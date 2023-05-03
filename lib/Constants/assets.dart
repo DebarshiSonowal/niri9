@@ -27,5 +27,12 @@ class Assets {
   static const hindiImage = "assets/images/hindi.png";
   static const bhojpuriImage = "assets/images/bhojpuri.png";
 
+  static const advertiseBannerImage = "assets/images/launcing_banner.jpg";
+  static const advertiseBannerImage2 = "assets/images/launcing_banner2.jpg";
+  static const episodeImage = "assets/images/episode_image.jpg";
+  static const episodeImage2 = "assets/images/episode_image2.jpg";
+
+  static String videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+
 // static const banner_image = "assets/images/";
 }

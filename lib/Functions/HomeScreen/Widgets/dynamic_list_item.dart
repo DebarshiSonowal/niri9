@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:niri9/Navigation/Navigate.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Models/ott.dart';
 import '../../../Repository/repository.dart';
+import '../../../Router/routes.dart';
 import '../../../Widgets/title_box.dart';
 import 'ott_item.dart';
 
@@ -40,7 +42,7 @@ final Function onTap;
                 return OttItem(
                   item: item,
                   onTap: () {
-
+                    Navigation.instance.navigate(Routes.watchScreen,args: item.id);
                   },
                 );
               },

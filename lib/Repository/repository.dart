@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:niri9/Constants/assets.dart';
 import 'package:niri9/Models/dynamic_list_item_model.dart';
+import 'package:niri9/Models/subscription_model.dart';
 
 import '../Models/account_item.dart';
 import '../Models/appbar_option.dart';
@@ -144,6 +145,25 @@ class Repository extends ChangeNotifier {
     OTT(id: 9, image: Assets.item3Image),
     OTT(id: 9, image: Assets.itemImage),
     OTT(id: 9, image: Assets.item2Image),
+  ];
+
+  List<SubscriptionModel> subscriptions = [
+    SubscriptionModel(
+      "Status",
+      "Active",
+    ),
+    SubscriptionModel(
+      "Pack Country",
+      "India",
+    ),
+    SubscriptionModel(
+      "Payment Mode",
+      "crm",
+    ),
+    SubscriptionModel(
+      "Expiry Date",
+      "04 Jun 2023",
+    ),
   ];
 
   List<AccountItem> items = [

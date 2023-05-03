@@ -9,6 +9,8 @@ import 'package:niri9/Functions/Rent/rent_page.dart';
 import 'package:niri9/Functions/Search/search_page.dart';
 import 'package:niri9/Router/routes.dart';
 
+import '../Functions/SubscriptionPage/subscription_page.dart';
+import '../Functions/WatchScreen/watch_screen.dart';
 import '../Widgets/FadeTransitionBuilder.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
@@ -31,6 +33,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           page: LanguageSelectedPage(index: settings.arguments as int));
     case Routes.filmFestivalScreen:
       return FadeTransitionPageRouteBuilder(page: const FilmFestivalPage());
+    case Routes.watchScreen:
+      return FadeTransitionPageRouteBuilder(
+          page: WatchScreen(
+        index: settings.arguments as int,
+      ));
+    case Routes.subscriptionScreen:
+      return FadeTransitionPageRouteBuilder(page: const SubscriptionPage());
+
     default:
       return FadeTransitionPageRouteBuilder(
         page: Container(),
