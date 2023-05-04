@@ -8,6 +8,7 @@ import '../Models/account_item.dart';
 import '../Models/appbar_option.dart';
 import '../Models/available_language.dart';
 import '../Models/ott.dart';
+import '../Models/plan_pricing.dart';
 
 class Repository extends ChangeNotifier {
   int _currentIndex = 0;
@@ -203,6 +204,12 @@ class Repository extends ChangeNotifier {
       name: "Sign Out",
       icon: FontAwesomeIcons.signOut,
     ),
+  ];
+
+  List<PlanPricing> plans = [
+    PlanPricing(true, false, false, 1, "HD 720P", "299","Mobile"),
+    PlanPricing(true, true, false, 2, "HD 1080P", "499","Gold"),
+    PlanPricing(true, true, true, 4, "HD 1080P", "599","Premium"),
   ];
 
   void updateIndex(int val) {

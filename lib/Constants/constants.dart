@@ -9,4 +9,10 @@ class Constants {
 
   static const subscriptionBg = Color(0xff151515);
   static const subscriptionCardBg = Color(0xff272030);
+
+  static const plansColor = Color(0xff928ea0);
+
+  static const planButtonColor = Color(0xff67d2b8);
+
+  static const selectedPlanColor = Color(0xff731af5);
 }

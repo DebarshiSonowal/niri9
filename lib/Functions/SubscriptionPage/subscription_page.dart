@@ -1,15 +1,28 @@
+import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:niri9/Constants/constants.dart';
+import 'package:niri9/Models/plan_pricing.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:niri9/Widgets/gradient_text.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Repository/repository.dart';
+import 'Widgets/plan_column.dart';
+import 'Widgets/premium_card.dart';
 import 'Widgets/subscription_appbar.dart';
+import 'Widgets/type_column.dart';
 
-class SubscriptionPage extends StatelessWidget {
+class SubscriptionPage extends StatefulWidget {
   const SubscriptionPage({Key? key}) : super(key: key);
+
+  @override
+  State<SubscriptionPage> createState() => _SubscriptionPageState();
+}
+
+class _SubscriptionPageState extends State<SubscriptionPage> {
+  int selected = 2;
 
   @override
   Widget build(BuildContext context) {
@@ -29,128 +42,107 @@ class SubscriptionPage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Card(
-                margin: EdgeInsets.symmetric(
-                  horizontal: 13.w,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Constants.subscriptionCardBg,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+              const PremiumCard(),
+              SizedBox(
+                height: 5.h,
+              ),
+              Consumer<Repository>(builder: (context, data, _) {
+                return Container(
                   padding: EdgeInsets.symmetric(
-                    vertical: 1.5.h,
-                    horizontal: 8.w,
+                    horizontal: 2.w,
+                    vertical: 1.h,
                   ),
+                  margin: EdgeInsets.symmetric(
+                    horizontal: 2.w,
+                  ),
+                  color: const Color(0xff0b071e),
+                  width: double.infinity,
+                  height: 42.5.h,
                   child: Column(
                     children: [
-                      GradientText(
-                        "Premium",
+                      Expanded(
+                        child: Container(
+                          width: double.infinity,
+                          child: Row(
+                            children: [
+                              const TypeColumn(),
+                              PlanColumn(
+                                plan: data.plans,
+                                index: 0,
+                                selected: selected,
+                                updateSet: (int val) {
+                                  setState(() {
+                                    selected = val;
+                                  });
+                                },
+                              ),
+                              PlanColumn(
+                                plan: data.plans,
+                                index: 1,
+                                selected: selected,
+                                updateSet: (int val) {
+                                  setState(() {
+                                    selected = val;
+                                  });
+                                },
+                              ),
+                              PlanColumn(
+                                plan: data.plans,
+                                index: 2,
+                                selected: selected,
+                                updateSet: (int val) {
+                                  setState(() {
+                                    selected = val;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 4.w,
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 0.5.h,
+                        ),
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Constants.planButtonColor,
+                          ),
+                          onPressed: () {},
+                          child: Center(
+                            child: Text(
+                              "Continue",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium
+                                  ?.copyWith(
+                                    color: const Color(0xff002215),
+                                  ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'Apply Promo Code',
                         style: TextStyle(
-                          fontSize: 15.sp,
-                        ),
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xff7338b0),
-                            Color(0xffb61d73),
-                          ],
+                          color: Colors.white,
+                          decoration: TextDecoration.underline,
+                          // fontWeight: FontWeight.bold,
+                          fontSize: 9.sp,
+                          decorationColor: Colors.white,
                         ),
                       ),
                       SizedBox(
-                        height: 3.h,
+                        height: 1.h,
                       ),
-                      Text(
-                        "INR 599",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18.sp,
-                            ),
-                      ),
-                      SizedBox(
-                        height: 2.5.h,
-                      ),
-                      Text(
-                        "For 365 Days",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white30,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 9.sp,
-                            ),
-                      ),
-                      SizedBox(
-                        height: 2.5.h,
-                      ),
-                      Text(
-                        "Date of Purchase: 04 Jun 2022",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white,
-                              // fontWeight: FontWeight.bold,
-                              fontSize: 9.sp,
-                            ),
-                      ),
-                      SizedBox(
-                        height: 2.5.h,
-                      ),
-                      Consumer<Repository>(builder: (context, data, _) {
-                        return ListView.separated(
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            var item = data.subscriptions[index];
-                            return Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 2.5.w,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(
-                                    width:15.w,
-                                    child: Text(
-                                      item.title ?? "",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
-                                            color: Colors.white30,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 9.sp,
-                                          ),
-                                    ),
-                                  ),
-                                  Text(
-                                    item.value ?? "Active",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 9.sp,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return Divider(
-                              thickness: 0.01.h,
-                              color: Colors.white,
-                            );
-                          },
-                          itemCount: data.subscriptions.length,
-                        );
-                      }),
                     ],
                   ),
-                ),
-              ),
+                );
+              }),
             ],
           ),
         ),
