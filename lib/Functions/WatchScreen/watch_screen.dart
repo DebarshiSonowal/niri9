@@ -150,6 +150,7 @@ class _WatchScreenState extends State<WatchScreen> {
                         text: item.title ?? "",
                         list: item.list ?? [],
                         onTap: () {
+
                           Navigation.instance
                               .navigate(Routes.moreScreen, args: 0);
                         },

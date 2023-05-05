@@ -183,7 +183,7 @@ class PlanColumn extends StatelessWidget {
                                 width: 0.5.w,
                               ),
                               Container(
-                                color: Color(0xfffade60),
+                                color: const Color(0xfffade60),
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 0.5.w,
                                   vertical: 0.1.h,
