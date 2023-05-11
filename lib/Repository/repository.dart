@@ -130,6 +130,44 @@ class Repository extends ChangeNotifier {
     ),
   ];
 
+  List<DynamicListItemModel> premiumList = [
+    DynamicListItemModel(
+      title: "Top 10 in India",
+      list: [
+        OTT(id: 0, image: Assets.itemImage),
+        OTT(id: 1, image: Assets.item2Image),
+        OTT(id: 2, image: Assets.item3Image),
+        OTT(id: 3, image: Assets.itemImage),
+        OTT(id: 4, image: Assets.item2Image),
+        OTT(id: 5, image: Assets.item3Image),
+      ],
+    ),
+  ];
+  List<DynamicListItemModel> premiumOthersList = [
+    DynamicListItemModel(
+      title: "Movies that are top rated",
+      list: [
+        OTT(id: 0, image: Assets.itemImage),
+        OTT(id: 1, image: Assets.item2Image),
+        OTT(id: 2, image: Assets.item3Image),
+        OTT(id: 3, image: Assets.itemImage),
+        OTT(id: 4, image: Assets.item2Image),
+        OTT(id: 5, image: Assets.item3Image),
+      ],
+    ),
+    DynamicListItemModel(
+      title: "Fresh Arrival",
+      list: [
+        OTT(id: 0, image: Assets.itemImage),
+        OTT(id: 1, image: Assets.item2Image),
+        OTT(id: 2, image: Assets.item3Image),
+        OTT(id: 3, image: Assets.itemImage),
+        OTT(id: 4, image: Assets.item2Image),
+        OTT(id: 5, image: Assets.item3Image),
+      ],
+    ),
+  ];
+
   List<OTT> selectedCategory = [
     OTT(id: 0, image: Assets.itemImage),
     OTT(id: 1, image: Assets.item2Image),
