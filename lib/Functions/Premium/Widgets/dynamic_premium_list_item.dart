@@ -8,21 +8,24 @@ import '../../../Widgets/title_box.dart';
 import 'premium_ott_item.dart';
 
 class DynamicPremiumListItem extends StatelessWidget {
-  const DynamicPremiumListItem({Key? key, required this.text, required this.list, required this.onTap}) : super(key: key);
+  const DynamicPremiumListItem(
+      {Key? key, required this.text, required this.list, required this.onTap})
+      : super(key: key);
   final String text;
   final List<OTT> list;
   final Function onTap;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 23.h,
+      height: 30.h,
       width: double.infinity,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TitleBox(
             text: text,
-            onTap: ()=>onTap(),
+            onTap: () => onTap(),
           ),
           Container(
             // color: Colors.green,
@@ -30,7 +33,7 @@ class DynamicPremiumListItem extends StatelessWidget {
               horizontal: 2.w,
               vertical: 1.h,
             ),
-            height: 17.h,
+            height: 24.h,
             width: double.infinity,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
@@ -41,16 +44,17 @@ class DynamicPremiumListItem extends StatelessWidget {
                   index: index,
                   item: item,
                   onTap: () {
-                    Navigation.instance.navigate(Routes.watchScreen,args: item.id);
+                    Navigation.instance
+                        .navigate(Routes.watchScreen, args: item.id);
                   },
                 );
               },
               separatorBuilder: (context, index) {
                 return SizedBox(
-                  width: 2.w,
+                  width: 4.w,
                 );
               },
-              itemCount:list.length,
+              itemCount: list.length,
             ),
           ),
         ],

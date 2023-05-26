@@ -235,6 +235,10 @@ class Repository extends ChangeNotifier {
       icon: Icons.help,
     ),
     AccountItem(
+      name: "About",
+      icon: Icons.info,
+    ),
+    AccountItem(
       name: "Chat With Us",
       icon: FontAwesomeIcons.whatsapp,
     ),

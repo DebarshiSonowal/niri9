@@ -16,7 +16,7 @@ class DynamicPremiumOtherListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 23.h,
+      height:31.h,
       width: double.infinity,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -31,7 +31,7 @@ class DynamicPremiumOtherListItem extends StatelessWidget {
               horizontal: 2.w,
               vertical: 1.h,
             ),
-            height: 17.h,
+            height: 25.h,
             width: double.infinity,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
@@ -47,7 +47,7 @@ class DynamicPremiumOtherListItem extends StatelessWidget {
               },
               separatorBuilder: (context, index) {
                 return SizedBox(
-                  width: 2.w,
+                  width: 2.5.w,
                 );
               },
               itemCount:list.length,

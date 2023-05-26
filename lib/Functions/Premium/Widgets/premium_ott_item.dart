@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:niri9/Widgets/gradient_text.dart';
 import 'package:sizer/sizer.dart';
@@ -25,23 +27,26 @@ class PremiumOttItem extends StatelessWidget {
         children: [
           Container(
             height: double.infinity,
-            width: 23.w,
+            width: 35.w,
             decoration: BoxDecoration(
               // color: Colors.red,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
               child: Image.asset(
                 item.image!,
                 // // width: 22.w,
                 // width: 20.w,
                 // height: 16.h,
-                fit: BoxFit.fitHeight,
+                fit: BoxFit.fill,
               ),
             ),
           ),
           Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.05),
+            ),
             margin: EdgeInsets.only(
               right: 2.w,
             ),
@@ -49,10 +54,13 @@ class PremiumOttItem extends StatelessWidget {
               "${index + 1}",
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     color: Colors.white,
-                    fontSize: 22.sp,
-                    // fontWeight: FontWeight.bold,
+                    fontSize: 40.sp,
+                    fontWeight: FontWeight.bold,
                   ),
-              gradient: LinearGradient(colors: []),
+              gradient: const LinearGradient(colors: [
+                Color(0xff8230c6),
+                Colors.black,
+              ]),
             ),
           ),
         ],

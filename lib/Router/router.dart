@@ -5,10 +5,12 @@ import 'package:niri9/Functions/HomeScreen/home_screen.dart';
 import 'package:niri9/Functions/LanguageSelectedPage/language_selected_page.dart';
 import 'package:niri9/Functions/More/more_page.dart';
 import 'package:niri9/Functions/Premium/premium_page.dart';
+import 'package:niri9/Functions/RefundPolicy/refund_policy.dart';
 import 'package:niri9/Functions/Rent/rent_page.dart';
 import 'package:niri9/Functions/Search/search_page.dart';
 import 'package:niri9/Router/routes.dart';
 
+import '../Functions/AboutPage/about_page.dart';
 import '../Functions/SubscriptionPage/subscription_page.dart';
 import '../Functions/WatchScreen/watch_screen.dart';
 import '../Widgets/FadeTransitionBuilder.dart';
@@ -40,6 +42,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       ));
     case Routes.subscriptionScreen:
       return FadeTransitionPageRouteBuilder(page: const SubscriptionPage());
+    case Routes.refundScreen:
+      return FadeTransitionPageRouteBuilder(page: const RefundPolicyScreen());
+    case Routes.aboutScreen:
+      return FadeTransitionPageRouteBuilder(page: const AboutPage());
 
     default:
       return FadeTransitionPageRouteBuilder(

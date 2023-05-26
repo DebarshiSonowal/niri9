@@ -9,4 +9,7 @@ class Routes {
   static const filmFestivalScreen = "/film_festival";
   static const watchScreen = "/watch";
   static const subscriptionScreen = "/subscription";
+  static const refundScreen = "/refundScreen";
+
+  static const aboutScreen = "/about_screen";
 }
