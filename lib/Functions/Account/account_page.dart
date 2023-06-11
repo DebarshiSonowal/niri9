@@ -147,7 +147,7 @@ class AccountPage extends StatelessWidget {
   }
 
   Future<void> _launchUrl(Uri _url) async {
-    if (!await launchUrl(_url)) {
+    if (!await launchUrl(_url,mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch $_url');
     }
   }

@@ -43,44 +43,46 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
           },
         ),
       ),
-      body: Container(
-        color: Constants.primaryColor,
-        height: 100.h,
-        width: 100.w,
-        padding: EdgeInsets.symmetric(
-          vertical: 0.5.h,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const HomeBanner(),
-              TitleBox(
-                text: "Explore in your language",
-                onTap: () {},
-              ),
-              const LanguageSection(),
-              Consumer<Repository>(builder: (context, data, _) {
-                return Flexible(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      var item = data.dynamicList[index];
-                      return DynamicListItem(
-                        text: item.title ?? "",
-                        list: item.list ?? [],
-                        onTap: () {
-                          Navigation.instance
-                              .navigate(Routes.moreScreen, args: 0);
-                        },
-                      );
-                    },
-                    itemCount: data.dynamicList.length,
-                  ),
-                );
-              }),
-            ],
+      body: SafeArea(
+        child: Container(
+          color: Constants.primaryColor,
+          height: 100.h,
+          width: 100.w,
+          padding: EdgeInsets.symmetric(
+            vertical: 0.5.h,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const HomeBanner(),
+                TitleBox(
+                  text: "Explore in your language",
+                  onTap: () {},
+                ),
+                const LanguageSection(),
+                Consumer<Repository>(builder: (context, data, _) {
+                  return Flexible(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        var item = data.dynamicList[index];
+                        return DynamicListItem(
+                          text: item.title ?? "",
+                          list: item.list ?? [],
+                          onTap: () {
+                            Navigation.instance
+                                .navigate(Routes.moreScreen, args: 0);
+                          },
+                        );
+                      },
+                      itemCount: data.dynamicList.length,
+                    ),
+                  );
+                }),
+              ],
+            ),
           ),
         ),
       ),
