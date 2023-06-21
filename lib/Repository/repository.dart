@@ -7,8 +7,12 @@ import 'package:niri9/Models/subscription_model.dart';
 import '../Models/account_item.dart';
 import '../Models/appbar_option.dart';
 import '../Models/available_language.dart';
+import '../Models/genres.dart';
+import '../Models/languages.dart';
 import '../Models/ott.dart';
 import '../Models/plan_pricing.dart';
+import '../Models/sections.dart';
+import '../Models/types.dart';
 
 class Repository extends ChangeNotifier {
   int _currentIndex = 0;
@@ -249,17 +253,84 @@ class Repository extends ChangeNotifier {
   ];
 
   List<PlanPricing> plans = [
-    PlanPricing(true, false, false, 1, "HD 720P", "299","Mobile"),
-    PlanPricing(true, true, false, 2, "HD 1080P", "499","Gold"),
-    PlanPricing(true, true, true, 4, "HD 1080P", "599","Premium"),
+    PlanPricing(true, false, false, 1, "HD 720P", "299", "Mobile"),
+    PlanPricing(true, true, false, 2, "HD 1080P", "499", "Gold"),
+    PlanPricing(true, true, true, 4, "HD 1080P", "599", "Premium"),
   ];
+
+  List<Sections> _sections = [];
+
+  List<Genres> _genres = [];
+
+  List<Language> _languages = [];
+
+  List<Types> _types = [];
+
+  String? _about, _privacy, _terms, _refund;
 
   void updateIndex(int val) {
     _currentIndex = val;
     notifyListeners();
   }
 
+  void updateAbout(String val) {
+    _about = val;
+    notifyListeners();
+  }
+
+  void updatePrivacy(String val) {
+    _privacy = val;
+    notifyListeners();
+  }
+
+  void updateTerms(String val) {
+    _terms = val;
+    notifyListeners();
+  }
+
+  void updateRefund(String val) {
+    _refund = val;
+    notifyListeners();
+  }
+
+  void addSections(List<Sections> list) {
+    _sections = list;
+    debugPrint("`addSections ${list}");
+    notifyListeners();
+  }
+
+  void addLanguages(List<Language> list) {
+    _languages = list;
+    notifyListeners();
+  }
+
+  void addTypes(List<Types> list) {
+    _types = list;
+    notifyListeners();
+  }
+
+  void addGenres(List<Genres> list) {
+    _genres = list;
+    notifyListeners();
+  }
+
   int get currentIndex => _currentIndex;
+
+  get refund => _refund;
+
+  get terms => _terms;
+
+  get privacy => _privacy;
+
+  get about => _about;
+
+  List<Types> get types => _types;
+
+  List<Language> get languages => _languages;
+
+  List<Genres> get genres => _genres;
+
+  List<Sections> get sections => _sections;
 
 // get int index
 }

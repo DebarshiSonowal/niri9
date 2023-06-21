@@ -108,7 +108,7 @@ class SearchPage extends StatelessWidget {
             Consumer<Repository>(builder: (context, data, _) {
               return Expanded(
                 child: GridView.builder(
-                  itemCount: data.selectedCategory.length,
+                  itemCount: data.sections[0].movies.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 2.w,
@@ -116,7 +116,7 @@ class SearchPage extends StatelessWidget {
                     childAspectRatio: 9 / 12,
                   ),
                   itemBuilder: (BuildContext context, int index) {
-                    var item = data.selectedCategory[index];
+                    var item = data.sections[0].movies[index];
                     return OttItem(item: item, onTap: () {});
                   },
                 ),

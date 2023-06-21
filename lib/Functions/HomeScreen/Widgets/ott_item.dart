@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:niri9/Models/movies.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Models/ott.dart';
@@ -10,7 +11,7 @@ class OttItem extends StatelessWidget {
     required this.onTap,
   });
 
-  final OTT item;
+  final Movies item;
   final Function onTap;
 
   @override
@@ -30,8 +31,8 @@ class OttItem extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
-            child: Image.asset(
-              item.image!,
+            child: Image.network(
+              item.poster_pic!,
               // // width: 22.w,
               // width: 20.w,
               // height: 16.h,

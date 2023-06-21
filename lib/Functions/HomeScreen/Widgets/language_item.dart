@@ -1,5 +1,8 @@
 
 import 'package:flutter/material.dart';
+import 'package:niri9/Constants/assets.dart';
+import 'package:niri9/Constants/constants.dart';
+import 'package:niri9/Models/languages.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Models/available_language.dart';
@@ -11,7 +14,7 @@ class LanguageItem extends StatelessWidget {
     required this.onTap,
   });
 
-  final AvailableLanguage item;
+  final Language item;
   final Function onTap;
 
   @override
@@ -32,7 +35,7 @@ class LanguageItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Image.asset(
-                item.assets!,
+                Assets.assameseImage,
                 height: 11.h,
                 width: 20.w,
                 fit: BoxFit.fitHeight,
@@ -41,13 +44,13 @@ class LanguageItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    item.name ?? "",
+                    item.slug ?? "",
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: Colors.white,
                     ),
                   ),
                   Text(
-                    item.inEnglish ?? "",
+                    item.name ?? "",
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: Colors.white,
                     ),

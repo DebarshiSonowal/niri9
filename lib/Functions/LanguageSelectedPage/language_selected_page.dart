@@ -70,17 +70,16 @@ class LanguageSelectedPage extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              var item = data.dynamicList[index];
+              var item = data.sections[index];
               return DynamicListItem(
                 text: item.title ?? "",
-                list: item.list ?? [],
+                list: item.movies ?? [],
                 onTap: () {
                   Navigation.instance.navigate(Routes.moreScreen,args: 0);
                 },
               );
             },
-            itemCount: data.
-            dynamicList.length,
+            itemCount:data.sections.length,
           );
         }),
       ),

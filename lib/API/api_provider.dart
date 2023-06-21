@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../Models/generic_response.dart';
 import '../Models/genres.dart';
 import '../Models/languages.dart';
+import '../Models/sections.dart';
 import '../Models/types.dart';
 
 class ApiProvider {
@@ -13,7 +14,7 @@ class ApiProvider {
 
   static final ApiProvider instance = ApiProvider._();
 
-  final String baseUrl = "http://test.niri9.com/";
+  final String baseUrl = "http://test.niri9.com";
 
   final String path = "api";
 
@@ -267,6 +268,42 @@ class ApiProvider {
     } on DioError catch (e) {
       debugPrint("getTermsPolicy  error: ${e.error} ${e.message}");
       return GenericResponse.withError(e.message);
+    }
+  }
+
+  Future<SectionsResponse> getSections() async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: 8),
+        receiveTimeout: const Duration(seconds: 8),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          // 'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/widgets/sections";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    // debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.get(
+        url,
+        // data: jsonEncode(data),
+      );
+      debugPrint("getSections response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return SectionsResponse.fromJson(response?.data);
+      } else {
+        debugPrint("getSections error response: ${response?.data}");
+        return SectionsResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("getSections  error: ${e.error} ${e.message}");
+      return SectionsResponse.withError(e.message);
     }
   }
 

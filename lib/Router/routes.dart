@@ -10,6 +10,8 @@ class Routes {
   static const watchScreen = "/watch";
   static const subscriptionScreen = "/subscription";
   static const refundScreen = "/refundScreen";
-
   static const aboutScreen = "/about_screen";
+
+
+  static const loadingScreen = "/loading_dialog";
 }

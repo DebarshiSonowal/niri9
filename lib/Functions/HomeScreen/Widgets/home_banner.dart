@@ -23,6 +23,7 @@ class _HomeBannerState extends State<HomeBanner> {
         width: double.infinity,
         height: 25.h,
         child: CarouselSlider.builder(
+          // itemCount: data.bannerList.length,
           itemCount: data.bannerList.length,
           itemBuilder: (BuildContext context, int index, int realIndex) {
             var item = data.bannerList[index];

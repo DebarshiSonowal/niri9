@@ -14,6 +14,7 @@ import '../Functions/AboutPage/about_page.dart';
 import '../Functions/SubscriptionPage/subscription_page.dart';
 import '../Functions/WatchScreen/watch_screen.dart';
 import '../Widgets/FadeTransitionBuilder.dart';
+import '../Widgets/loading_dialog.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -46,6 +47,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return FadeTransitionPageRouteBuilder(page: const RefundPolicyScreen());
     case Routes.aboutScreen:
       return FadeTransitionPageRouteBuilder(page: const AboutPage());
+    case Routes.loadingScreen:
+      return FadeTransitionPageRouteBuilder(page: LoadingDialog());
 
     default:
       return FadeTransitionPageRouteBuilder(

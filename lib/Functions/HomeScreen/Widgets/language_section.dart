@@ -24,7 +24,7 @@ class LanguageSection extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
           itemBuilder: (context, index) {
-            var item = data.languageList[index];
+            var item = data.languages[index];
             return LanguageItem(
               item: item,
               onTap: () {
