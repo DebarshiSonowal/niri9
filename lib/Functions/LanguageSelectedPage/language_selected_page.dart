@@ -73,7 +73,7 @@ class LanguageSelectedPage extends StatelessWidget {
               var item = data.sections[index];
               return DynamicListItem(
                 text: item.title ?? "",
-                list: item.movies ?? [],
+                list: item.videos ?? [],
                 onTap: () {
                   Navigation.instance.navigate(Routes.moreScreen,args: 0);
                 },

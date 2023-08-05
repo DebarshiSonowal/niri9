@@ -6,7 +6,6 @@ import 'package:niri9/Repository/repository.dart';
 import 'package:niri9/Router/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
-
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../Widgets/title_box.dart';
 import 'Widgets/custom_app_bar.dart';
@@ -74,14 +73,14 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         var item = data.sections[index];
-                        return DynamicListItem(
+                        return item.videos.isNotEmpty?DynamicListItem(
                           text: item.title ?? "",
-                          list: item.movies ?? [],
+                          list: item.videos ?? [],
                           onTap: () {
                             Navigation.instance
                                 .navigate(Routes.moreScreen, args: 0);
                           },
-                        );
+                        ):Container();
                       },
                       itemCount: data.sections.length,
                     ),
@@ -98,7 +97,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
 
   void fetchData(BuildContext context) async {
     Navigation.instance.navigate(Routes.loadingScreen);
-    await fetchSections(context);
+
     if (!context.mounted) return;
     await fetchLanguages(context);
     if (!context.mounted) return;
@@ -107,14 +106,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
 
   }
 
-  Future<void> fetchSections(BuildContext context) async {
-    final response = await ApiProvider.instance.getSections();
-    if (response.status ?? false) {
-      // if (!context.mounted) return;
-      Provider.of<Repository>(context, listen: false)
-          .addSections(response.sections);
-    } else {}
-  }
+
   Future<void> fetchLanguages(BuildContext context) async {
     final response = await ApiProvider.instance.getLanguages();
     if (response.status ?? false) {

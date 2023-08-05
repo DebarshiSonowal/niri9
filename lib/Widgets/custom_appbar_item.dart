@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
@@ -7,38 +8,50 @@ class CustomAppbarItem extends StatelessWidget {
   const CustomAppbarItem({
     super.key,
     required this.item,
-    required this.index, required this.onTap,
+    required this.index,
+    required this.onTap,
   });
 
   final int index;
   final AppBarOption item;
   final Function onTap;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: ()=>onTap(),
-      child: Container(
+      onTap: () => onTap(),
+      child: SizedBox(
+        width: 16.w,
         child: SingleChildScrollView(
           physics: const NeverScrollableScrollPhysics(),
           child: Column(
             children: [
               (index == 0 || index == 2)
-                  ? Image.asset(
-                item.image!,
-                scale: 16,
-                color: Colors.white,
-              )
-                  : Image.asset(
-                item.image!,
-                scale: 16,
-              ),
+                  ? CachedNetworkImage(
+                      imageUrl: item.image!,
+                      height: 16.sp,
+                      width: 16.sp,
+                      // color: Colors.white,
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: item.image!,
+                      height: 16.sp,
+                      width: 16.sp,
+                      // color: Colors.white,
+                    ),
               SizedBox(
                 height: 0.4.h,
               ),
-              Text(
-                item.name ?? "",
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white,
+              SizedBox(
+                width: 15.w,
+                child: Center(
+                  child: Text(
+                    item.name ?? "",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.white,
+                        ),
+                  ),
                 ),
               ),
             ],

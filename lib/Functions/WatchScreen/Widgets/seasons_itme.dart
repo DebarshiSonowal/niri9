@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:niri9/Models/season.dart';
 import 'package:sizer/sizer.dart';
 
 class SeasonsItem extends StatelessWidget {
@@ -13,7 +14,7 @@ class SeasonsItem extends StatelessWidget {
   final int index;
   final Function onTap;
   final int selected;
-  final List<String> list;
+  final List<Season> list;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,7 @@ class SeasonsItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            list[index],
+            list[index].title??"",
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: Colors.black,
               fontSize: 11.sp,

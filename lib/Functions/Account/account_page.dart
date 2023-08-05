@@ -12,9 +12,14 @@ import '../../Constants/assets.dart';
 import '../../Constants/constants.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 
-class AccountPage extends StatelessWidget {
-  const AccountPage({Key? key}) : super(key: key);
+class AccountPage extends StatefulWidget {
+  const AccountPage({super.key});
 
+  @override
+  State<AccountPage> createState() => _AccountPageState();
+}
+
+class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,6 +97,7 @@ class AccountPage extends StatelessWidget {
               return ListTile(
                 onTap: () {
                   onTap(index, item);
+                  // debugPrint("Item");
                 },
                 leading: Icon(
                   item.icon,
@@ -130,24 +136,32 @@ class AccountPage extends StatelessWidget {
       case 3:
         break;
       case 4:
-        _launchUrl(Uri.parse("https://niri9.com/terms-condition.php"));
+        // _launchUrl(Uri.parse("https://niri9.com/terms-condition.php"));
+        Navigation.instance.navigate(Routes.termsConditionsScreen);
         break;
       case 5:
-        _launchUrl(Uri.parse("https://niri9.com/privacy_policy.php"));
+        // _launchUrl(Uri.parse("https://niri9.com/privacy_policy.php"));
+        Navigation.instance.navigate(Routes.privacyPolicyScreen);
         break;
       case 6:
         Navigation.instance.navigate(Routes.refundScreen);
         break;
       case 7:
+        Navigation.instance.navigate(Routes.helpFaqScreen);
+        break;
+      case 8:
         Navigation.instance.navigate(Routes.aboutScreen);
         break;
+      case 9:
+        break;
       default:
+        Navigation.instance.navigate(Routes.loginScreen);
         break;
     }
   }
 
   Future<void> _launchUrl(Uri _url) async {
-    if (!await launchUrl(_url,mode: LaunchMode.externalApplication)) {
+    if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch $_url');
     }
   }

@@ -3,6 +3,7 @@ import 'package:niri9/Models/movies.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Models/ott.dart';
+import '../../../Models/video.dart';
 
 class OttItem extends StatelessWidget {
   const OttItem({
@@ -11,7 +12,7 @@ class OttItem extends StatelessWidget {
     required this.onTap,
   });
 
-  final Movies item;
+  final Video item;
   final Function onTap;
 
   @override
@@ -24,7 +25,7 @@ class OttItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(5),
         ),
         child: Container(
-          width: 27.w,
+          width: 35.w,
           decoration: BoxDecoration(
             // color: Colors.red,
             borderRadius: BorderRadius.circular(5),

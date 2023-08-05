@@ -1,4 +1,5 @@
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,16 +25,16 @@ class _HomeBannerState extends State<HomeBanner> {
         height: 25.h,
         child: CarouselSlider.builder(
           // itemCount: data.bannerList.length,
-          itemCount: data.bannerList.length,
+          itemCount: data.sections[0].videos.length,
           itemBuilder: (BuildContext context, int index, int realIndex) {
-            var item = data.bannerList[index];
+            var item = data.sections[0].videos[index];
             return Container(
               height: 25.h,
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 children: [
-                  Image.asset(
-                    item,
+                  CachedNetworkImage(
+                    imageUrl:item.profile_pic??"",
                     fit: BoxFit.fill,
                     height: 25.h,
                     width: double.infinity,

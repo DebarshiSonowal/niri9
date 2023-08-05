@@ -1,3 +1,5 @@
+import 'package:niri9/Models/video.dart';
+
 import 'movies.dart';
 
 class Sections {
@@ -12,6 +14,7 @@ class Sections {
   int? id, sequence;
   String? title, slug, web_template, app_template, page, info;
   List<Movies> movies = [];
+  List<Video> videos = [];
 
   Sections.fromJson(json) {
     id = json['id'] ?? 0;
@@ -26,6 +29,9 @@ class Sections {
     movies = json['movies'] == null
         ? []
         : (json['movies'] as List).map((e) => Movies.fromJson(e)).toList();
+    videos = json['videos'] == null
+        ? []
+        : (json['videos'] as List).map((e) => Video.fromJson(e)).toList();
   }
 }
 

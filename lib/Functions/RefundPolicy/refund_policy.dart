@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:niri9/Navigation/Navigate.dart';
+import 'package:niri9/Repository/repository.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Constants/assets.dart';
@@ -54,32 +57,37 @@ class RefundPolicyScreen extends StatelessWidget {
         padding: EdgeInsets.symmetric(
           horizontal: 5.w,
         ),
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Refund Policy",
-              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                    color: Colors.white,
-                  ),
-            ),
-            SizedBox(
-              height: 4.h,
-            ),
-            Text(
-              Constants.refundPolicy ?? "",
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Colors.white70,
-                  ),
-            ),
-            const Spacer(),
-            Image.asset(
-              Assets.logoTransparent,
-              height: 15.h,
-              width: 30.w,
-              fit: BoxFit.cover,
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Refund Policy",
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                      color: Colors.white,
+                    ),
+              ),
+              SizedBox(
+                height: 2.h,
+              ),
+              Consumer<Repository>(builder: (context, data, _) {
+                return Html(
+                  data: data.refundPolicy ?? "",
+                  // style: {
+                  //   "#": Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  //         color: Colors.white70,
+                  //       ),
+                  // },
+                );
+              }),
+              Image.asset(
+                Assets.logoTransparent,
+                height: 15.h,
+                width: 30.w,
+                fit: BoxFit.cover,
+              ),
+            ],
+          ),
         ),
       ),
     );

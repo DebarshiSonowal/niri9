@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:niri9/Constants/assets.dart';
+import 'package:niri9/Models/category.dart';
 import 'package:niri9/Models/dynamic_list_item_model.dart';
 import 'package:niri9/Models/subscription_model.dart';
+import 'package:niri9/Models/video.dart';
 
 import '../Models/account_item.dart';
 import '../Models/appbar_option.dart';
@@ -13,82 +15,59 @@ import '../Models/ott.dart';
 import '../Models/plan_pricing.dart';
 import '../Models/sections.dart';
 import '../Models/types.dart';
+import '../Models/user.dart';
 
 class Repository extends ChangeNotifier {
   int _currentIndex = 0;
-  List<AppBarOption> appbarOptions = [
-    AppBarOption(
-      name: "All",
-      image: Assets.allImage,
-    ),
-    AppBarOption(
-      name: "Movies",
-      image: Assets.movieImage,
-    ),
-    AppBarOption(
-      name: "Web Series",
-      image: Assets.webSeriesImage,
-    ),
-    AppBarOption(
-      name: "Film Festival",
-      image: Assets.filmImage,
-    ),
-    AppBarOption(
-      name: "Videos",
-      image: Assets.videoImage,
-    ),
-    AppBarOption(
-      name: "More",
-      image: Assets.moreImage,
-    ),
+  List<Category> _categories = [];
+  List<Video> _specificVideos = [];
+  List<AppBarOption> _appbarOptions = [
+    // AppBarOption(
+    //   name: "All",
+    //   image: Assets.allImage,
+    // ),
+    // AppBarOption(
+    //   name: "Movies",
+    //   image: Assets.movieImage,
+    // ),
+    // AppBarOption(
+    //   name: "Web Series",
+    //   image: Assets.webSeriesImage,
+    // ),
+    // AppBarOption(
+    //   name: "Film Festival",
+    //   image: Assets.filmImage,
+    // ),
+    // AppBarOption(
+    //   name: "Videos",
+    //   image: Assets.videoImage,
+    // ),
+    // AppBarOption(
+    //   name: "More",
+    //   image: Assets.moreImage,
+    // ),
   ];
-  List<AppBarOption> appbarOptions2 = [
-    AppBarOption(
-      name: "All",
-      image: Assets.allImage,
-    ),
-    AppBarOption(
-      name: "Movies",
-      image: Assets.movieImage,
-    ),
-    AppBarOption(
-      name: "Web Series",
-      image: Assets.webSeriesImage,
-    ),
-    AppBarOption(
-      name: "Film Festival",
-      image: Assets.filmImage,
-    ),
-    AppBarOption(
-      name: "Videos",
-      image: Assets.videoImage,
-    ),
-    AppBarOption(
-      name: "Less",
-      image: Assets.uploadImage,
-    ),
-  ];
-  List<AppBarOption> appbarOptions3 = [
-    AppBarOption(
-      name: "Web Series",
-      image: Assets.webSeriesImage,
-    ),
-    AppBarOption(
-      name: "Movies",
-      image: Assets.movieImage,
-    ),
-    AppBarOption(
-      name: "Film Festival",
-      image: Assets.filmImage,
-    ),
-  ];
+  User? _user;
+  List<List<Video>> _videos = [];
 
-  List<String> bannerList = [
-    Assets.bannerImage,
-    Assets.bannerImage,
-    Assets.bannerImage,
-    Assets.bannerImage,
-  ];
+  String _faq = "",
+      _refundPolicy = "",
+      _privacyPolicy = "",
+      _help_center = "",
+      _termsConditions = "";
+
+  List<AppBarOption> get appbarOptions => _appbarOptions;
+
+  //
+  // List<String> bannerList = [
+  //   Assets.bannerImage,
+  //   Assets.bannerImage,
+  //   Assets.bannerImage,
+  //   Assets.bannerImage,
+  // ];
+
+  Video? videoDetails;
+
   List<AvailableLanguage> languageList = [
     AvailableLanguage(
       name: "অসমীয়া",
@@ -235,6 +214,10 @@ class Repository extends ChangeNotifier {
       icon: Icons.privacy_tip_rounded,
     ),
     AccountItem(
+      name: "Refund Policy",
+      icon: Icons.help,
+    ),
+    AccountItem(
       name: "Help & FAQ's",
       icon: Icons.help,
     ),
@@ -267,6 +250,60 @@ class Repository extends ChangeNotifier {
   List<Types> _types = [];
 
   String? _about, _privacy, _terms, _refund;
+
+  void setFaq(String val) {
+    _faq = val;
+    notifyListeners();
+  }
+
+  void setUser(User val) {
+    _user = val;
+    notifyListeners();
+  }
+
+  void setHelp(String s) {
+    _help_center = s;
+    notifyListeners();
+  }
+
+  void setTermsConditions(String val) {
+    _termsConditions = val;
+    notifyListeners();
+  }
+
+  void setRefund(String val) {
+    _refundPolicy = val;
+    notifyListeners();
+  }
+
+  void setPrivacy(String val) {
+    _privacyPolicy = val;
+    notifyListeners();
+  }
+
+  void setVideoDetails(Video? details) {
+    videoDetails = details;
+    notifyListeners();
+  }
+
+  void setCategories(List<Category> list) {
+    _appbarOptions = list
+        .map((e) =>
+            AppBarOption(name: e.name ?? "", image: e.profile_icon ?? ""))
+        .toList();
+    _categories = list;
+    notifyListeners();
+  }
+
+  void setVideos(List<Video> list) {
+    _videos.add(list);
+    notifyListeners();
+  }
+
+  void setSearchVideos(List<Video> list) {
+    _specificVideos = list;
+    notifyListeners();
+  }
 
   void updateIndex(int val) {
     _currentIndex = val;
@@ -331,6 +368,24 @@ class Repository extends ChangeNotifier {
   List<Genres> get genres => _genres;
 
   List<Sections> get sections => _sections;
+
+  List<List<Video>> get videos => _videos;
+
+  List<Category> get categories => _categories;
+
+  List<Video> get specificVideos => _specificVideos;
+
+  String get refundPolicy => _refundPolicy;
+
+  String get faq => _faq;
+
+  String get termsConditions => _termsConditions;
+
+  String get privacyPolicy => _privacyPolicy;
+
+  get help_center => _help_center;
+
+  User? get user => _user;
 
 // get int index
 }

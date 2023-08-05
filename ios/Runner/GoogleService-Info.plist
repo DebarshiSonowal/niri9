@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>300760354070-b79ompmq51gb1lme7oi13flcnr9lhf9j.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.300760354070-b79ompmq51gb1lme7oi13flcnr9lhf9j</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>300760354070-i35oqbo6ht75f9i3i96lq641b31pme5g.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCGmHWsb62v-pz-l4qKzekkO6i5kFpoAKs</string>
+	<key>GCM_SENDER_ID</key>
+	<string>300760354070</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.niri.niri9</string>
+	<key>PROJECT_ID</key>
+	<string>niri9-c2612</string>
+	<key>STORAGE_BUCKET</key>
+	<string>niri9-c2612.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:300760354070:ios:a2c12c6ec530fac71c5437</string>
+	<key>DATABASE_URL</key>
+	<string>https://niri9-c2612-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

@@ -24,7 +24,7 @@ class CustomAppbar extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(
-            height: 3.h,
+            height: 2.5.h,
           ),
           Row(
             children: [
@@ -43,39 +43,85 @@ class CustomAppbar extends StatelessWidget {
             builder: (context, data, _) {
               return Container(
                 padding: EdgeInsets.symmetric(
-                  horizontal: 3.w,
+                  horizontal: 2.w,
                 ),
                 width: double.infinity,
                 height: 6.h,
-                child: ListView.separated(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    var item = isExpanded
-                        ? data.appbarOptions[index]
-                        : data.appbarOptions2[index];
-                    return CustomAppbarItem(
-                      item: item,
-                      index: index,
-                      onTap: () {
-                        if (index == 3) {
-                          Navigation.instance
-                              .navigate(Routes.filmFestivalScreen);
-                        } else if (index == 5) {
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: 76.w,
+                      child: ListView.separated(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          var item = data.appbarOptions[index];
+                          return CustomAppbarItem(
+                            item: item,
+                            index: index,
+                            onTap: () {
+                              if (index == 3) {
+                                Navigation.instance
+                                    .navigate(Routes.filmFestivalScreen);
+                              }
+                            },
+                          );
+                        },
+                        separatorBuilder: (context, index) {
+                          return SizedBox(
+                            width: 4.w,
+                          );
+                        },
+                        itemCount: (data.appbarOptions.length > 4
+                            ? 4
+                            : data.appbarOptions.length),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10.w,
+                      child: GestureDetector(
+                        onTap: () {
                           updateState();
-                        }
-                      },
-                    );
-                  },
-                  separatorBuilder: (context, index) {
-                    return SizedBox(
-                      width: 6.w,
-                    );
-                  },
-                  itemCount:
-                      (isExpanded ? data.appbarOptions : data.appbarOptions2)
-                          .length,
+                        },
+                        child: SizedBox(
+                          width: 15.w,
+                          child: SingleChildScrollView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            child: Column(
+                              children: [
+                                Image.asset(
+                                  Assets.moreImage,
+                                  height: 16.sp,
+                                  width: 16.sp,
+                                  // color: Colors.white,
+                                ),
+                                SizedBox(
+                                  height: 0.4.h,
+                                ),
+                                SizedBox(
+                                  width: 15.w,
+                                  child: Center(
+                                    child: Text(
+                                      "More",
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: Colors.white,
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               );
             },
@@ -102,6 +148,9 @@ class CustomAppbar extends StatelessWidget {
                   ],
                 )
               : Container(),
+          !isExpanded?SizedBox(
+            height: 0.5.h,
+          ):Container(),
           !isExpanded
               ? Consumer<Repository>(
                   builder: (context, data, _) {
@@ -112,11 +161,11 @@ class CustomAppbar extends StatelessWidget {
                       width: double.infinity,
                       height: 6.h,
                       child: ListView.separated(
-                        physics: const NeverScrollableScrollPhysics(),
+                        // physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
-                          var item = data.appbarOptions3[index];
+                          var item = data.appbarOptions[index];
                           return CustomAppbarItem(
                             item: item,
                             index: index,
@@ -126,10 +175,7 @@ class CustomAppbar extends StatelessWidget {
                               if (index == 3) {
                                 // Navigation.instance
                                 //     .navigate(Routes.filmFestivalScreen);
-
-                              } else if (index == 5) {
-
-                              }
+                              } else if (index == 5) {}
                             },
                           );
                         },
@@ -138,7 +184,7 @@ class CustomAppbar extends StatelessWidget {
                             width: 6.w,
                           );
                         },
-                        itemCount: data.appbarOptions3.length,
+                        itemCount: (data.appbarOptions.sublist(4).length),
                       ),
                     );
                   },

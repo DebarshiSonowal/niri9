@@ -16,6 +16,8 @@ class Constants {
 
   static const selectedPlanColor = Color(0xff731af5);
 
+  static const int waitTime = 30;
+
   //s
   static const refundPolicy =
       """This Policy applies to NIRI9 App platforms including without limitation www.niri9.com

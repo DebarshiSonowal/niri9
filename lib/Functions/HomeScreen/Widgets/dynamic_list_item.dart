@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:niri9/Models/movies.dart';
+import 'package:niri9/Models/video.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -13,7 +14,7 @@ import 'ott_item.dart';
 class DynamicListItem extends StatelessWidget {
   const DynamicListItem({Key? key, required this.text, required this.list, required this.onTap}) : super(key: key);
 final String text;
-final List<Movies> list;
+final List<Video> list;
 final Function onTap;
   @override
   Widget build(BuildContext context) {
