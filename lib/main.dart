@@ -9,10 +9,12 @@ import 'Repository/repository.dart';
 import 'Router/router.dart';
 import 'Theme/apptheme.dart';
 import 'firebase_options.dart';
+import 'Helper/storage.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  Storage.instance.initializeStorage();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

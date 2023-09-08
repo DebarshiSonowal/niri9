@@ -18,7 +18,9 @@ import 'Widgets/search_app_bar.dart';
 import 'Widgets/section_select_button.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
+  const SearchPage({super.key, this.filters});
+
+  final String? filters;
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -34,25 +36,24 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
-      selectedGenre = Provider
-          .of<Repository>(context, listen: false)
-          .genres[0];
+      selectedGenre = Provider.of<Repository>(context, listen: false).genres[0];
       selectedCategory =
-      Provider
-          .of<Repository>(context, listen: false)
-          .categories[0];
+          Provider.of<Repository>(context, listen: false).categories[0];
       selectedSections =
-      Provider
-          .of<Repository>(context, listen: false)
-          .sections[0];
+          Provider.of<Repository>(context, listen: false).sections[0];
       setState(() {});
+      if (widget.filters != "") {
+        selectedCategory = Provider.of<Repository>(context, listen: false)
+            .categories
+            .firstWhere((element) => element.name == widget.filters);
+        search(selectedCategory, selectedSections, selectedGenre, "", page_no);
+      }
     });
   }
 
   @override
   void dispose() {
     super.dispose();
-
   }
 
   @override
@@ -62,8 +63,8 @@ class _SearchPageState extends State<SearchPage> {
         preferredSize: Size.fromHeight(12.4.h),
         child: SearchAppbar(
           search: (String val) {
-            search(
-                selectedCategory, selectedSections, selectedGenre, val, page_no);
+            search(selectedCategory, selectedSections, selectedGenre, val,
+                page_no);
           },
         ),
       ),
@@ -82,7 +83,9 @@ class _SearchPageState extends State<SearchPage> {
               return Container(
                 width: double.infinity,
                 height: 4.h,
-                padding: EdgeInsets.symmetric(horizontal: 2.w,),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 2.w,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -134,15 +137,11 @@ class _SearchPageState extends State<SearchPage> {
               ),
               child: Text(
                 "Today's Top Searches",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .headlineMedium
-                    ?.copyWith(
-                  color: Colors.white,
-                  fontSize: 13.sp,
-                  // fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: Colors.white,
+                      fontSize: 13.sp,
+                      // fontWeight: FontWeight.bold,
+                    ),
               ),
             ),
             Consumer<Repository>(builder: (context, data, _) {

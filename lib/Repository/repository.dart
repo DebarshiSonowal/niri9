@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:niri9/Constants/assets.dart';
+import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Models/category.dart';
 import 'package:niri9/Models/dynamic_list_item_model.dart';
 import 'package:niri9/Models/subscription_model.dart';
@@ -20,7 +21,7 @@ import '../Models/user.dart';
 class Repository extends ChangeNotifier {
   int _currentIndex = 0;
   List<Category> _categories = [];
-  List<Video> _specificVideos = [];
+  List<Video> _specificVideos = [], _rental = [];
   List<AppBarOption> _appbarOptions = [
     // AppBarOption(
     //   name: "All",
@@ -230,7 +231,7 @@ class Repository extends ChangeNotifier {
       icon: FontAwesomeIcons.whatsapp,
     ),
     AccountItem(
-      name: "Sign Out",
+      name: Storage.instance.isLoggedIn?"Sign Out":"Sign In",
       icon: FontAwesomeIcons.signOut,
     ),
   ];
@@ -351,6 +352,11 @@ class Repository extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addRental(List<Video> videos) {
+    _rental = videos;
+    notifyListeners();
+  }
+
   int get currentIndex => _currentIndex;
 
   get refund => _refund;
@@ -386,6 +392,8 @@ class Repository extends ChangeNotifier {
   get help_center => _help_center;
 
   User? get user => _user;
+
+  get rental => _rental;
 
 // get int index
 }

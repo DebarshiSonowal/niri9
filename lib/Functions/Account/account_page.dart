@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../Constants/assets.dart';
 import '../../Constants/constants.dart';
+import '../../Helper/storage.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 
 class AccountPage extends StatefulWidget {
@@ -104,7 +105,10 @@ class _AccountPageState extends State<AccountPage> {
                   color: Colors.white,
                 ),
                 title: Text(
-                  item.name ?? "",
+                  ((item.name ?? "") == "Sign In" ||
+                          (item.name ?? "") == "Sign Out")
+                      ? (Storage.instance.isLoggedIn ? "Sign Out" : "Sign In")
+                      : (item.name ?? ""),
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         color: Colors.white,
                       ),
@@ -128,6 +132,7 @@ class _AccountPageState extends State<AccountPage> {
   void onTap(int index, AccountItem item) {
     switch (index) {
       case 0:
+        Navigation.instance.navigate(Routes.profile);
         break;
       case 1:
         break;

@@ -205,6 +205,7 @@ class _OtpPageState extends State<OtpPage> {
             codeAutoRetrievalTimeout: _onCodeTimeout)
         .onError((error, stackTrace) {
       debugPrint('error ${error} ${stackTrace}');
+      Navigation.instance.goBack();
     }).then((value) {
       setState(() {
         time = '30';
@@ -223,9 +224,12 @@ class _OtpPageState extends State<OtpPage> {
   }
 
   _onVerificationFailed(FirebaseAuthException exception) {
+    Navigation.instance.goBack();
     if (exception.code == 'invalid-phone-number') {
       showMessage("The phone number entered is invalid!");
     }
+
+    showError("${exception.message}");
   }
 
   _onCodeSent(String verification, int? forceResendingToken) {
@@ -310,12 +314,13 @@ class _OtpPageState extends State<OtpPage> {
       // print("Dekhi 5 sec por por kisu hy ni :/");
     });
   }
+
   void loginByOTP(String mobile) async {
     Navigation.instance.navigate(Routes.loadingScreen);
     final response = await ApiProvider.instance.login(
         "mobile",
         // selectedCountryCode.dialCode.toString(),
-        mobile.toString().substring(0,3),
+        mobile.toString().substring(0, 3),
         mobile.toString().substring(3),
         "",
         "",
@@ -330,7 +335,7 @@ class _OtpPageState extends State<OtpPage> {
       Navigation.instance.navigate(Routes.homeScreen);
     } else {
       Navigation.instance.goBack();
-      showError(response.message??"Something Went Wrong");
+      showError(response.message ?? "Something Went Wrong");
     }
   }
 }

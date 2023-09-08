@@ -23,7 +23,7 @@ class AlertX {
         statusBarColor: Colors.transparent,
       ));
       showDialog(
-          barrierDismissible: false,
+          barrierDismissible: true,
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
@@ -57,7 +57,9 @@ class AlertX {
                     ),
                   ),
                 TextButton(
-                  onPressed: positiveButtonPressed,
+                  onPressed: (){
+                    Navigator.pop(context);
+                  },
                   child: Text(
                     positiveButtonText,
                     style: Theme.of(context).textTheme.headline4?.copyWith(

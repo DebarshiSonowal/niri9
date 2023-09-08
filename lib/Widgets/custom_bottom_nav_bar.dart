@@ -23,7 +23,7 @@ class CustomBottomNavBar extends StatelessWidget {
         Provider.of<Repository>(context, listen: false).updateIndex(val);
         switch (val) {
           case 1:
-            Navigation.instance.navigate(Routes.searchScreen);
+            Navigation.instance.navigate(Routes.searchScreen,args: "");
             break;
           case 2:
             Navigation.instance.navigate(Routes.premiumScreen);

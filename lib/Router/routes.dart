@@ -23,4 +23,6 @@ class Routes {
   static const loadingScreen = "/loading_dialog";
 
   static const otpScreen = "/otp_screen";
+
+  static const profile = "/profile";
 }

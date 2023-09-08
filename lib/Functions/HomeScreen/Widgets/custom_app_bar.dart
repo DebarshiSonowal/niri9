@@ -62,9 +62,11 @@ class CustomAppbar extends StatelessWidget {
                             item: item,
                             index: index,
                             onTap: () {
-                              if (index == 3) {
+                              if (item.name?.toLowerCase() == "film festival") {
                                 Navigation.instance
                                     .navigate(Routes.filmFestivalScreen);
+                              }else{
+                                Navigation.instance.navigate(Routes.searchScreen,args: "${item.name}");
                               }
                             },
                           );
@@ -148,9 +150,11 @@ class CustomAppbar extends StatelessWidget {
                   ],
                 )
               : Container(),
-          !isExpanded?SizedBox(
-            height: 0.5.h,
-          ):Container(),
+          !isExpanded
+              ? SizedBox(
+                  height: 0.5.h,
+                )
+              : Container(),
           !isExpanded
               ? Consumer<Repository>(
                   builder: (context, data, _) {

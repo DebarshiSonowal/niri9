@@ -32,16 +32,16 @@ class LanguageItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                Assets.assameseImage,
-                height: 11.h,
-                width: 20.w,
-                fit: BoxFit.fitHeight,
-              ),
+              // Image.asset(
+              //   Assets.assameseImage,
+              //   height: 11.h,
+              //   width: 20.w,
+              //   fit: BoxFit.fitHeight,
+              // ),
               Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text(
                     item.slug ?? "",

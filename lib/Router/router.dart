@@ -9,6 +9,7 @@ import 'package:niri9/Functions/More/more_page.dart';
 import 'package:niri9/Functions/Otp/otp_screen.dart';
 import 'package:niri9/Functions/Premium/premium_page.dart';
 import 'package:niri9/Functions/Privacy/privacy_policy.dart';
+import 'package:niri9/Functions/ProfilePage/profile_page.dart';
 import 'package:niri9/Functions/RefundPolicy/refund_policy.dart';
 import 'package:niri9/Functions/Rent/rent_page.dart';
 import 'package:niri9/Functions/Search/search_page.dart';
@@ -31,12 +32,16 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case Routes.otpScreen:
       return FadeTransitionPageRouteBuilder(
           page: OtpPage(mobile: settings.arguments as String));
-
+    case Routes.profile:
+      return FadeTransitionPageRouteBuilder(page: const ProfilePage());
     //main
     case Routes.homeScreen:
       return FadeTransitionPageRouteBuilder(page: const HomeScreenPage());
     case Routes.searchScreen:
-      return FadeTransitionPageRouteBuilder(page: const SearchPage());
+      return FadeTransitionPageRouteBuilder(
+          page: SearchPage(
+        filters: settings.arguments as String,
+      ));
     case Routes.premiumScreen:
       return FadeTransitionPageRouteBuilder(page: const PremiumPage());
     case Routes.rentScreen:

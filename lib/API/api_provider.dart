@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:niri9/Constants/constants.dart';
+import 'package:niri9/Models/user.dart';
 
 import '../Helper/storage.dart';
 import '../Models/category.dart';
@@ -10,6 +11,7 @@ import '../Models/generic_response.dart';
 import '../Models/genres.dart';
 import '../Models/languages.dart';
 import '../Models/login.dart';
+import '../Models/payment_gateway.dart';
 import '../Models/sections.dart';
 import '../Models/settings.dart';
 import '../Models/social.dart';
@@ -28,17 +30,6 @@ class ApiProvider {
 
   Dio? dio;
 
-  //{
-  //    provider:"mobile/google"
-  //    country_code:'+91',  ( if provider mobile i.e. OTP)
-  //    mobile:'1231313',  ( if provider mobile i.e. OTP)
-  //    'f_name': "First Name"  ( if provider social (google)),
-  //    'l_name': "Last Name"  ( if provider social (google)),
-  //    'email': "emai@email.com"  ( if provider social (google)),
-  //    'profile_pic': "avater url"  ( if provider social (google)),
-  //     'social_id': google Id  ( if provider social (google)),
-  //    'device_token': "" ,
-  // }
   Future<LoginResponse> login(
       String provider,
       String country_code,
@@ -65,42 +56,42 @@ class ApiProvider {
     var data = {
       "provider": provider,
     };
-    if(country_code!=""){
+    if (country_code != "") {
       data.addAll({
         "country_code": country_code,
       });
     }
-    if(mobile!=""){
+    if (mobile != "") {
       data.addAll({
         "mobile": mobile,
       });
     }
-    if(f_name!=""){
+    if (f_name != "") {
       data.addAll({
         "f_name": f_name,
       });
     }
-    if(l_name!=""){
+    if (l_name != "") {
       data.addAll({
         "l_name": l_name,
       });
     }
-    if(email!=""){
+    if (email != "") {
       data.addAll({
         "email": email,
       });
     }
-    if(profile_pic!=""){
+    if (profile_pic != "") {
       data.addAll({
         "profile_pic": profile_pic,
       });
     }
-    if(social_id!=""){
+    if (social_id != "") {
       data.addAll({
         "social_id": social_id,
       });
     }
-    if(device_token!=""){
+    if (device_token != "") {
       data.addAll({
         "device_token": device_token,
       });
@@ -146,6 +137,130 @@ class ApiProvider {
       Response? response = await dio?.get(
         url,
         // data: jsonEncode(data),
+      );
+      debugPrint("getGenres response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return GenresResponse.fromJson(response?.data);
+      } else {
+        debugPrint("getGenres error response: ${response?.data}");
+        return GenresResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("getGenres  error: ${e.error} ${e.message}");
+      return GenresResponse.withError(e.message);
+    }
+  }
+
+  Future<PaymentGatewayResponse> getPaymentGateway() async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          // 'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/videos/genres";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    // debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.get(
+        url,
+        // data: jsonEncode(data),
+      );
+      debugPrint("getPaymentGatewayResponse response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return PaymentGatewayResponse.fromJson(response?.data);
+      } else {
+        debugPrint("getPaymentGatewayResponse error response: ${response?.data}");
+        return PaymentGatewayResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("getPaymentGatewayResponse  error: ${e.error} ${e.message}");
+      return PaymentGatewayResponse.withError(e.message);
+    }
+  }
+
+  Future<ProfileResponse> getProfile() async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/users/profile";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    // debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.get(
+        url,
+        // data: jsonEncode(data),
+      );
+      debugPrint("getProfile response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return ProfileResponse.fromJson(response?.data);
+      } else {
+        debugPrint("getProfile error response: ${response?.data}");
+        return ProfileResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("getPRofile  error: ${e.error} ${e.message}");
+      return ProfileResponse.withError(e.message);
+    }
+  }
+
+  Future<GenresResponse> updateVideoTime(
+    video_list_id,
+    view_duration,
+    unique_id,
+    last_play_time,
+    platform,
+    event_name,
+  ) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/update-view-time";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    debugPrint("${Storage.instance.token}");
+    dio = Dio(option);
+    debugPrint(url.toString());
+
+    var data = {
+      "video_list_id": video_list_id,
+      "view_duration": view_duration,
+      'unique_id': unique_id,
+      'last_play_time': last_play_time,
+      'platform': platform,
+      'event_name': event_name,
+    };
+    debugPrint(jsonEncode(data));
+    try {
+      Response? response = await dio?.post(
+        url,
+        data: jsonEncode(data),
       );
       debugPrint("getGenres response: ${response?.data} ${response?.headers}");
       if (response?.statusCode == 200 || response?.statusCode == 201) {
@@ -251,6 +366,43 @@ class ApiProvider {
       }
     } on DioError catch (e) {
       debugPrint("VideoResponse  error: ${e.error} ${e.message}");
+      return VideoResponse.withError(e.message);
+    }
+  }
+
+  Future<VideoResponse> getRental(
+      ) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/videos/rent-list";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+
+    try {
+      Response? response = await dio?.get(
+        url,
+        // data: jsonEncode(data),
+      );
+      debugPrint(
+          "VideoRentalResponse response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return VideoResponse.fromJson(response?.data);
+      } else {
+        debugPrint("VideoRentalResponse error response: ${response?.data}");
+        return VideoResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("VideoRentalResponse  error: ${e.error} ${e.message}");
       return VideoResponse.withError(e.message);
     }
   }

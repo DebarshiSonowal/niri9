@@ -3,6 +3,7 @@ import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Constants/constants.dart';
+import 'package:niri9/Models/video.dart';
 import 'package:provider/provider.dart';
 
 // import 'package:read_more_text/read_more_text.dart';
@@ -30,6 +31,7 @@ class WatchScreen extends StatefulWidget {
 }
 
 class _WatchScreenState extends State<WatchScreen> {
+  int? lastPlayed;
   late VideoPlayerController videoPlayerController;
   late CustomVideoPlayerController _customVideoPlayerController;
   var list = [
@@ -54,6 +56,30 @@ class _WatchScreenState extends State<WatchScreen> {
   @override
   void initState() {
     super.initState();
+    videoPlayerController = VideoPlayerController.networkUrl(
+        Uri.parse(Assets.videoUrl))
+      ..initialize().then(
+        (value) => setState(() {
+          videoPlayerController.addListener(() {
+            if (lastPlayed == null ||
+                ((lastPlayed!+(10*1000)) <
+                    (videoPlayerController.value.duration.inMilliseconds))) {
+              lastPlayed = videoPlayerController.value.duration.inMilliseconds;
+              updateUploadStatus(
+                _customVideoPlayerController,
+                Provider.of<Repository>(context, listen: false).videoDetails!,
+                "",
+              );
+            }
+          });
+        }),
+      );
+
+    _customVideoPlayerController = CustomVideoPlayerController(
+      context: context,
+      videoPlayerController: videoPlayerController,
+    );
+
     // fetchDetails(widget.index);
     // videoPlayerController = VideoPlayerController.network(Assets.videoUrl)
     //   ..initialize().then((value) => setState(() {}));
@@ -73,7 +99,7 @@ class _WatchScreenState extends State<WatchScreen> {
 
   @override
   void dispose() {
-    _customVideoPlayerController?.dispose();
+    _customVideoPlayerController.dispose();
     super.dispose();
   }
 
@@ -194,26 +220,52 @@ class _WatchScreenState extends State<WatchScreen> {
       Navigation.instance.goBack();
       Provider.of<Repository>(context, listen: false)
           .setVideoDetails(response.video!);
-      videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(
-          Provider.of<Repository>(context, listen: false)
-                  .videoDetails
-                  ?.web_url ??
-              Assets.videoUrl))
-        ..initialize().then((value) => setState(() {}));
-      _customVideoPlayerController = CustomVideoPlayerController(
-        context: context,
-        videoPlayerController: videoPlayerController!,
-      );
-      Future.delayed(const Duration(seconds: 2), () {
-        videoPlayerController
-            ?.play()
-            .onError((error, stackTrace) => debugPrint(error.toString()));
-        setState(() {});
+      // videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(
+      //     Provider.of<Repository>(context, listen: false)
+      //             .videoDetails
+      //             ?.web_url ??
+      //         Assets.videoUrl))
+      //   ..initialize().then((value) => setState(() {
+      //
+      //         videoPlayerController.play();
+      //       }));
+      setState(() {
+        // _customVideoPlayerController = CustomVideoPlayerController(
+        //   context: context,
+        //   videoPlayerController: videoPlayerController,
+        // );
       });
+      //   ..initialize().then((value) => setState(() {
+      //     _customVideoPlayerController = CustomVideoPlayerController(
+      //       context: context,
+      //       videoPlayerController: videoPlayerController,
+      //     );
+      //   }));
+
+      // Future.delayed(const Duration(seconds: 2), () {
+      //   _customVideoPlayerController.videoPlayerController.play().onError(
+      //       (error, stackTrace) => debugPrint("error ${error.toString()}"));
+      //   setState(() {});
+      // });
       return;
     } else {
       Navigation.instance.goBack();
       return;
     }
+  }
+
+  void updateUploadStatus(
+      CustomVideoPlayerController _customVideoPlayerController,
+      Video video,
+      String event_name) async {
+    final response = await ApiProvider.instance.updateVideoTime(
+        video.id,
+        video.readable_time,
+        "",
+        videoPlayerController.value.duration.inMilliseconds,
+        "mobile",
+        event_name);
+    if (response.success ?? false) {
+    } else {}
   }
 }
