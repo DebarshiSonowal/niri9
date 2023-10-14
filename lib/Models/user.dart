@@ -14,7 +14,7 @@ class User {
     l_name = json["l_name"] ?? "NA";
     expiry_date = json["expiry_date"] ?? "NA";
     has_subscription = json["has_subscription"] ?? false;
-    last_subscription = json["last_subscription"] ?? false;
+    // last_subscription = json["last_subscription"] ?? false;
     last_rent = json["last_rent"] ?? false;
   }
 }

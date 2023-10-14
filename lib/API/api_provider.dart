@@ -7,6 +7,7 @@ import 'package:niri9/Models/user.dart';
 
 import '../Helper/storage.dart';
 import '../Models/category.dart';
+import '../Models/episode.dart';
 import '../Models/generic_response.dart';
 import '../Models/genres.dart';
 import '../Models/languages.dart';
@@ -174,11 +175,13 @@ class ApiProvider {
         url,
         // data: jsonEncode(data),
       );
-      debugPrint("getPaymentGatewayResponse response: ${response?.data} ${response?.headers}");
+      debugPrint(
+          "getPaymentGatewayResponse response: ${response?.data} ${response?.headers}");
       if (response?.statusCode == 200 || response?.statusCode == 201) {
         return PaymentGatewayResponse.fromJson(response?.data);
       } else {
-        debugPrint("getPaymentGatewayResponse error response: ${response?.data}");
+        debugPrint(
+            "getPaymentGatewayResponse error response: ${response?.data}");
         return PaymentGatewayResponse.withError(response?.data['error']
             ? response?.data['message']['success']
             : response?.data['message']['error']);
@@ -203,7 +206,7 @@ class ApiProvider {
     // var url = "http://asamis.assam.gov.in/api/login";
     dio = Dio(option);
     debugPrint(url.toString());
-    // debugPrint(jsonEncode(data));
+    debugPrint('Bearer ${Storage.instance.token}');
 
     try {
       Response? response = await dio?.get(
@@ -234,15 +237,19 @@ class ApiProvider {
     event_name,
   ) async {
     BaseOptions option = BaseOptions(
-        connectTimeout: const Duration(seconds: Constants.waitTime),
-        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        connectTimeout: const Duration(
+          seconds: Constants.waitTime,
+        ),
+        receiveTimeout: const Duration(
+          seconds: Constants.waitTime,
+        ),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': 'Bearer ${Storage.instance.token}'
           // 'APP-KEY': ConstanceData.app_key
         });
-    var url = "$baseUrl/$path/update-view-time";
+    var url = "$baseUrl/$path/videos/update-view-time";
     // var url = "http://asamis.assam.gov.in/api/login";
     debugPrint("${Storage.instance.token}");
     dio = Dio(option);
@@ -370,8 +377,7 @@ class ApiProvider {
     }
   }
 
-  Future<VideoResponse> getRental(
-      ) async {
+  Future<VideoResponse> getRental() async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
         receiveTimeout: const Duration(seconds: Constants.waitTime),
@@ -1006,6 +1012,43 @@ class ApiProvider {
     } on DioError catch (e) {
       debugPrint("getSections  error: ${e.error} ${e.message}");
       return SectionsResponse.withError(e.message);
+    }
+  }
+
+  Future<EpisodeResponse> getEpisodes(int videoListId) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          // 'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/videos/episodes/$videoListId";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    // debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.get(
+        url,
+        // data: jsonEncode(data),
+      );
+      debugPrint(
+          "EpisodeResponse response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return EpisodeResponse.fromJson(response?.data);
+      } else {
+        debugPrint("EpisodeResponse error response: ${response?.data}");
+        return EpisodeResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("EpisodeResponse  error: ${e.error} ${e.message}");
+      return EpisodeResponse.withError(e.message);
     }
   }
 }

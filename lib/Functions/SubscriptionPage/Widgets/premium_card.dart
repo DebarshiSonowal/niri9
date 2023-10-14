@@ -70,7 +70,7 @@ class PremiumCard extends StatelessWidget {
               height: 2.5.h,
             ),
             Text(
-              "Date of Purchase: 04 Jun 2022",
+              "Date of Purchase: 05 Jun 2022",
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Colors.white,
                 // fontWeight: FontWeight.bold,
@@ -80,58 +80,58 @@ class PremiumCard extends StatelessWidget {
             SizedBox(
               height: 2.5.h,
             ),
-            Consumer<Repository>(builder: (context, data, _) {
-              return ListView.separated(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  var item = data.subscriptions[index];
-                  return Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 2.5.w,
-                    ),
-                    child: Row(
-                      mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width:15.w,
-                          child: Text(
-                            item.title ?? "",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                              color: Colors.white30,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 9.sp,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          item.value ?? "Active",
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 9.sp,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) {
-                  return Divider(
-                    thickness: 0.01.h,
-                    color: Colors.white,
-                  );
-                },
-                itemCount: data.subscriptions.length,
-              );
-            }),
+            // Consumer<Repository>(builder: (context, data, _) {
+            //   return ListView.separated(
+            //     physics: const NeverScrollableScrollPhysics(),
+            //     shrinkWrap: true,
+            //     itemBuilder: (context, index) {
+            //       var item = data.subscriptions[index];
+            //       return Padding(
+            //         padding: EdgeInsets.symmetric(
+            //           horizontal: 2.5.w,
+            //         ),
+            //         child: Row(
+            //           mainAxisAlignment:
+            //           MainAxisAlignment.spaceBetween,
+            //           children: [
+            //             SizedBox(
+            //               width:15.w,
+            //               child: Text(
+            //                 item.title ?? "",
+            //                 style: Theme.of(context)
+            //                     .textTheme
+            //                     .bodyMedium
+            //                     ?.copyWith(
+            //                   color: Colors.white30,
+            //                   fontWeight: FontWeight.bold,
+            //                   fontSize: 9.sp,
+            //                 ),
+            //               ),
+            //             ),
+            //             Text(
+            //               "${item.total_price_inr ?? "Active"}",
+            //               style: Theme.of(context)
+            //                   .textTheme
+            //                   .bodyMedium
+            //                   ?.copyWith(
+            //                 color: Colors.white,
+            //                 fontWeight: FontWeight.bold,
+            //                 fontSize: 9.sp,
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       );
+            //     },
+            //     separatorBuilder: (context, index) {
+            //       return Divider(
+            //         thickness: 0.01.h,
+            //         color: Colors.white,
+            //       );
+            //     },
+            //     itemCount: data.subscriptions.length,
+            //   );
+            // }),
           ],
         ),
       ),

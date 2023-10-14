@@ -1,4 +1,6 @@
 // import 'package:appinio_video_player/appinio_video_player.dart';
+import 'dart:async';
+
 import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:niri9/API/api_provider.dart';
@@ -31,6 +33,7 @@ class WatchScreen extends StatefulWidget {
 }
 
 class _WatchScreenState extends State<WatchScreen> {
+  Timer? uploadTimer;
   int? lastPlayed;
   late VideoPlayerController videoPlayerController;
   late CustomVideoPlayerController _customVideoPlayerController;
@@ -56,29 +59,7 @@ class _WatchScreenState extends State<WatchScreen> {
   @override
   void initState() {
     super.initState();
-    videoPlayerController = VideoPlayerController.networkUrl(
-        Uri.parse(Assets.videoUrl))
-      ..initialize().then(
-        (value) => setState(() {
-          videoPlayerController.addListener(() {
-            if (lastPlayed == null ||
-                ((lastPlayed!+(10*1000)) <
-                    (videoPlayerController.value.duration.inMilliseconds))) {
-              lastPlayed = videoPlayerController.value.duration.inMilliseconds;
-              updateUploadStatus(
-                _customVideoPlayerController,
-                Provider.of<Repository>(context, listen: false).videoDetails!,
-                "",
-              );
-            }
-          });
-        }),
-      );
-
-    _customVideoPlayerController = CustomVideoPlayerController(
-      context: context,
-      videoPlayerController: videoPlayerController,
-    );
+    initiateVideoPlayer();
 
     // fetchDetails(widget.index);
     // videoPlayerController = VideoPlayerController.network(Assets.videoUrl)
@@ -257,15 +238,87 @@ class _WatchScreenState extends State<WatchScreen> {
   void updateUploadStatus(
       CustomVideoPlayerController _customVideoPlayerController,
       Video video,
-      String event_name) async {
+      String event_name,
+      int currentDuration) async {
     final response = await ApiProvider.instance.updateVideoTime(
         video.id,
         video.readable_time,
         "",
-        videoPlayerController.value.duration.inMilliseconds,
+        currentDuration,
         "mobile",
         event_name);
     if (response.success ?? false) {
     } else {}
   }
+
+  void initiateVideoPlayer() async {
+    videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(Assets.videoUrl));
+    await videoPlayerController.initialize();
+
+    bool isPlaying = false; // Flag to track if the video is currently playing
+
+    setState(() {
+      videoPlayerController.addListener(() {
+        int currentDuration = videoPlayerController.value.position.inMilliseconds;
+
+        if (currentDuration >= 10000 && uploadTimer == null) {
+          // Start a Timer after 10 seconds to call updateUploadStatus once
+          uploadTimer = Timer(const Duration(seconds: 10), () {
+            if (videoPlayerController.value.isPlaying) {
+              // Call updateUploadStatus when the video is playing
+              updateUploadStatus(
+                _customVideoPlayerController,
+                Provider.of<Repository>(context, listen: false).videoDetails!,
+                "play",
+                currentDuration,
+              );
+            }
+            uploadTimer?.cancel(); // Cancel the Timer
+            uploadTimer = null; // Reset the Timer
+          });
+        }
+
+        // Check if the video is currently playing
+        if (videoPlayerController.value.isPlaying) {
+          if (!isPlaying) {
+            // Call updateUploadStatus when video starts playing
+            updateUploadStatus(
+              _customVideoPlayerController,
+              Provider.of<Repository>(context, listen: false).videoDetails!,
+              "play",
+              currentDuration,
+            );
+            isPlaying = true;
+          }
+        } else {
+          isPlaying = false;
+        }
+      });
+
+      // ...
+
+      videoPlayerController.play();
+
+      videoPlayerController.addListener(() {
+        if (!videoPlayerController.value.isPlaying) {
+          // Call updateUploadStatus when video is paused
+          updateUploadStatus(
+            _customVideoPlayerController,
+            Provider.of<Repository>(context, listen: false).videoDetails!,
+            "pause",
+            videoPlayerController.value.position.inMilliseconds,
+          );
+        }
+      });
+    });
+
+    _customVideoPlayerController = CustomVideoPlayerController(
+      context: context,
+      videoPlayerController: videoPlayerController,
+    );
+  }
+
+
+
 }

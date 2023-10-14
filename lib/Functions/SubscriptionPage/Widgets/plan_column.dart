@@ -1,6 +1,8 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:niri9/Models/display_data.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Constants/constants.dart';
@@ -11,14 +13,19 @@ class PlanColumn extends StatelessWidget {
 
   PlanColumn({
     super.key,
-    required this.plan,
+    required this.displayData,
     required this.index,
     required this.selected,
-    required this.updateSet,
+    required this.updateSet, required this.plan_type, required this.discount, required this.total_price, required this.base_price,
   });
 
-  final List<PlanPricing> plan;
+  final DisplayData displayData;
   final int index;
+  final String plan_type;
+  final double discount,total_price,base_price;
+  //    plan_type: data.subscriptions[0].plan_type,
+  //    discount: data.subscriptions[0].discount,
+  //    total_price: data.subscriptions[0].total_price_inr,
   final Function(int) updateSet;
 
   @override
@@ -42,7 +49,7 @@ class PlanColumn extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    plan[index].name ?? "",
+                    plan_type.capitalize(),
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           color: Constants.planButtonColor,
                           fontWeight: FontWeight.bold,
@@ -59,7 +66,7 @@ class PlanColumn extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  (plan[index].movies ?? false)
+                  (displayData.mso?.value ?? false)
                       ? Icon(
                           FontAwesomeIcons.check,
                           size: 8.sp,
@@ -78,7 +85,7 @@ class PlanColumn extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  (plan[index].tv ?? false)
+                  (displayData.watch_tv?.value ?? false)
                       ? Icon(
                           FontAwesomeIcons.check,
                           size: 8.sp,
@@ -97,7 +104,7 @@ class PlanColumn extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  (plan[index].ad ?? false)
+                  (displayData.ad?.value ?? false)
                       ? Icon(
                           FontAwesomeIcons.check,
                           size: 8.sp,
@@ -117,7 +124,7 @@ class PlanColumn extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "${plan[index].screenNumber}",
+                    "${displayData.screens?.value}",
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           color: index == selected
                               ? Colors.white
@@ -136,7 +143,7 @@ class PlanColumn extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "${plan[index].resolution}",
+                    "${displayData.quality?.value}",
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           color: index == selected
                               ? Colors.white
@@ -171,9 +178,11 @@ class PlanColumn extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "${plan[index].price}",
+                                "$base_price",
                                 style: TextStyle(
-                                  color: index==selected?Colors.white:Constants.plansColor,
+                                  color: index == selected
+                                      ? Colors.white
+                                      : Constants.plansColor,
                                   decoration: TextDecoration.lineThrough,
                                   decorationColor: Colors.white,
                                   fontSize: 7.sp,
@@ -189,14 +198,14 @@ class PlanColumn extends StatelessWidget {
                                   vertical: 0.1.h,
                                 ),
                                 child: Text(
-                                  "50% OFF",
+                                  "$discount OFF",
                                   style: Theme.of(context)
                                       .textTheme
                                       .headlineMedium
                                       ?.copyWith(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 6.sp,
+                                        fontSize: 5.sp,
                                       ),
                                 ),
                               ),
@@ -207,7 +216,7 @@ class PlanColumn extends StatelessWidget {
                     height: 1.5.h,
                   ),
                   Text(
-                    "₹${plan[index].price}/yr",
+                    "₹$total_price/${plan_type.substring(0,1)}",
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           color: Constants.planButtonColor,
                           fontSize: 9.sp,

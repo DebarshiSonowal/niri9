@@ -1,16 +1,21 @@
-// "id": 51,
-// "title": null,
-// "slug": null,
-// "sequence": 1,
-// "profile_pic": "http://test.niri9.com/doc/default/file-upload.png",
-// "episode_code": "S01E01",
-// "note": "",
-// "duration": 0,
-// "video_player": "",
-// "status": 1,
-// "readable_time": "0 hour 0 minute",
-// "last_viewed_duration": 0,
-// "last_viewed_percent": 0
+class EpisodeResponse {
+  bool? success;
+  List<Episode> episodes = [];
+  String? message;
+
+  EpisodeResponse.fromJson(json) {
+    success = json["success"] ?? false;
+    episodes = json['result'] == null
+        ? []
+        : (json['result'] as List).map((e) => Episode.fromJson(e)).toList();
+  }
+
+  EpisodeResponse.withError(msg) {
+    success = false;
+    message = msg;
+  }
+}
+
 class Episode {
   int? id,
       sequence,
@@ -34,6 +39,6 @@ class Episode {
     last_viewed_duration = json['last_viewed_duration'] ?? 0;
     last_viewed_percent = json['last_viewed_percent'] ?? 0;
     //
-    title = json['title']??"";
+    title = json['title'] ?? "";
   }
 }

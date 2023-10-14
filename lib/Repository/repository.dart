@@ -4,6 +4,7 @@ import 'package:niri9/Constants/assets.dart';
 import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Models/category.dart';
 import 'package:niri9/Models/dynamic_list_item_model.dart';
+import 'package:niri9/Models/subscription.dart';
 import 'package:niri9/Models/subscription_model.dart';
 import 'package:niri9/Models/video.dart';
 
@@ -68,7 +69,7 @@ class Repository extends ChangeNotifier {
   // ];
 
   Video? videoDetails;
-
+  List<Subscription> subscriptions = [];
   List<AvailableLanguage> languageList = [
     AvailableLanguage(
       name: "অসমীয়া",
@@ -170,24 +171,24 @@ class Repository extends ChangeNotifier {
     OTT(id: 9, image: Assets.item2Image),
   ];
 
-  List<SubscriptionModel> subscriptions = [
-    SubscriptionModel(
-      "Status",
-      "Active",
-    ),
-    SubscriptionModel(
-      "Pack Country",
-      "India",
-    ),
-    SubscriptionModel(
-      "Payment Mode",
-      "crm",
-    ),
-    SubscriptionModel(
-      "Expiry Date",
-      "04 Jun 2023",
-    ),
-  ];
+  // List<SubscriptionModel> subscriptions = [
+  //   SubscriptionModel(
+  //     "Status",
+  //     "Active",
+  //   ),
+  //   SubscriptionModel(
+  //     "Pack Country",
+  //     "India",
+  //   ),
+  //   SubscriptionModel(
+  //     "Payment Mode",
+  //     "crm",
+  //   ),
+  //   SubscriptionModel(
+  //     "Expiry Date",
+  //     "04 Jun 2023",
+  //   ),
+  // ];
 
   List<AccountItem> items = [
     AccountItem(
@@ -394,6 +395,11 @@ class Repository extends ChangeNotifier {
   User? get user => _user;
 
   get rental => _rental;
+
+  void addSubscriptions(SubscriptionResponse response) {
+    subscriptions = response.subscriptions;
+    notifyListeners();
+  }
 
 // get int index
 }

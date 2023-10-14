@@ -37,9 +37,9 @@ class SubscriptionResponse {
   SubscriptionResponse.fromJson(json) {
     success = json['success'] ?? true;
     message = json['message'] ?? "Something went wrong";
-    subscriptions = json['subscriptions'] == null
+    subscriptions = json['result'] == null
         ? []
-        : (json['subscriptions'] as List)
+        : (json['result'] as List)
             .map((e) => Subscription.fromJson(e))
             .toList();
   }

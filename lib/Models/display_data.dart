@@ -2,8 +2,8 @@ import 'package:niri9/Models/generic_item.dart';
 
 class DisplayData {
   GenericItemBool? mso, watch_tv, ad;
-  GenericItemInt? quality;
-  GenericItemString? screens;
+  GenericItemString? quality;
+  GenericItemInt? screens;
 
   DisplayData.fromJson(json) {
     mso = json['mso'] == null ? null : GenericItemBool.fromJson(json['mso']);
@@ -13,9 +13,9 @@ class DisplayData {
     ad = json['ad'] == null ? null : GenericItemBool.fromJson(json['ad']);
     quality = json['quality'] == null
         ? null
-        : GenericItemInt.fromJson(json['quality']);
+        : GenericItemString.fromJson(json['quality']);
     screens = json['screens'] == null
         ? null
-        : GenericItemString.fromJson(json['screens']);
+        : GenericItemInt.fromJson(json['screens']);
   }
 }

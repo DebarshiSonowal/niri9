@@ -20,6 +20,7 @@ class Assets {
   static const filmImage = "assets/images/film-award.png";
   static const videoImage = "assets/images/video-player.png";
   static const moreImage = "assets/images/arrow_down.png";
+  static const lessImage = "assets/images/arrow_up.png";
   static const uploadImage = "assets/images/upload.png";
 
   //languages
