@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Repository/repository.dart';
+import 'my_list_button.dart';
+import 'share_indicator.dart';
+import 'slider_indicator.dart';
 
 class HomeBanner extends StatefulWidget {
   const HomeBanner({Key? key}) : super(key: key);
@@ -23,96 +25,122 @@ class _HomeBannerState extends State<HomeBanner> {
       return SizedBox(
         width: double.infinity,
         height: 25.h,
-        child: CarouselSlider.builder(
-          // itemCount: data.bannerList.length,
-          itemCount: data.sections[0].videos.length,
-          itemBuilder: (BuildContext context, int index, int realIndex) {
-            var item = data.sections[0].videos[index];
-            return Container(
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            SizedBox(
               height: 25.h,
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  CachedNetworkImage(
-                    imageUrl:item.profile_pic??"",
-                    fit: BoxFit.fill,
-                    height: 25.h,
+              width: double.infinity,
+              child: CarouselSlider.builder(
+                // itemCount: data.bannerList.length,
+                itemCount: data.sections[0].videos.length,
+                itemBuilder: (BuildContext context, int index, int realIndex) {
+                  var item = data.sections[0].videos[index];
+                  return SizedBox(
+                    height: 23.h,
                     width: double.infinity,
-                  ),
-                  Container(
-                    height: 1.2.h,
-                    // color: Colors.grey,
-                    width: double.infinity,
-                    padding: EdgeInsets.only(
-                      bottom: 0.7.h,
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: item.profile_pic ?? "",
+                          fit: BoxFit.fill,
+                          height: 25.h,
+                          width: double.infinity,
+                        ),
+                        Container(
+                          height: 7.h,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.2),
+                          ),
+                          // color: Colors.grey,
+                          width: double.infinity,
+
+                          padding: EdgeInsets.only(
+                            bottom: 0.7.h,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 30.w,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 4.w,
+                                  vertical: 1.h,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "Play Now",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    // child: Row(
-                    //   children: [
-                    //     SizedBox(
-                    //       height: 4.h,
-                    //       width: 10.h,
-                    //       child: Column(
-                    //         mainAxisSize: MainAxisSize.min,
-                    //         children: [
-                    //           Icon(
-                    //             Icons.add,
-                    //             color: Colors.white,
-                    //           ),
-                    //           Text(
-                    //             "My List",
-                    //             style: Theme.of(context)
-                    //                 .textTheme
-                    //                 .bodySmall
-                    //                 ?.copyWith(
-                    //                   color: Colors.white,
-                    //                 ),
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     ),
-                    //     ListView.separated(
-                    //       scrollDirection: Axis.horizontal,
-                    //       shrinkWrap: true,
-                    //       itemBuilder: (context, index) {
-                    //         return Container(
-                    //           // height: 1.h,
-                    //           width: 5.w,
-                    //           decoration: BoxDecoration(
-                    //             color: index == _current
-                    //                 ? Colors.white
-                    //                 : const Color(0xff464646),
-                    //             borderRadius: BorderRadius.circular(1.h),
-                    //           ),
-                    //         );
-                    //       },
-                    //       separatorBuilder: (context, index) {
-                    //         return SizedBox(
-                    //           width: 3.w,
-                    //         );
-                    //       },
-                    //       itemCount: data.bannerList.length,
-                    //     ),
-                    //   ],
-                    // ),
+                  );
+                },
+                options: CarouselOptions(
+                  autoPlay: true,
+                  enableInfiniteScroll: true,
+                  // enlargeCenterPage: true,
+                  aspectRatio: 10.5 / 9,
+                  viewportFraction: 1,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      _current = index;
+                    });
+                  },
+                ),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(
+                bottom: 1.h,
+              ),
+              width: double.infinity,
+              height: 5.h,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  MyListButton(
+                    onTap: () {},
+                  ),
+                  SizedBox(
+                    width: 3.w,
+                  ),
+                  SliderIndicator(current: _current),
+                  SizedBox(
+                    width: 3.w,
+                  ),
+                  ShareIndicator(
+                    onTap: () {},
                   ),
                 ],
               ),
-            );
-          },
-          options: CarouselOptions(
-            autoPlay: true,
-            enableInfiniteScroll: true,
-            // enlargeCenterPage: true,
-            aspectRatio: 10.5 / 9,
-            viewportFraction: 1,
-            onPageChanged: (index, reason) {
-              setState(() {
-                _current = index;
-              });
-            },
-          ),
+            ),
+          ],
         ),
       );
     });
   }
 }
+
+
+
+
+
+

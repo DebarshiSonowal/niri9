@@ -33,7 +33,8 @@ class Assets {
   static const episodeImage = "assets/images/episode_image.jpg";
   static const episodeImage2 = "assets/images/episode_image2.jpg";
 
-  static String videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+  // static String videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+  static String videoUrl = "https://customer-edsfz57k0gqg8bse.cloudflarestream.com/586d3a3a3600c6df1ce400b0abde47c6/manifest/video.m3u8";
 
 // static const banner_image = "assets/images/";
 }

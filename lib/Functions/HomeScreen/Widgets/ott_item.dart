@@ -25,7 +25,7 @@ class OttItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(5),
         ),
         child: Container(
-          width: 35.w,
+          width: 32.w,
           decoration: BoxDecoration(
             // color: Colors.red,
             borderRadius: BorderRadius.circular(5),

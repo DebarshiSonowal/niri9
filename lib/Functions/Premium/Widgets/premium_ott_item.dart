@@ -45,22 +45,24 @@ class PremiumOttItem extends StatelessWidget {
           ),
           Container(
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withOpacity(0.12),
             ),
             margin: EdgeInsets.only(
               right: 2.w,
             ),
-            child: GradientText(
+            child: Text(
               "${index + 1}",
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     color: Colors.white,
                     fontSize: 40.sp,
                     fontWeight: FontWeight.bold,
                   ),
-              gradient: const LinearGradient(colors: [
-                Color(0xff8230c6),
-                Colors.black,
-              ]),
+              // gradient: const LinearGradient(
+              //   colors: [
+              //     Color(0xff8230c6),
+              //     Colors.black,
+              //   ],
+              // ),
             ),
           ),
         ],

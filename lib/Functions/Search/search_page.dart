@@ -152,7 +152,7 @@ class _SearchPageState extends State<SearchPage> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 2.w,
                     mainAxisSpacing: 0.5.h,
-                    childAspectRatio: 12 / 11,
+                    childAspectRatio:8.5 / 11,
                   ),
                   itemBuilder: (BuildContext context, int index) {
                     var item = data.specificVideos[index];

@@ -17,6 +17,7 @@ import 'package:niri9/Functions/TermsConditions/terms_conditions.dart';
 import 'package:niri9/Router/routes.dart';
 
 import '../Functions/AboutPage/about_page.dart';
+import '../Functions/Cupon/apply_cupons.dart';
 import '../Functions/SplashScreen/splash_screen.dart';
 import '../Functions/SubscriptionPage/subscription_page.dart';
 import '../Functions/WatchScreen/watch_screen.dart';
@@ -65,6 +66,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return FadeTransitionPageRouteBuilder(page: const SubscriptionPage());
 
     //Extra
+    case Routes.cuponApply:
+      return FadeTransitionPageRouteBuilder(page: const ApplyCuponsPage());
     case Routes.refundScreen:
       return FadeTransitionPageRouteBuilder(page: const RefundPolicyScreen());
     case Routes.privacyPolicyScreen:

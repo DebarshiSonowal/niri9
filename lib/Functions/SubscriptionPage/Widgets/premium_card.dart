@@ -50,10 +50,10 @@ class PremiumCard extends StatelessWidget {
             Text(
               "INR 599",
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 18.sp,
-              ),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.sp,
+                  ),
             ),
             SizedBox(
               height: 2.5.h,
@@ -61,10 +61,10 @@ class PremiumCard extends StatelessWidget {
             Text(
               "For 365 Days",
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.white30,
-                fontWeight: FontWeight.bold,
-                fontSize: 9.sp,
-              ),
+                    color: Colors.white30,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 9.sp,
+                  ),
             ),
             SizedBox(
               height: 2.5.h,
@@ -72,13 +72,168 @@ class PremiumCard extends StatelessWidget {
             Text(
               "Date of Purchase: 05 Jun 2022",
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.white,
-                // fontWeight: FontWeight.bold,
-                fontSize: 9.sp,
-              ),
+                    color: Colors.white,
+                    // fontWeight: FontWeight.bold,
+                    fontSize: 9.sp,
+                  ),
             ),
             SizedBox(
               height: 2.5.h,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 5.w,
+                vertical: 0.5.h,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Status:",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.white30,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 9.sp,
+                        ),
+                  ),
+                  Text(
+                    "Active",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 9.sp,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(
+              color: Colors.white30,
+              height: 0.2.h,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 5.w,
+                vertical: 0.5.h,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Pack Country:",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white30,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 9.sp,
+                    ),
+                  ),
+                  Text(
+                    "Active",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 9.sp,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(
+              color: Colors.white30,
+              height: 0.2.h,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 5.w,
+                vertical: 0.5.h,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Payment Mode:",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white30,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 9.sp,
+                    ),
+                  ),
+                  Text(
+                    "Active",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 9.sp,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(
+              color: Colors.white30,
+              height: 0.2.h,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 5.w,
+                vertical: 0.5.h,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Auto Renewal:",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white30,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 9.sp,
+                    ),
+                  ),
+                  Text(
+                    "Active",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 9.sp,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(
+              color: Colors.white30,
+              height: 0.2.h,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 5.w,
+                vertical: 0.5.h,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Expiry Date:",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white30,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 9.sp,
+                    ),
+                  ),
+                  Text(
+                    "Active",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 9.sp,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(
+              color: Colors.white30,
+              height: 0.2.h,
             ),
             // Consumer<Repository>(builder: (context, data, _) {
             //   return ListView.separated(

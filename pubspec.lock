@@ -145,6 +145,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  coupon_uikit:
+    dependency: "direct main"
+    description:
+      name: coupon_uikit
+      sha256: b9687e24b2878f7763f4afea4148fe85458025455e3fe5a9738ccffde4bbb1ba
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   crypto:
     dependency: transitive
     description:
@@ -177,6 +185,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.3.0"
+  dotted_dashed_line:
+    dependency: "direct main"
+    description:
+      name: dotted_dashed_line
+      sha256: da3678819f4522c982eb256d2bc80d032fd2a3e7b437841ea83987c67c00cda5
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   dotted_line:
     dependency: "direct main"
     description:
@@ -318,6 +334,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
+  flutter_lists:
+    dependency: "direct main"
+    description:
+      name: flutter_lists
+      sha256: "4b42c4307e15f520a74515ec766392945d502458aaf54209e18c8ff5324b178c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   flutter_native_splash:
     dependency: "direct main"
     description:

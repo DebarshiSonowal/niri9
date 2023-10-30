@@ -19,7 +19,7 @@ final Function onTap;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 25.h,
+      height: 29.h,
       width: double.infinity,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -34,7 +34,7 @@ final Function onTap;
               horizontal: 2.w,
               vertical: 1.h,
             ),
-            height: 19.h,
+            height: 22.h,
             width: double.infinity,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
@@ -50,7 +50,7 @@ final Function onTap;
               },
               separatorBuilder: (context, index) {
                 return SizedBox(
-                  width: 2.w,
+                  width: 1.5.w,
                 );
               },
               itemCount:list.length,

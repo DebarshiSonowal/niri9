@@ -68,7 +68,7 @@ class CustomBottomNavBar extends StatelessWidget {
             Assets.premiumImage,
             scale: 24,
           ),
-          label: "Premium",
+          label: "Trending",
         ),
         BottomNavigationBarItem(
           backgroundColor: Constants.bottomNavigationBarBackgroundColor,

@@ -10,6 +10,7 @@ import '../../Constants/assets.dart';
 import '../../Constants/constants.dart';
 import '../../Repository/repository.dart';
 import '../../Widgets/alert.dart';
+import '../SubscriptionPage/Widgets/premium_card.dart';
 import 'Widgets/profile_appbar.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -37,6 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         child: Consumer<Repository>(builder: (context, data, _) {
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
                 height: 4.h,
@@ -61,7 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
               ),
               SizedBox(
-                height: 6.h,
+                height: 4.h,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -81,7 +83,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   SizedBox(
                     width: 20.w,
                     child: Text(
-                      "${data.user?.email}",
+                      data.user?.email??"N/A",
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
                             color: Colors.white,
                           ),
@@ -110,7 +112,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   SizedBox(
                     width: 20.w,
                     child: Text(
-                      "${data.user?.mobile}",
+                      "${data.user?.mobile??"N/A"}",
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
                             color: Colors.white,
                           ),
@@ -118,6 +120,22 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ],
               ),
+              SizedBox(
+                height: 3.h,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 15.sp,),
+                child: Text(
+                  "Current Subscription",
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 2.h,
+              ),
+              const PremiumCard(),
             ],
           );
         }),

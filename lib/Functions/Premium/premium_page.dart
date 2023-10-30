@@ -20,7 +20,7 @@ class PremiumPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Premium",
+          "Trending",
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 color: Colors.white,
                 fontSize: 16.sp,

@@ -5,9 +5,9 @@ import '../../../Navigation/Navigate.dart';
 
 class SubscriptionAppbar extends StatelessWidget {
   const SubscriptionAppbar({
-    super.key,
+    super.key, required this.title,
   });
-
+  final String title;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -30,7 +30,7 @@ class SubscriptionAppbar extends StatelessWidget {
             width: 21.5.w,
           ),
           Text(
-            "Subscription",
+            title,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: Colors.white54,
               fontSize: 14.sp,

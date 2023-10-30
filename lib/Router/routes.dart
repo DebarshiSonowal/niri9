@@ -25,4 +25,6 @@ class Routes {
   static const otpScreen = "/otp_screen";
 
   static const profile = "/profile";
+
+  static const cuponApply = "/cupon_apply";
 }

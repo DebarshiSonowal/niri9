@@ -9,6 +9,7 @@ import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Models/plan_pricing.dart';
 import 'package:niri9/Models/user.dart';
 import 'package:niri9/Navigation/Navigate.dart';
+import 'package:niri9/Router/routes.dart';
 import 'package:niri9/Widgets/gradient_text.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -53,7 +54,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(7.h),
-        child: const SubscriptionAppbar(),
+        child: const SubscriptionAppbar(title: "Subscription",),
       ),
       backgroundColor: Constants.subscriptionBg,
       body: Container(
@@ -170,14 +171,19 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                           ),
                         ),
                       ),
-                      Text(
-                        'Apply Promo Code',
-                        style: TextStyle(
-                          color: Colors.white,
-                          decoration: TextDecoration.underline,
-                          // fontWeight: FontWeight.bold,
-                          fontSize: 9.sp,
-                          decorationColor: Colors.white,
+                      GestureDetector(
+                        onTap:(){
+                          Navigation.instance.navigate(Routes.cuponApply);
+                        },
+                        child: Text(
+                          'Apply Promo Code',
+                          style: TextStyle(
+                            color: Colors.white,
+                            decoration: TextDecoration.underline,
+                            // fontWeight: FontWeight.bold,
+                            fontSize: 9.sp,
+                            decorationColor: Colors.white,
+                          ),
                         ),
                       ),
                       SizedBox(

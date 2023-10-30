@@ -196,6 +196,10 @@ class Repository extends ChangeNotifier {
       icon: Icons.person,
     ),
     AccountItem(
+      name: "Subscription",
+      icon: Icons.subscriptions,
+    ),
+    AccountItem(
       name: "Notification Inbox",
       icon: Icons.notifications,
     ),
