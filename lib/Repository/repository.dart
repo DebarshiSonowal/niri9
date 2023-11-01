@@ -4,6 +4,7 @@ import 'package:niri9/Constants/assets.dart';
 import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Models/category.dart';
 import 'package:niri9/Models/dynamic_list_item_model.dart';
+import 'package:niri9/Models/order_history.dart';
 import 'package:niri9/Models/subscription.dart';
 import 'package:niri9/Models/subscription_model.dart';
 import 'package:niri9/Models/video.dart';
@@ -49,6 +50,7 @@ class Repository extends ChangeNotifier {
     //   image: Assets.moreImage,
     // ),
   ];
+  List<OrderHistoryItem> orders=[];
   User? _user;
   List<List<Video>> _videos = [];
 
@@ -200,6 +202,10 @@ class Repository extends ChangeNotifier {
       icon: Icons.subscriptions,
     ),
     AccountItem(
+      name: "Orders",
+      icon: FontAwesomeIcons.boxArchive,
+    ),
+    AccountItem(
       name: "Notification Inbox",
       icon: Icons.notifications,
     ),
@@ -344,6 +350,11 @@ class Repository extends ChangeNotifier {
 
   void addLanguages(List<Language> list) {
     _languages = list;
+    notifyListeners();
+  }
+
+  void setOrders(List<OrderHistoryItem> list) {
+    orders= list;
     notifyListeners();
   }
 

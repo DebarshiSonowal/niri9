@@ -55,7 +55,7 @@ class _AccountPageState extends State<AccountPage> {
                     width: 4.w,
                   ),
                   Text(
-                    "Account settings",
+                    "Account Settings",
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Colors.white,
                           fontSize: 13.sp,
@@ -138,29 +138,32 @@ class _AccountPageState extends State<AccountPage> {
         Navigation.instance.navigate(Routes.subscriptionScreen);
         break;
       case 2:
+        Navigation.instance.navigate(Routes.orderHistory);
         break;
       case 3:
         break;
       case 4:
         break;
       case 5:
+        break;
+      case 6:
         // _launchUrl(Uri.parse("https://niri9.com/terms-condition.php"));
         Navigation.instance.navigate(Routes.termsConditionsScreen);
         break;
-      case 6:
+      case 7:
         // _launchUrl(Uri.parse("https://niri9.com/privacy_policy.php"));
         Navigation.instance.navigate(Routes.privacyPolicyScreen);
         break;
-      case 7:
+      case 8:
         Navigation.instance.navigate(Routes.refundScreen);
         break;
-      case 8:
+      case 9:
         Navigation.instance.navigate(Routes.helpFaqScreen);
         break;
-      case 9:
+      case 10:
         Navigation.instance.navigate(Routes.aboutScreen);
         break;
-      case 10:
+      case 11:
         break;
       default:
         Navigation.instance.navigate(Routes.loginScreen);

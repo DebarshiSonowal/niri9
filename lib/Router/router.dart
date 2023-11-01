@@ -6,6 +6,7 @@ import 'package:niri9/Functions/HomeScreen/home_screen.dart';
 import 'package:niri9/Functions/LanguageSelectedPage/language_selected_page.dart';
 import 'package:niri9/Functions/Login/login_page.dart';
 import 'package:niri9/Functions/More/more_page.dart';
+import 'package:niri9/Functions/Orders/orders_page.dart';
 import 'package:niri9/Functions/Otp/otp_screen.dart';
 import 'package:niri9/Functions/Premium/premium_page.dart';
 import 'package:niri9/Functions/Privacy/privacy_policy.dart';
@@ -66,6 +67,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return FadeTransitionPageRouteBuilder(page: const SubscriptionPage());
 
     //Extra
+    case Routes.orderHistory:
+      return FadeTransitionPageRouteBuilder(page: const OrderPageScreen());
     case Routes.cuponApply:
       return FadeTransitionPageRouteBuilder(page: const ApplyCuponsPage());
     case Routes.refundScreen:

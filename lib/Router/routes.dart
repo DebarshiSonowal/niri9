@@ -21,10 +21,8 @@ class Routes {
   static const helpFaqScreen = "/help_faq_screen";
 
   static const loadingScreen = "/loading_dialog";
-
   static const otpScreen = "/otp_screen";
-
   static const profile = "/profile";
-
+  static const orderHistory = "/orderHistory";
   static const cuponApply = "/cupon_apply";
 }

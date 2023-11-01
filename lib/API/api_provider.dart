@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:niri9/Constants/constants.dart';
+import 'package:niri9/Models/order_history.dart';
 import 'package:niri9/Models/user.dart';
 
 import '../Helper/storage.dart';
@@ -12,6 +13,7 @@ import '../Models/generic_response.dart';
 import '../Models/genres.dart';
 import '../Models/languages.dart';
 import '../Models/login.dart';
+import '../Models/order_history_details.dart';
 import '../Models/payment_gateway.dart';
 import '../Models/sections.dart';
 import '../Models/settings.dart';
@@ -410,6 +412,77 @@ class ApiProvider {
     } on DioError catch (e) {
       debugPrint("VideoRentalResponse  error: ${e.error} ${e.message}");
       return VideoResponse.withError(e.message);
+    }
+  }
+
+  Future<OrderHistoryResponse> getOrderHistory() async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/sales/order";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+
+    try {
+      Response? response = await dio?.get(
+        url,
+        // data: jsonEncode(data),
+      );
+      debugPrint(
+          "VideoRentalResponse response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return OrderHistoryResponse.fromJson(response?.data);
+      } else {
+        debugPrint("VideoRentalResponse error response: ${response?.data}");
+        return OrderHistoryResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("VideoRentalResponse  error: ${e.error} ${e.message}");
+      return OrderHistoryResponse.withError(e.message);
+    }
+  }
+  Future<OrderHistoryDetailsResponse> getOrderHistoryDetails(id) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/sales/order/$id";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+
+    try {
+      Response? response = await dio?.get(
+        url,
+        // data: jsonEncode(data),
+      );
+      debugPrint(
+          "OrderHistoryDetailsResponse response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return OrderHistoryDetailsResponse.fromJson(response?.data);
+      } else {
+        debugPrint("OrderHistoryDetailsResponse error response: ${response?.data}");
+        return OrderHistoryDetailsResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("OrderHistoryDetailsResponse error: ${e.error} ${e.message}");
+      return OrderHistoryDetailsResponse.withError(e.message);
     }
   }
 

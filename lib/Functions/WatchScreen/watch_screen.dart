@@ -59,7 +59,7 @@ class _WatchScreenState extends State<WatchScreen> {
   @override
   void initState() {
     super.initState();
-    initiateVideoPlayer();
+
 
     // fetchDetails(widget.index);
     // videoPlayerController = VideoPlayerController.network(Assets.videoUrl)
@@ -74,6 +74,7 @@ class _WatchScreenState extends State<WatchScreen> {
     //       .onError((error, stackTrace) => debugPrint(error.toString()));
     // });
     Future.delayed(const Duration(seconds: 0), () {
+      // initiateVideoPlayer(context);
       fetchDetails(widget.index);
     });
   }
@@ -92,98 +93,103 @@ class _WatchScreenState extends State<WatchScreen> {
           height: double.infinity,
           width: double.infinity,
           color: Constants.primaryColor,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                VideoSection(
-                    customVideoPlayerController: _customVideoPlayerController),
-                const InfoBar(),
-                const OptionsBar(),
-                const DescriptionSection(),
-                Consumer<Repository>(builder: (context, data, _) {
-                  return (data.videoDetails?.season_list ?? []).isNotEmpty
-                      ? Container(
-                          height: 8.5.h,
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 5.w,
-                            vertical: 2.h,
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Episodes",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      color: Colors.white70,
-                                      fontSize: 14.sp,
-                                    ),
+          child:FutureBuilder(
+              future:initiateVideoPlayer(context),
+              builder: (context,_) {
+              return _.hasData?SingleChildScrollView(
+                child: Column(
+                  children: [
+                    VideoSection(
+                        customVideoPlayerController: _customVideoPlayerController),
+                    const InfoBar(),
+                    const OptionsBar(),
+                    const DescriptionSection(),
+                    Consumer<Repository>(builder: (context, data, _) {
+                      return (data.videoDetails?.season_list ?? []).isNotEmpty
+                          ? Container(
+                              height: 8.5.h,
+                              width: double.infinity,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 5.w,
+                                vertical: 2.h,
                               ),
-                              SizedBox(
-                                width: 5.w,
-                              ),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) {
-                                  return SeasonsItem(
-                                    index: index,
-                                    selected: selected,
-                                    list: data.videoDetails?.season_list ?? [],
-                                    onTap: () {
-                                      setState(() {
-                                        selected = index;
-                                      });
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Episodes",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.copyWith(
+                                          color: Colors.white70,
+                                          fontSize: 14.sp,
+                                        ),
+                                  ),
+                                  SizedBox(
+                                    width: 5.w,
+                                  ),
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) {
+                                      return SeasonsItem(
+                                        index: index,
+                                        selected: selected,
+                                        list: data.videoDetails?.season_list ?? [],
+                                        onTap: () {
+                                          setState(() {
+                                            selected = index;
+                                          });
+                                        },
+                                      );
                                     },
-                                  );
-                                },
-                                itemCount:
-                                    data.videoDetails?.season_list.length,
+                                    itemCount:
+                                        data.videoDetails?.season_list.length,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        )
-                      : Container();
-                }),
-                EpisodesSlider(
-                    selected: selected, season1: season1, season2: season2),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 7.w,
-                    vertical: 3.h,
-                  ),
-                  child: Image.asset(
-                    Assets.advertiseBannerImage,
-                    height: 12.h,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Consumer<Repository>(builder: (context, data, _) {
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      var item = data.sections[index];
-                      return item.videos.isNotEmpty
-                          ? DynamicListItem(
-                              text: item.title ?? "",
-                              list: item.videos ?? [],
-                              onTap: () {
-                                Navigation.instance
-                                    .navigate(Routes.moreScreen, args: 0);
-                              },
                             )
                           : Container();
-                    },
-                    itemCount: data.sections.length,
-                  );
-                }),
-              ],
-            ),
+                    }),
+                    EpisodesSlider(
+                        selected: selected, season1: season1, season2: season2),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 7.w,
+                        vertical: 3.h,
+                      ),
+                      child: Image.asset(
+                        Assets.advertiseBannerImage,
+                        height: 12.h,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Consumer<Repository>(builder: (context, data, _) {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          var item = data.sections[index];
+                          return item.videos.isNotEmpty
+                              ? DynamicListItem(
+                                  text: item.title ?? "",
+                                  list: item.videos ?? [],
+                                  onTap: () {
+                                    Navigation.instance
+                                        .navigate(Routes.moreScreen, args: 0);
+                                  },
+                                )
+                              : Container();
+                        },
+                        itemCount: data.sections.length,
+                      );
+                    }),
+                  ],
+                ),
+              ):Container();
+            },
           ),
         ),
       ),
@@ -251,7 +257,7 @@ class _WatchScreenState extends State<WatchScreen> {
     } else {}
   }
 
-  void initiateVideoPlayer() async {
+  Future<bool> initiateVideoPlayer(context) async {
     videoPlayerController =
         VideoPlayerController.networkUrl(Uri.parse(Assets.videoUrl));
     await videoPlayerController.initialize();
@@ -317,6 +323,7 @@ class _WatchScreenState extends State<WatchScreen> {
       context: context,
       videoPlayerController: videoPlayerController,
     );
+    return true;
   }
 
 
