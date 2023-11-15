@@ -28,7 +28,7 @@ class _HomeBannerState extends State<HomeBanner> {
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: [
-            SizedBox(
+            data.sections.isNotEmpty?SizedBox(
               height: 25.h,
               width: double.infinity,
               child: CarouselSlider.builder(
@@ -105,8 +105,8 @@ class _HomeBannerState extends State<HomeBanner> {
                   },
                 ),
               ),
-            ),
-            Container(
+            ):Container(),
+            data.sections.isNotEmpty?Container(
               margin: EdgeInsets.only(
                 bottom: 1.h,
               ),
@@ -131,7 +131,7 @@ class _HomeBannerState extends State<HomeBanner> {
                   ),
                 ],
               ),
-            ),
+            ):Container(),
           ],
         ),
       );

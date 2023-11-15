@@ -1,4 +1,5 @@
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:niri9/Constants/assets.dart';
 import 'package:niri9/Constants/constants.dart';
@@ -34,23 +35,26 @@ class LanguageItem extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Image.asset(
-              //   Assets.assameseImage,
-              //   height: 11.h,
-              //   width: 20.w,
-              //   fit: BoxFit.fitHeight,
-              // ),
+              CachedNetworkImage(
+                imageUrl: item.profile_pic??"",
+                height: 5.h,
+                width: 13.5.w,
+                fit: BoxFit.fitHeight,
+              ),
+              SizedBox(
+                width: 4.w,
+              ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text(
-                    item.slug ?? "",
+                    item.name ?? "",
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: Colors.white,
                     ),
                   ),
                   Text(
-                    item.name ?? "",
+                    item.local_name ?? "",
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: Colors.white,
                     ),

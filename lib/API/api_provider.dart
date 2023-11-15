@@ -324,7 +324,7 @@ class ApiProvider {
   }
 
   Future<VideoResponse> getVideos(
-      int page_no, Sections? section, Category? category, Genres? genre) async {
+      int page_no, Sections? section, Category? category, Genres? genre,String? search,String? page) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
         receiveTimeout: const Duration(seconds: Constants.waitTime),
@@ -344,6 +344,16 @@ class ApiProvider {
     if (section != null) {
       data.addAll({
         'section': section.slug ?? "",
+      });
+    }
+    if (search != null) {
+      data.addAll({
+        'search': search,
+      });
+    }
+    if (page != null) {
+      data.addAll({
+        'page': page,
       });
     }
     if (category != null) {

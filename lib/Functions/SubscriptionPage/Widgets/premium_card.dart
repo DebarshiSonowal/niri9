@@ -119,51 +119,26 @@ class PremiumCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Pack Country:",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white30,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 9.sp,
+                  SizedBox(
+                    width: 25.w,
+                    child: Text(
+                      "Pack Country:",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white30,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 9.sp,
+                      ),
                     ),
                   ),
-                  Text(
-                    "Active",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 9.sp,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Divider(
-              color: Colors.white30,
-              height: 0.2.h,
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 5.w,
-                vertical: 0.5.h,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Payment Mode:",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white30,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 9.sp,
-                    ),
-                  ),
-                  Text(
-                    "Active",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 9.sp,
+                  SizedBox(
+                    width: 19.w,
+                    child: Text(
+                      "India",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 9.sp,
+                      ),
                     ),
                   ),
                 ],
@@ -181,20 +156,26 @@ class PremiumCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Auto Renewal:",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white30,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 9.sp,
+                  SizedBox(
+                    width:25.w,
+                    child: Text(
+                      "Payment Mode:",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white30,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 9.sp,
+                      ),
                     ),
                   ),
-                  Text(
-                    "Active",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 9.sp,
+                  SizedBox(
+                    width: 19.w,
+                    child: Text(
+                      "CRM",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 9.sp,
+                      ),
                     ),
                   ),
                 ],
@@ -212,20 +193,63 @@ class PremiumCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Expiry Date:",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white30,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 9.sp,
+                  SizedBox(
+                    width:25.w,
+                    child: Text(
+                      "Auto Renewal:",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white30,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 9.sp,
+                      ),
                     ),
                   ),
-                  Text(
-                    "Active",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 9.sp,
+                  SizedBox(
+                    width: 19.w,
+                    child: Text(
+                      "No",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 9.sp,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(
+              color: Colors.white30,
+              height: 0.2.h,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 5.w,
+                vertical: 0.5.h,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width:25.w,
+                    child: Text(
+                      "Expiry Date:",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white30,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 9.sp,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 19.w,
+                    child: Text(
+                      "4 Jun, 2023",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 9.sp,
+                      ),
                     ),
                   ),
                 ],

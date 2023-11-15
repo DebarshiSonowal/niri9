@@ -172,7 +172,7 @@ class _SearchPageState extends State<SearchPage> {
       String? term, int page_no) async {
     Navigation.instance.navigate(Routes.loadingScreen);
     final response = await ApiProvider.instance
-        .getVideos(page_no, sections, category, genres);
+        .getVideos(page_no, sections, category, genres,term,"rent");
     if (response.success ?? false) {
       Navigation.instance.goBack();
       Provider.of<Repository>(context, listen: false)
