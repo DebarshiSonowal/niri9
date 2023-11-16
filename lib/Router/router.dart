@@ -8,7 +8,7 @@ import 'package:niri9/Functions/Login/login_page.dart';
 import 'package:niri9/Functions/More/more_page.dart';
 import 'package:niri9/Functions/Orders/orders_page.dart';
 import 'package:niri9/Functions/Otp/otp_screen.dart';
-import 'package:niri9/Functions/Premium/premium_page.dart';
+// import 'package:niri9/Functions/Premium/trending_page.dart';
 import 'package:niri9/Functions/Privacy/privacy_policy.dart';
 import 'package:niri9/Functions/ProfilePage/profile_page.dart';
 import 'package:niri9/Functions/RefundPolicy/refund_policy.dart';
@@ -21,6 +21,7 @@ import '../Functions/AboutPage/about_page.dart';
 import '../Functions/Cupon/apply_cupons.dart';
 import '../Functions/SplashScreen/splash_screen.dart';
 import '../Functions/SubscriptionPage/subscription_page.dart';
+import '../Functions/Trending/trending_page.dart';
 import '../Functions/WatchScreen/watch_screen.dart';
 import '../Widgets/FadeTransitionBuilder.dart';
 import '../Widgets/loading_dialog.dart';
@@ -45,14 +46,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         filters: settings.arguments as String,
       ));
     case Routes.premiumScreen:
-      return FadeTransitionPageRouteBuilder(page: const PremiumPage());
+      return FadeTransitionPageRouteBuilder(page: const TrendingPage());
     case Routes.rentScreen:
       return FadeTransitionPageRouteBuilder(page: const RentPage());
     case Routes.accountScreen:
       return FadeTransitionPageRouteBuilder(page: const AccountPage());
     case Routes.moreScreen:
       return FadeTransitionPageRouteBuilder(
-          page: MorePage(index: settings.arguments as int));
+          page: MorePage(section: settings.arguments as String));
     case Routes.selectedLanguageScreen:
       return FadeTransitionPageRouteBuilder(
           page: LanguageSelectedPage(index: settings.arguments as int));

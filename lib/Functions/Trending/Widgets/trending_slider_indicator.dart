@@ -4,8 +4,8 @@ import 'package:sizer/sizer.dart';
 
 import '../../../Repository/repository.dart';
 
-class SliderIndicator extends StatelessWidget {
-  const SliderIndicator({
+class TrendingSliderIndicator extends StatelessWidget {
+  const TrendingSliderIndicator({
     super.key,
     required int current,
   }) : _current = current;
@@ -38,7 +38,7 @@ class SliderIndicator extends StatelessWidget {
                   width: 2.w,
                 );
               },
-              itemCount: data.homeBanner.length,
+              itemCount: data.trendingBanner.length,
             ),
           );
         }

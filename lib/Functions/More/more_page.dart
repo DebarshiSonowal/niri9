@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Models/ott.dart';
 import 'package:niri9/Repository/repository.dart';
@@ -8,8 +9,8 @@ import 'package:sizer/sizer.dart';
 import 'Widgets/ottitem.dart';
 
 class MorePage extends StatefulWidget {
-  const MorePage({Key? key, required this.index}) : super(key: key);
-  final int index;
+  const MorePage({Key? key, required this.section}) : super(key: key);
+  final String section;
 
   @override
   State<MorePage> createState() => _MorePageState();
@@ -21,7 +22,7 @@ class _MorePageState extends State<MorePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Web Series You May Like",
+          widget.section.replaceAll("-", " ").capitalize(),
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,

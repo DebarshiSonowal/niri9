@@ -171,7 +171,7 @@ class _WatchScreenState extends State<WatchScreen> {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
-                          var item = data.sections[index];
+                          var item = data.homeSections[index];
                           return item.videos.isNotEmpty
                               ? DynamicListItem(
                                   text: item.title ?? "",
@@ -183,7 +183,7 @@ class _WatchScreenState extends State<WatchScreen> {
                                 )
                               : Container();
                         },
-                        itemCount: data.sections.length,
+                        itemCount: data.homeSections.length,
                       );
                     }),
                   ],

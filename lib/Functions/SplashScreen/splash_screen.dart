@@ -60,6 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> fetchData() async {
     await fetchCategories();
+    await fetchBanner();
     await fetchGenres();
     await fetchSections();
     await fetchPrivacy();
@@ -70,12 +71,29 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigation.instance.navigateAndRemoveUntil(Routes.homeScreen);
   }
 
+  Future<void> fetchBanner() async {
+    final response = await ApiProvider.instance.getBannerResponse("home");
+    if (response.success ?? false) {
+      // if (!context.mounted) return;
+      Provider.of<Repository>(context, listen: false)
+          .addHomeBanner(response.result??[]);
+      // await fetchVideos(response.sections[0]);
+    }
+  }
+
   Future<void> fetchSections() async {
-    final response = await ApiProvider.instance.getSections();
+    final response = await ApiProvider.instance.getSections("home");
     if (response.status ?? false) {
       // if (!context.mounted) return;
       Provider.of<Repository>(context, listen: false)
-          .addSections(response.sections);
+          .addHomeSections(response.sections);
+      // await fetchVideos(response.sections[0]);
+    }
+    final response1 = await ApiProvider.instance.getSections("trending");
+    if (response1.status ?? false) {
+      // if (!context.mounted) return;
+      Provider.of<Repository>(context, listen: false)
+          .addTrendingSections(response1.sections);
       // await fetchVideos(response.sections[0]);
     }
   }

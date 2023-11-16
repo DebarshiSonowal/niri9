@@ -7,6 +7,7 @@ import 'package:niri9/Models/order_history.dart';
 import 'package:niri9/Models/user.dart';
 
 import '../Helper/storage.dart';
+import '../Models/banner.dart';
 import '../Models/category.dart';
 import '../Models/episode.dart';
 import '../Models/generic_response.dart';
@@ -323,8 +324,8 @@ class ApiProvider {
     }
   }
 
-  Future<VideoResponse> getVideos(
-      int page_no, Sections? section, Category? category, Genres? genre,String? search,String? page) async {
+  Future<VideoResponse> getVideos(int page_no, Sections? section,
+      Category? category, Genres? genre, String? search, String? page) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
         receiveTimeout: const Duration(seconds: Constants.waitTime),
@@ -460,6 +461,7 @@ class ApiProvider {
       return OrderHistoryResponse.withError(e.message);
     }
   }
+
   Future<OrderHistoryDetailsResponse> getOrderHistoryDetails(id) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
@@ -485,7 +487,8 @@ class ApiProvider {
       if (response?.statusCode == 200 || response?.statusCode == 201) {
         return OrderHistoryDetailsResponse.fromJson(response?.data);
       } else {
-        debugPrint("OrderHistoryDetailsResponse error response: ${response?.data}");
+        debugPrint(
+            "OrderHistoryDetailsResponse error response: ${response?.data}");
         return OrderHistoryDetailsResponse.withError(response?.data['error']
             ? response?.data['message']['success']
             : response?.data['message']['error']);
@@ -1061,7 +1064,7 @@ class ApiProvider {
     }
   }
 
-  Future<SectionsResponse> getSections() async {
+  Future<SectionsResponse> getSections(String page) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
         receiveTimeout: const Duration(seconds: Constants.waitTime),
@@ -1075,12 +1078,16 @@ class ApiProvider {
     // var url = "http://asamis.assam.gov.in/api/login";
     dio = Dio(option);
     debugPrint(url.toString());
+    var data = {
+      'page': page,
+    };
+    debugPrint(jsonEncode(data));
     // debugPrint(jsonEncode(data));
 
     try {
       Response? response = await dio?.get(
         url,
-        // data: jsonEncode(data),
+        queryParameters: data,
       );
       debugPrint(
           "getSections response: ${response?.data} ${response?.headers}");
@@ -1095,6 +1102,47 @@ class ApiProvider {
     } on DioError catch (e) {
       debugPrint("getSections  error: ${e.error} ${e.message}");
       return SectionsResponse.withError(e.message);
+    }
+  }
+
+  Future<BannerResponse> getBannerResponse(String page) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          // 'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/widgets/banner";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    var data = {
+      'page': page,
+    };
+    debugPrint(jsonEncode(data));
+    // debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.get(
+        url,
+        queryParameters: data,
+      );
+      debugPrint(
+          "get BannerResponse: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return BannerResponse.fromJson(response?.data);
+      } else {
+        debugPrint("getSections error response: ${response?.data}");
+        return BannerResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("getSections  error: ${e.error} ${e.message}");
+      return BannerResponse.withError(e.message);
     }
   }
 

@@ -72,17 +72,17 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
-                        var item = data.sections[index];
+                        var item = data.homeSections[index];
                         return item.videos.isNotEmpty?DynamicListItem(
                           text: item.title ?? "",
                           list: item.videos ?? [],
                           onTap: () {
                             Navigation.instance
-                                .navigate(Routes.moreScreen, args: 0);
+                                .navigate(Routes.moreScreen, args: item.slug??"");
                           },
                         ):Container();
                       },
-                      itemCount: data.sections.length,
+                      itemCount: data.homeSections.length,
                     ),
                   );
                 }),

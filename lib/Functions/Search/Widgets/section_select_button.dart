@@ -31,7 +31,7 @@ class SectionSelectButton extends StatelessWidget {
           value: selectedSection,
           onChanged: (val) => onChanged(val),
           items:
-              data.sections.map<DropdownMenuItem<Sections>>((Sections value) {
+              data.homeSections.map<DropdownMenuItem<Sections>>((Sections value) {
             return DropdownMenuItem<Sections>(
               value: value,
               child: Text(

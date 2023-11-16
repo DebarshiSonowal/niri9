@@ -70,7 +70,7 @@ class LanguageSelectedPage extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              var item = data.sections[index];
+              var item = data.homeSections[index];
               return DynamicListItem(
                 text: item.title ?? "",
                 list: item.videos ?? [],
@@ -79,7 +79,7 @@ class LanguageSelectedPage extends StatelessWidget {
                 },
               );
             },
-            itemCount:data.sections.length,
+            itemCount:data.homeSections.length,
           );
         }),
       ),

@@ -40,7 +40,7 @@ class _SearchPageState extends State<SearchPage> {
       selectedCategory =
           Provider.of<Repository>(context, listen: false).categories[0];
       selectedSections =
-          Provider.of<Repository>(context, listen: false).sections[0];
+          Provider.of<Repository>(context, listen: false).homeSections[0];
       setState(() {});
       if (widget.filters != "") {
         selectedCategory = Provider.of<Repository>(context, listen: false)

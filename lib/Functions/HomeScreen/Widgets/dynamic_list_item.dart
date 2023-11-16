@@ -34,7 +34,7 @@ final Function onTap;
               horizontal: 2.w,
               vertical: 1.h,
             ),
-            height: 22.h,
+            height: 23.h,
             width: double.infinity,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
@@ -50,7 +50,7 @@ final Function onTap;
               },
               separatorBuilder: (context, index) {
                 return SizedBox(
-                  width: 1.5.w,
+                  width: 2.w,
                 );
               },
               itemCount:list.length,

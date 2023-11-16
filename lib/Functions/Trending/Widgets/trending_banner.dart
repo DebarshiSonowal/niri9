@@ -1,22 +1,24 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:niri9/Functions/Trending/Widgets/trending_slider_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Repository/repository.dart';
-import 'my_list_button.dart';
-import 'share_indicator.dart';
-import 'slider_indicator.dart';
+import '../../HomeScreen/Widgets/my_list_button.dart';
+import '../../HomeScreen/Widgets/share_indicator.dart';
+import '../../HomeScreen/Widgets/slider_indicator.dart';
 
-class HomeBanner extends StatefulWidget {
-  const HomeBanner({Key? key}) : super(key: key);
+
+class TrendingBanner extends StatefulWidget {
+  const TrendingBanner({Key? key}) : super(key: key);
 
   @override
-  State<HomeBanner> createState() => _HomeBannerState();
+  State<TrendingBanner> createState() => _TrendingBannerState();
 }
 
-class _HomeBannerState extends State<HomeBanner> {
+class _TrendingBannerState extends State<TrendingBanner> {
   int _current = 0;
 
   @override
@@ -28,14 +30,14 @@ class _HomeBannerState extends State<HomeBanner> {
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: [
-            data.homeBanner.isNotEmpty?SizedBox(
+            data.trendingBanner.isNotEmpty?SizedBox(
               height: 25.h,
               width: double.infinity,
               child: CarouselSlider.builder(
                 // itemCount: data.bannerList.length,
-                itemCount: data.homeBanner.length,
+                itemCount: data.trendingBanner.length,
                 itemBuilder: (BuildContext context, int index, int realIndex) {
-                  var item = data.homeBanner[index];
+                  var item = data.trendingBanner[index];
                   return SizedBox(
                     height: 23.h,
                     width: double.infinity,
@@ -79,9 +81,9 @@ class _HomeBannerState extends State<HomeBanner> {
                                         .textTheme
                                         .bodyMedium
                                         ?.copyWith(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -106,7 +108,7 @@ class _HomeBannerState extends State<HomeBanner> {
                 ),
               ),
             ):Container(),
-            data.homeBanner.isNotEmpty?Container(
+            data.trendingBanner.isNotEmpty?Container(
               margin: EdgeInsets.only(
                 bottom: 1.h,
               ),
@@ -122,7 +124,7 @@ class _HomeBannerState extends State<HomeBanner> {
                   SizedBox(
                     width: 3.w,
                   ),
-                  SliderIndicator(current: _current),
+                  TrendingSliderIndicator(current: _current),
                   SizedBox(
                     width: 3.w,
                   ),

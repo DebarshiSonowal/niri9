@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Models/ott.dart';
+import '../../../Models/video.dart';
 import '../../../Navigation/Navigate.dart';
 import '../../../Router/routes.dart';
 import '../../../Widgets/title_box.dart';
+import '../../HomeScreen/Widgets/ott_item.dart';
 import 'premium_ott_item.dart';
 
 class DynamicPremiumListItem extends StatelessWidget {
@@ -12,7 +14,7 @@ class DynamicPremiumListItem extends StatelessWidget {
       {Key? key, required this.text, required this.list, required this.onTap})
       : super(key: key);
   final String text;
-  final List<OTT> list;
+  final List<Video> list;
   final Function onTap;
 
   @override
@@ -40,8 +42,8 @@ class DynamicPremiumListItem extends StatelessWidget {
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 var item = list[index];
-                return PremiumOttItem(
-                  index: index,
+                return OttItem(
+                  // index: index,
                   item: item,
                   onTap: () {
                     Navigation.instance

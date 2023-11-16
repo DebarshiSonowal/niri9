@@ -10,8 +10,10 @@ import '../../Router/routes.dart';
 import '../../Widgets/alert.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../HomeScreen/Widgets/home_banner.dart';
-import '../Premium/Widgets/dynamic_premium_list_item.dart';
-import '../Premium/Widgets/dynamic_premium_other_list_item.dart';
+// import '../Premium/Widgets/dynamic_premium_list_item.dart';
+// import '../Premium/Widgets/dynamic_premium_other_list_item.dart';
+import '../Trending/Widgets/dynamic_premium_list_item.dart';
+import '../Trending/Widgets/dynamic_premium_other_list_item.dart';
 
 class RentPage extends StatefulWidget {
   const RentPage({super.key});
@@ -60,26 +62,26 @@ class _RentPageState extends State<RentPage> {
               SizedBox(
                 height: 0.5.h,
               ),
-              Consumer<Repository>(builder: (context, data, _) {
-                return Flexible(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      var item = data.premiumList[index];
-                      return DynamicPremiumListItem(
-                        text: item.title ?? "",
-                        list: item.list ?? [],
-                        onTap: () {
-                          Navigation.instance
-                              .navigate(Routes.moreScreen, args: 0);
-                        },
-                      );
-                    },
-                    itemCount: data.premiumList.length,
-                  ),
-                );
-              }),
+              // Consumer<Repository>(builder: (context, data, _) {
+              //   return Flexible(
+              //     child: ListView.builder(
+              //       shrinkWrap: true,
+              //       physics: const NeverScrollableScrollPhysics(),
+              //       itemBuilder: (context, index) {
+              //         var item = data.premiumList[index];
+              //         return DynamicPremiumListItem(
+              //           text: item.title ?? "",
+              //           list: item.list ?? [],
+              //           onTap: () {
+              //             Navigation.instance
+              //                 .navigate(Routes.moreScreen, args: 0);
+              //           },
+              //         );
+              //       },
+              //       itemCount: data.premiumList.length,
+              //     ),
+              //   );
+              // }),
               Consumer<Repository>(builder: (context, data, _) {
                 return Flexible(
                   child: ListView.builder(

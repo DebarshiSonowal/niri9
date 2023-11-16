@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:niri9/Constants/assets.dart';
 import 'package:niri9/Helper/storage.dart';
+import 'package:niri9/Models/banner.dart';
 import 'package:niri9/Models/category.dart';
 import 'package:niri9/Models/dynamic_list_item_model.dart';
 import 'package:niri9/Models/order_history.dart';
@@ -50,7 +51,8 @@ class Repository extends ChangeNotifier {
     //   image: Assets.moreImage,
     // ),
   ];
-  List<OrderHistoryItem> orders=[];
+  List<BannerResult> homeBanner = [], trendingBanner = [];
+  List<OrderHistoryItem> orders = [];
   User? _user;
   List<List<Video>> _videos = [];
 
@@ -242,7 +244,7 @@ class Repository extends ChangeNotifier {
       icon: FontAwesomeIcons.whatsapp,
     ),
     AccountItem(
-      name: Storage.instance.isLoggedIn?"Sign Out":"Sign In",
+      name: Storage.instance.isLoggedIn ? "Sign Out" : "Sign In",
       icon: FontAwesomeIcons.signOut,
     ),
   ];
@@ -253,7 +255,7 @@ class Repository extends ChangeNotifier {
     PlanPricing(true, true, true, 4, "HD 1080P", "599", "Premium"),
   ];
 
-  List<Sections> _sections = [];
+  List<Sections> _homeSections = [], _trendingSections = [];
 
   List<Genres> _genres = [];
 
@@ -342,9 +344,15 @@ class Repository extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addSections(List<Sections> list) {
-    _sections = list;
-    debugPrint("`addSections ${list}");
+  void addHomeSections(List<Sections> list) {
+    _homeSections = list;
+    debugPrint("`addHomeSections ${list}");
+    notifyListeners();
+  }
+
+  void addTrendingSections(List<Sections> list) {
+    _trendingSections = list;
+    debugPrint("`addTrendingSections ${list}");
     notifyListeners();
   }
 
@@ -353,8 +361,18 @@ class Repository extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addHomeBanner(List<BannerResult> list) {
+    homeBanner = list;
+    notifyListeners();
+  }
+
+  void addTrendingBanner(List<BannerResult> list) {
+    trendingBanner = list;
+    notifyListeners();
+  }
+
   void setOrders(List<OrderHistoryItem> list) {
-    orders= list;
+    orders = list;
     notifyListeners();
   }
 
@@ -389,7 +407,9 @@ class Repository extends ChangeNotifier {
 
   List<Genres> get genres => _genres;
 
-  List<Sections> get sections => _sections;
+  List<Sections> get homeSections => _homeSections;
+
+  List<Sections> get trendingSections => _trendingSections;
 
   List<List<Video>> get videos => _videos;
 
