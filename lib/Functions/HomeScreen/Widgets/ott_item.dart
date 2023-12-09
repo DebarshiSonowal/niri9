@@ -33,7 +33,7 @@ class OttItem extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
             child: Image.network(
-              item.poster_pic!,
+              item.profile_pic!,
               // // width: 22.w,
               // width: 20.w,
               // height: 16.h,

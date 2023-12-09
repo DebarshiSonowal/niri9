@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:niri9/Router/routes.dart';
 import 'package:provider/provider.dart';
@@ -147,7 +148,9 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
-      fetchProfile(context);
+      if (Storage.instance.isLoggedIn??false) {
+        fetchProfile(context);
+      }
     });
   }
 

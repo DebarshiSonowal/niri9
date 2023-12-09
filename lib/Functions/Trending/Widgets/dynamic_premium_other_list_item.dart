@@ -9,10 +9,11 @@ import 'premium_ott_item.dart';
 import 'premium_ott_item2.dart';
 
 class DynamicPremiumOtherListItem extends StatelessWidget {
-  const DynamicPremiumOtherListItem({Key? key, required this.text, required this.list, required this.onTap}) : super(key: key);
+  const DynamicPremiumOtherListItem({Key? key, required this.text, required this.list, required this.onTap, required this.isEnd}) : super(key: key);
   final String text;
   final List<OTT> list;
   final Function onTap;
+  final bool isEnd;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -23,7 +24,7 @@ class DynamicPremiumOtherListItem extends StatelessWidget {
         children: [
           TitleBox(
             text: text,
-            onTap: ()=>onTap(),
+            onTap: ()=>onTap(), isEnd: isEnd,
           ),
           Container(
             // color: Colors.green,

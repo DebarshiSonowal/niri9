@@ -23,6 +23,11 @@ class LanguageItem extends StatelessWidget {
     return GestureDetector(
       onTap: () => onTap(),
       child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          //set border radius more than 50% of height and width to make circle
+        ),
         child: Container(
           padding: EdgeInsets.only(
             right: 0.4.w,
@@ -31,36 +36,43 @@ class LanguageItem extends StatelessWidget {
           width: 40.w,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
+            image: DecorationImage(
+              fit: BoxFit.fill,
+              image:CachedNetworkImageProvider(
+                 item.profile_pic??"",
+
+              ),
+            )
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CachedNetworkImage(
-                imageUrl: item.profile_pic??"",
-                height: 5.h,
-                width: 13.5.w,
-                fit: BoxFit.fitHeight,
-              ),
+              // CachedNetworkImage(
+              //   imageUrl: item.profile_pic??"",
+              //   height: 5.h,
+              //   width: 13.5.w,
+              //   fit: BoxFit.fitHeight,
+              // ),
               SizedBox(
                 width: 4.w,
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    item.name ?? "",
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    item.local_name ?? "",
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
+              // Column(
+              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //   children: [
+              //     Text(
+              //       item.name ?? "",
+              //       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              //         color: Colors.white,
+              //       ),
+              //     ),
+              //     Text(
+              //       item.local_name ?? "",
+              //       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              //         color: Colors.white,
+              //       ),
+              //     ),
+              //   ],
+              // ),
               Container(),
             ],
           ),

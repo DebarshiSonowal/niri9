@@ -79,57 +79,57 @@ class _SearchPageState extends State<SearchPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Consumer<Repository>(builder: (context, data, _) {
-              return Container(
-                width: double.infinity,
-                height: 4.h,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 2.w,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    GenreSelectButton(
-                      selectedGenre: selectedGenre,
-                      onChanged: (Genres? newValue) {
-                        setState(() {
-                          selectedGenre = newValue!;
-                        });
-                      },
-                      data: data,
-                    ),
-                    // SizedBox(
-                    //   width: 2.w,
-                    // ),
-                    SectionSelectButton(
-                      selectedSection: selectedSections,
-                      onChanged: (Sections? newValue) {
-                        setState(() {
-                          selectedSections = newValue!;
-                        });
-                      },
-                      data: data,
-                    ),
-                    // SizedBox(
-                    //   width: 2.w,
-                    // ),
-                    CategorySelectButton(
-                      selectedCategory: selectedCategory,
-                      onChanged: (Category? newValue) {
-                        setState(() {
-                          selectedCategory = newValue!;
-                        });
-                      },
-                      data: data,
-                    ),
-                  ],
-                ),
-              );
-            }),
-            SizedBox(
-              height: 2.h,
-            ),
+            // Consumer<Repository>(builder: (context, data, _) {
+            //   return Container(
+            //     width: double.infinity,
+            //     height: 4.h,
+            //     padding: EdgeInsets.symmetric(
+            //       horizontal: 2.w,
+            //     ),
+            //     child: Row(
+            //       crossAxisAlignment: CrossAxisAlignment.center,
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: [
+            //         GenreSelectButton(
+            //           selectedGenre: selectedGenre,
+            //           onChanged: (Genres? newValue) {
+            //             setState(() {
+            //               selectedGenre = newValue!;
+            //             });
+            //           },
+            //           data: data,
+            //         ),
+            //         // SizedBox(
+            //         //   width: 2.w,
+            //         // ),
+            //         // SectionSelectButton(
+            //         //   selectedSection: selectedSections,
+            //         //   onChanged: (Sections? newValue) {
+            //         //     setState(() {
+            //         //       selectedSections = newValue!;
+            //         //     });
+            //         //   },
+            //         //   data: data,
+            //         // ),
+            //         // SizedBox(
+            //         //   width: 2.w,
+            //         // ),
+            //         CategorySelectButton(
+            //           selectedCategory: selectedCategory,
+            //           onChanged: (Category? newValue) {
+            //             setState(() {
+            //               selectedCategory = newValue!;
+            //             });
+            //           },
+            //           data: data,
+            //         ),
+            //       ],
+            //     ),
+            //   );
+            // }),
+            // SizedBox(
+            //   height: 2.h,
+            // ),
             Padding(
               padding: EdgeInsets.only(
                 bottom: 1.5.h,
@@ -152,11 +152,17 @@ class _SearchPageState extends State<SearchPage> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 2.w,
                     mainAxisSpacing: 0.5.h,
-                    childAspectRatio:8.5 / 11,
+                    childAspectRatio: 8.5 / 11,
                   ),
                   itemBuilder: (BuildContext context, int index) {
                     var item = data.specificVideos[index];
-                    return OttItem(item: item, onTap: () {});
+                    return OttItem(
+                      item: item,
+                      onTap: () {
+                        Navigation.instance
+                            .navigate(Routes.watchScreen, args: item.id);
+                      },
+                    );
                   },
                 ),
               );
@@ -171,8 +177,14 @@ class _SearchPageState extends State<SearchPage> {
   void search(Category? category, Sections? sections, Genres? genres,
       String? term, int page_no) async {
     Navigation.instance.navigate(Routes.loadingScreen);
-    final response = await ApiProvider.instance
-        .getVideos(page_no, sections, category, genres,term,"rent");
+    final response = await ApiProvider.instance.getVideos(
+        page_no,
+        sections?.slug,
+        category?.slug,
+        // genres?.slug,
+        "",
+        term,
+        "");
     if (response.success ?? false) {
       Navigation.instance.goBack();
       Provider.of<Repository>(context, listen: false)

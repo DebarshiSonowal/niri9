@@ -33,11 +33,13 @@ class SeasonsItem extends StatelessWidget {
             color: selected == index ? Colors.white : const Color(0xff7c7c7c),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Text(
-            list[index].title??"",
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.black,
-              fontSize: 11.sp,
+          child: Center(
+            child: Text(
+              list[index].title??"",
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Colors.black,
+                fontSize: 9.sp,
+              ),
             ),
           ),
         ),

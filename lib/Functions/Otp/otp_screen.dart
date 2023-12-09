@@ -171,7 +171,7 @@ class _OtpPageState extends State<OtpPage> {
                         //     .navigateAndRemoveUntil(Routes.homeScreen);
                       });
                     } on FirebaseAuthException catch (_, e) {
-                      debugPrint(_.code);
+                      debugPrint("the error is ${_.code} ${_.message} ${e}");
                       // if(dev)
                       Navigation.instance.goBack();
                       showError("${_.message}");

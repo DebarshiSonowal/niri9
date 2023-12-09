@@ -67,6 +67,7 @@ class OptionsBar extends StatelessWidget {
                       icon: Icons.money,
                       onTap: () {
                         showRentalBottomSheet(context);
+
                       },
                     ),
                   ],

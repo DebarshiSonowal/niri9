@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/cli_commands.dart';
+import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Models/ott.dart';
 import 'package:niri9/Repository/repository.dart';
@@ -17,6 +19,8 @@ class MorePage extends StatefulWidget {
 }
 
 class _MorePageState extends State<MorePage> {
+  int page_no = 1;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,20 +43,44 @@ class _MorePageState extends State<MorePage> {
         ),
         child: Consumer<Repository>(builder: (context, data, _) {
           return GridView.builder(
-            itemCount: data.selectedCategory.length,
+            itemCount: data.specificVideos.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
-              crossAxisSpacing: 2.w,
-              mainAxisSpacing: 0.5.h,
-              childAspectRatio: 9 / 12,
+              crossAxisSpacing: 3.w,
+              mainAxisSpacing: 0.7.h,
+              childAspectRatio: 8.5 / 12,
             ),
             itemBuilder: (BuildContext context, int index) {
-              var item = data.selectedCategory[index];
-              return OttItem(item: item, onTap: () {});
+              var item = data.specificVideos[index];
+              return GestureDetector(
+                onTap: () {},
+                child: CachedNetworkImage(
+                  imageUrl: item.profile_pic ?? "",
+                  fit: BoxFit.fill,
+                ),
+              );
             },
           );
         }),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      fetchDetails(page_no, widget.section, null, null, null);
+    });
+  }
+
+  void fetchDetails(int page_no, String sections, String? category,
+      String? genres, String? term) async {
+    final response = await ApiProvider.instance
+        .getVideos(page_no, sections, category, genres, term, null,);
+    if (response.success ?? false) {
+      Provider.of<Repository>(context, listen: false)
+          .setSearchVideos(response.videos);
+    }
   }
 }

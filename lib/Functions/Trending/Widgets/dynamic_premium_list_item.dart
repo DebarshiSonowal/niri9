@@ -9,13 +9,41 @@ import '../../../Widgets/title_box.dart';
 import '../../HomeScreen/Widgets/ott_item.dart';
 import 'premium_ott_item.dart';
 
-class DynamicPremiumListItem extends StatelessWidget {
+class DynamicPremiumListItem extends StatefulWidget {
   const DynamicPremiumListItem(
       {Key? key, required this.text, required this.list, required this.onTap})
       : super(key: key);
   final String text;
   final List<Video> list;
   final Function onTap;
+
+  @override
+  State<DynamicPremiumListItem> createState() => _DynamicPremiumListItemState();
+}
+
+class _DynamicPremiumListItemState extends State<DynamicPremiumListItem> {
+  bool isEnd = false;
+  final ScrollController _scrollController = ScrollController();
+
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.offset <= _scrollController.position.minScrollExtent&&isEnd!=false) {
+        setState(() {
+          debugPrint("reach the top");
+          isEnd = false;
+        });
+      }
+      if (_scrollController.offset >= _scrollController.position.maxScrollExtent&&isEnd==false) {
+        setState(() {
+          debugPrint("reach the bottom");
+          isEnd = true;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +54,9 @@ class DynamicPremiumListItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           TitleBox(
-            text: text,
-            onTap: () => onTap(),
+            isEnd: isEnd,
+            text: widget.text,
+            onTap: () => widget.onTap(),
           ),
           Container(
             // color: Colors.green,
@@ -38,10 +67,11 @@ class DynamicPremiumListItem extends StatelessWidget {
             height: 24.h,
             width: double.infinity,
             child: ListView.separated(
+              controller: _scrollController,
               scrollDirection: Axis.horizontal,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                var item = list[index];
+                var item = widget.list[index];
                 return OttItem(
                   // index: index,
                   item: item,
@@ -56,7 +86,7 @@ class DynamicPremiumListItem extends StatelessWidget {
                   width: 4.w,
                 );
               },
-              itemCount: list.length,
+              itemCount: widget.list.length,
             ),
           ),
         ],

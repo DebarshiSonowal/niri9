@@ -12,7 +12,7 @@ class ShareIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap(),
+      onTap: ()=>onTap(),
       child: SizedBox(
         width: 15.w,
         height: 5.h,

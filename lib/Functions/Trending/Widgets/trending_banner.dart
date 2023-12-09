@@ -26,12 +26,12 @@ class _TrendingBannerState extends State<TrendingBanner> {
     return Consumer<Repository>(builder: (context, data, _) {
       return SizedBox(
         width: double.infinity,
-        height: 25.h,
+        height: 40.h,
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: [
             data.trendingBanner.isNotEmpty?SizedBox(
-              height: 25.h,
+              height:40.h,
               width: double.infinity,
               child: CarouselSlider.builder(
                 // itemCount: data.bannerList.length,
@@ -39,15 +39,15 @@ class _TrendingBannerState extends State<TrendingBanner> {
                 itemBuilder: (BuildContext context, int index, int realIndex) {
                   var item = data.trendingBanner[index];
                   return SizedBox(
-                    height: 23.h,
+                    height:40.h,
                     width: double.infinity,
                     child: Stack(
                       alignment: Alignment.bottomCenter,
                       children: [
                         CachedNetworkImage(
-                          imageUrl: item.profilePic ?? "",
+                          imageUrl: item.posterPic ?? "",
                           fit: BoxFit.fill,
-                          height: 25.h,
+                          height: 40.h,
                           width: double.infinity,
                         ),
                         Container(

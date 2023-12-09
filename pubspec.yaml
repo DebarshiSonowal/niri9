@@ -70,6 +70,8 @@ dependencies:
   dotted_dashed_line: ^0.0.3
   flutter_lists: ^0.0.2
   intl: ^0.18.1
+  shimmer: ^3.0.0
+  share_plus: ^7.2.1
 
 dev_dependencies:
   flutter_launcher_icons: "^0.13.1"

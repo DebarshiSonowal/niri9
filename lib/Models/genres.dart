@@ -10,6 +10,17 @@ class Genres {
     slug = json["slug"];
     profile_icon = json["profile_icon"];
   }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['slug'] = this.slug;
+    data['profile_icon'] = this.profile_icon;
+    data['sequence'] = this.sequence;
+    data['status'] = this.status;
+    return data;
+  }
 }
 
 class GenresResponse {

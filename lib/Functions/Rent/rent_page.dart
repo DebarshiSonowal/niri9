@@ -12,6 +12,7 @@ import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../HomeScreen/Widgets/home_banner.dart';
 // import '../Premium/Widgets/dynamic_premium_list_item.dart';
 // import '../Premium/Widgets/dynamic_premium_other_list_item.dart';
+import '../HomeScreen/Widgets/ott_item.dart';
 import '../Trending/Widgets/dynamic_premium_list_item.dart';
 import '../Trending/Widgets/dynamic_premium_other_list_item.dart';
 
@@ -23,7 +24,7 @@ class RentPage extends StatefulWidget {
 }
 
 class _RentPageState extends State<RentPage> {
-
+final ScrollController _scrollController = ScrollController();
 
 
   @override
@@ -58,10 +59,10 @@ class _RentPageState extends State<RentPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const HomeBanner(),
-              SizedBox(
-                height: 0.5.h,
-              ),
+              // const HomeBanner(),
+              // SizedBox(
+              //   height: 0.5.h,
+              // ),
               // Consumer<Repository>(builder: (context, data, _) {
               //   return Flexible(
               //     child: ListView.builder(
@@ -82,26 +83,45 @@ class _RentPageState extends State<RentPage> {
               //     ),
               //   );
               // }),
-              Consumer<Repository>(builder: (context, data, _) {
-                return Flexible(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      var item = data.premiumOthersList[index];
-                      return DynamicPremiumOtherListItem(
-                        text: item.title ?? "",
-                        list: item.list ?? [],
-                        onTap: () {
-                          Navigation.instance
-                              .navigate(Routes.moreScreen, args: 0);
-                        },
-                      );
+              // Consumer<Repository>(builder: (context, data, _) {
+              //   return Flexible(
+              //     child: ListView.builder(
+              //       shrinkWrap: true,
+              //       physics: const NeverScrollableScrollPhysics(),
+              //       itemBuilder: (context, index) {
+              //         var item = data.premiumOthersList[index];
+              //         return DynamicPremiumOtherListItem(
+              //           text: item.title ?? "",
+              //           list: item.list ?? [],
+              //           onTap: () {
+              //             Navigation.instance
+              //                 .navigate(Routes.moreScreen, args: 0);
+              //           },
+              //         );
+              //       },
+              //       itemCount: data.premiumOthersList.length,
+              //     ),
+              //   );
+              // }),
+              SizedBox(
+                height: 100.h,
+                child: Consumer<Repository>(builder: (context, data, _) {
+                  return GridView.builder(
+                    controller: _scrollController,
+                    itemCount: data.specificVideos.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 2.w,
+                      mainAxisSpacing: 0.5.h,
+                      childAspectRatio:8.5 / 11,
+                    ),
+                    itemBuilder: (BuildContext context, int index) {
+                      var item = data.specificVideos[index];
+                      return OttItem(item: item, onTap: () {});
                     },
-                    itemCount: data.premiumOthersList.length,
-                  ),
-                );
-              }),
+                  );
+                }),
+              ),
             ],
           ),
         ),
@@ -136,6 +156,29 @@ class _RentPageState extends State<RentPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero,()=>fetchRentals(context));
+    Future.delayed(Duration.zero,()=>fetchDetails(1,"",null,null,null));
+    _scrollController.addListener(() {
+      if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
+          !_scrollController.position.outOfRange) {
+        setState(() {
+          debugPrint("reach the top");
+        });
+      }
+      if (_scrollController.offset <= _scrollController.position.minScrollExtent &&
+          !_scrollController.position.outOfRange) {
+        setState(() {
+          debugPrint("reach the top");
+        });
+      }
+    });
+  }
+  void fetchDetails(int page_no, String sections, String? category,
+      String? genres, String? term) async {
+    final response = await ApiProvider.instance
+        .getVideos(page_no, sections, category, genres, term, "rent",);
+    if (response.success ?? false) {
+      Provider.of<Repository>(context, listen: false)
+          .setSearchVideos(response.videos);
+    }
   }
 }

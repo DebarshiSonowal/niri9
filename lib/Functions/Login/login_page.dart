@@ -176,58 +176,58 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               SizedBox(
-                height: 5.h,
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 4.w,
-                ),
                 height: 2.h,
-                width: double.infinity,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Divider(
-                        thickness: 0.05.h,
-                        color: Colors.white70,
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 5.w,
-                      ),
-                      child: Text(
-                        "Or",
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  color: Colors.white,
-                                  fontSize: 12.sp,
-                                ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Divider(
-                        thickness: 0.05.h,
-                        color: Colors.white70,
-                      ),
-                    ),
-                  ],
-                ),
               ),
-              SizedBox(
-                height: 5.h,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4.5.w),
-                child: SocialLoginButton(
-                  height: 5.h,
-                  width: double.infinity,
-                  buttonType: SocialLoginButtonType.google,
-                  onPressed: () {
-                    signInWithGoogle();
-                  },
-                ),
-              ),
+              // Container(
+              //   padding: EdgeInsets.symmetric(
+              //     horizontal: 4.w,
+              //   ),
+              //   height: 2.h,
+              //   width: double.infinity,
+              //   child: Row(
+              //     children: [
+              //       Expanded(
+              //         child: Divider(
+              //           thickness: 0.05.h,
+              //           color: Colors.white70,
+              //         ),
+              //       ),
+              //       Container(
+              //         padding: EdgeInsets.symmetric(
+              //           horizontal: 5.w,
+              //         ),
+              //         child: Text(
+              //           "Or",
+              //           style:
+              //               Theme.of(context).textTheme.headlineSmall?.copyWith(
+              //                     color: Colors.white,
+              //                     fontSize: 12.sp,
+              //                   ),
+              //         ),
+              //       ),
+              //       Expanded(
+              //         child: Divider(
+              //           thickness: 0.05.h,
+              //           color: Colors.white70,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 5.h,
+              // ),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 4.5.w),
+              //   child: SocialLoginButton(
+              //     height: 5.h,
+              //     width: double.infinity,
+              //     buttonType: SocialLoginButtonType.google,
+              //     onPressed: () {
+              //       signInWithGoogle();
+              //     },
+              //   ),
+              // ),
             ],
           ),
         ),

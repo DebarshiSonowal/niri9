@@ -5,10 +5,11 @@ import '../Constants/constants.dart';
 
 class TitleBox extends StatelessWidget {
   const TitleBox({
-    super.key, this.text, required this.onTap,
+    super.key, this.text, required this.onTap, required this.isEnd,
   });
   final String? text;
   final Function onTap;
+  final bool isEnd;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,26 +23,13 @@ class TitleBox extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(text??""),
-          GestureDetector(
+          isEnd?GestureDetector(
             onTap: ()=>onTap(),
-            child: Row(
-              children: [
-                Text(
-                  "More",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall
-                      ?.copyWith(
-                    color: Constants.thirdColor,
-                  ),
-                ),
-                const Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: Constants.thirdColor,
-                ),
-              ],
+            child: const Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: Constants.thirdColor,
             ),
-          ),
+          ):Container(),
         ],
       ),
     );

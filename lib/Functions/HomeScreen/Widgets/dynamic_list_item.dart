@@ -11,11 +11,42 @@ import '../../../Router/routes.dart';
 import '../../../Widgets/title_box.dart';
 import 'ott_item.dart';
 
-class DynamicListItem extends StatelessWidget {
-  const DynamicListItem({Key? key, required this.text, required this.list, required this.onTap}) : super(key: key);
-final String text;
-final List<Video> list;
-final Function onTap;
+class DynamicListItem extends StatefulWidget {
+  const DynamicListItem(
+      {Key? key, required this.text, required this.list, required this.onTap})
+      : super(key: key);
+  final String text;
+  final List<Video> list;
+  final Function onTap;
+
+  @override
+  State<DynamicListItem> createState() => _DynamicListItemState();
+}
+
+class _DynamicListItemState extends State<DynamicListItem> {
+  bool isEnd = false;
+  final ScrollController _scrollController = ScrollController();
+
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.offset <= _scrollController.position.minScrollExtent&&isEnd!=false) {
+        setState(() {
+          debugPrint("reach the top");
+          isEnd = false;
+        });
+      }
+      if (_scrollController.offset >= _scrollController.position.maxScrollExtent&&isEnd==false) {
+        setState(() {
+          debugPrint("reach the bottom");
+          isEnd = true;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -25,8 +56,9 @@ final Function onTap;
         mainAxisSize: MainAxisSize.min,
         children: [
           TitleBox(
-            text: text,
-            onTap: ()=>onTap(),
+            isEnd:isEnd,
+            text: widget.text,
+            onTap: () => widget.onTap(),
           ),
           Container(
             // color: Colors.green,
@@ -37,14 +69,16 @@ final Function onTap;
             height: 23.h,
             width: double.infinity,
             child: ListView.separated(
+              controller: _scrollController,
               scrollDirection: Axis.horizontal,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                var item = list[index];
+                var item = widget.list[index];
                 return OttItem(
                   item: item,
                   onTap: () {
-                    Navigation.instance.navigate(Routes.watchScreen,args: item.id);
+                    Navigation.instance
+                        .navigate(Routes.watchScreen, args: item.id);
                   },
                 );
               },
@@ -53,7 +87,7 @@ final Function onTap;
                   width: 2.w,
                 );
               },
-              itemCount:list.length,
+              itemCount: widget.list.length,
             ),
           ),
         ],

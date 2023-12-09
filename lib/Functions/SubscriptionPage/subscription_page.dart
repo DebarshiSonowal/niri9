@@ -97,9 +97,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                 plan_type: data.subscriptions[0].plan_type!,
                                 discount: data.subscriptions[0].discount!,
                                 total_price:
-                                    data.subscriptions[0].total_price_inr!,
+                                data.subscriptions[0].total_price_inr!,
                                 base_price:
-                                    data.subscriptions[0].base_price_inr!,
+                                data.subscriptions[0].base_price_inr!,
                                 selected: selected,
                                 updateSet: (int val) {
                                   setState(() {
@@ -113,9 +113,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                 plan_type: data.subscriptions[1].plan_type!,
                                 discount: data.subscriptions[1].discount!,
                                 total_price:
-                                    data.subscriptions[1].total_price_inr!,
+                                data.subscriptions[1].total_price_inr!,
                                 base_price:
-                                    data.subscriptions[1].base_price_inr!,
+                                data.subscriptions[1].base_price_inr!,
                                 selected: selected,
                                 updateSet: (int val) {
                                   setState(() {
@@ -129,9 +129,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                 plan_type: data.subscriptions[2].plan_type!,
                                 discount: data.subscriptions[2].discount!,
                                 total_price:
-                                    data.subscriptions[2].total_price_inr!,
+                                data.subscriptions[2].total_price_inr!,
                                 base_price:
-                                    data.subscriptions[2].base_price_inr!,
+                                data.subscriptions[2].base_price_inr!,
                                 selected: selected,
                                 updateSet: (int val) {
                                   setState(() {
@@ -156,23 +156,24 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                             backgroundColor: Constants.planButtonColor,
                           ),
                           onPressed: () {
-                            // initiateOrder();
+                            initiateOrder(data);
                           },
                           child: Center(
                             child: Text(
                               "Continue",
-                              style: Theme.of(context)
+                              style: Theme
+                                  .of(context)
                                   .textTheme
                                   .headlineMedium
                                   ?.copyWith(
-                                    color: const Color(0xff002215),
-                                  ),
+                                color: const Color(0xff002215),
+                              ),
                             ),
                           ),
                         ),
                       ),
                       GestureDetector(
-                        onTap:(){
+                        onTap: () {
                           Navigation.instance.navigate(Routes.cuponApply);
                         },
                         child: Text(
@@ -202,7 +203,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     debugPrint(
-        'success ${response.paymentId} ${response.orderId} ${response.signature}');
+        'success ${response.paymentId} ${response.orderId} ${response
+            .signature}');
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
@@ -225,7 +227,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           .addSubscriptions(response);
       setState(() {
         selected = response.subscriptions
-                .indexWhere((element) => (element.is_default ?? 0) == 1) ??
+            .indexWhere((element) => (element.is_default ?? 0) == 1) ??
             0;
       });
     }
@@ -240,7 +242,10 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
       "image": "https://tratri.in/assets/assets/images/logos/logo-razorpay.jpg",
       'name': '${profile?.f_name} ${profile?.l_name}',
       'description': 'Books',
-      'prefill': {'contact': profile?.mobile??"", 'email': profile?.email??""},
+      'prefill': {
+        'contact': profile?.mobile ?? "",
+        'email': profile?.email ?? ""
+      },
       // 'note': {
       //   'customer_id': customer_id,
       //   'order_id': id,
@@ -254,23 +259,25 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     }
   }
 
-  void initiateOrder(Repository data) async{
-    // final response = await ApiProvider.instance.initiateOrder();
-    // if(response.success??false){
-    //   initiatePayment(
-    //       total: data.subscriptions[selected]
-    //           .total_price_inr ??
-    //           0,
-    //       profile: Provider.of<Repository>(
-    //           Navigation.instance.navigatorKey
-    //               .currentContext ??
-    //               context,
-    //           listen: false)
-    //           .user,
-    //       id:
-    //   );
-    // }else{
-    //
-    // }
+  void initiateOrder(Repository data) async {
+    final response = await ApiProvider.instance.initiateOrder(
+        data.subscriptions[selected].id ?? 0, 0, 0);
+    if (response.success ?? false) {
+      initiatePayment(
+          total: data.subscriptions[selected]
+              .total_price_inr ??
+              0,
+          profile: Provider
+              .of<Repository>(
+              Navigation.instance.navigatorKey
+                  .currentContext ??
+                  context,
+              listen: false)
+              .user,
+          id:data.subscriptions[selected].id,
+      );
+    } else {
+
+    }
   }
 }

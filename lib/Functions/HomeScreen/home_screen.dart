@@ -22,13 +22,32 @@ class HomeScreenPage extends StatefulWidget {
 }
 
 class _HomeScreenPageState extends State<HomeScreenPage> {
-  bool isExpanded = true;
+  bool isExpanded = true, isEnd = false;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
       fetchData(context);
+    });
+    _scrollController.addListener(() {
+      if (_scrollController.offset <=
+              _scrollController.position.minScrollExtent &&
+          isEnd != false) {
+        setState(() {
+          debugPrint("reach the top");
+          isEnd = false;
+        });
+      }
+      if (_scrollController.offset >=
+              _scrollController.position.maxScrollExtent &&
+          isEnd == false) {
+        setState(() {
+          debugPrint("reach the bottom");
+          isEnd = true;
+        });
+      }
     });
   }
 
@@ -64,8 +83,11 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
                 TitleBox(
                   text: "Explore in your language",
                   onTap: () {},
+                  isEnd: isEnd,
                 ),
-                const LanguageSection(),
+                LanguageSection(
+                  scrollController: _scrollController,
+                ),
                 Consumer<Repository>(builder: (context, data, _) {
                   return Flexible(
                     child: ListView.builder(
@@ -73,14 +95,17 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         var item = data.homeSections[index];
-                        return item.videos.isNotEmpty?DynamicListItem(
-                          text: item.title ?? "",
-                          list: item.videos ?? [],
-                          onTap: () {
-                            Navigation.instance
-                                .navigate(Routes.moreScreen, args: item.slug??"");
-                          },
-                        ):Container();
+                        return item.videos.isNotEmpty
+                            ? DynamicListItem(
+                                text: item.title ?? "",
+                                list: item.videos ?? [],
+                                onTap: () {
+                                  Navigation.instance.navigate(
+                                      Routes.moreScreen,
+                                      args: item.slug ?? "");
+                                },
+                              )
+                            : Container();
                       },
                       itemCount: data.homeSections.length,
                     ),
@@ -103,9 +128,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
     if (!context.mounted) return;
     await fetchTypes(context);
     Navigation.instance.goBack();
-
   }
-
 
   Future<void> fetchLanguages(BuildContext context) async {
     final response = await ApiProvider.instance.getLanguages();
@@ -115,14 +138,15 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
           .addLanguages(response.languages);
     } else {}
   }
+
   Future<void> fetchTypes(BuildContext context) async {
     final response = await ApiProvider.instance.getTypes();
     if (response.success ?? false) {
       // if (!context.mounted) return;
-      Provider.of<Repository>(context, listen: false)
-          .addTypes(response.types);
+      Provider.of<Repository>(context, listen: false).addTypes(response.types);
     } else {}
   }
+
   Future<void> fetchPrivacy(BuildContext context) async {
     final response = await ApiProvider.instance.getPrivacyPolicy();
     if (response.success ?? false) {
@@ -131,6 +155,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
           .updatePrivacy(response.result!);
     } else {}
   }
+
   Future<void> fetchRefund(BuildContext context) async {
     final response = await ApiProvider.instance.getRefundPolicy();
     if (response.success ?? false) {
@@ -139,6 +164,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
           .updateRefund(response.result!);
     } else {}
   }
+
   Future<void> fetchTerms(BuildContext context) async {
     final response = await ApiProvider.instance.getRefundPolicy();
     if (response.success ?? false) {
@@ -147,5 +173,4 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
           .updateRefund(response.result!);
     } else {}
   }
-
 }

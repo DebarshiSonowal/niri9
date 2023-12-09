@@ -10,9 +10,9 @@ import 'language_item.dart';
 
 class LanguageSection extends StatelessWidget {
   const LanguageSection({
-    super.key,
+    super.key, required this.scrollController,
   });
-
+  final ScrollController scrollController;
   @override
   Widget build(BuildContext context) {
     return Consumer<Repository>(builder: (context, data, _) {
@@ -21,6 +21,7 @@ class LanguageSection extends StatelessWidget {
         width: double.infinity,
         height: 11.h,
         child: ListView.separated(
+          controller: scrollController,
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
           itemBuilder: (context, index) {

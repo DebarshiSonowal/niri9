@@ -9,6 +9,7 @@ import 'package:niri9/Models/order_history.dart';
 import 'package:niri9/Models/subscription.dart';
 import 'package:niri9/Models/subscription_model.dart';
 import 'package:niri9/Models/video.dart';
+import 'package:niri9/Models/video_details.dart';
 
 import '../Models/account_item.dart';
 import '../Models/appbar_option.dart';
@@ -18,6 +19,7 @@ import '../Models/languages.dart';
 import '../Models/ott.dart';
 import '../Models/plan_pricing.dart';
 import '../Models/sections.dart';
+import '../Models/series_episode_details.dart';
 import '../Models/types.dart';
 import '../Models/user.dart';
 
@@ -25,37 +27,12 @@ class Repository extends ChangeNotifier {
   int _currentIndex = 0;
   List<Category> _categories = [];
   List<Video> _specificVideos = [], _rental = [];
-  List<AppBarOption> _appbarOptions = [
-    // AppBarOption(
-    //   name: "All",
-    //   image: Assets.allImage,
-    // ),
-    // AppBarOption(
-    //   name: "Movies",
-    //   image: Assets.movieImage,
-    // ),
-    // AppBarOption(
-    //   name: "Web Series",
-    //   image: Assets.webSeriesImage,
-    // ),
-    // AppBarOption(
-    //   name: "Film Festival",
-    //   image: Assets.filmImage,
-    // ),
-    // AppBarOption(
-    //   name: "Videos",
-    //   image: Assets.videoImage,
-    // ),
-    // AppBarOption(
-    //   name: "More",
-    //   image: Assets.moreImage,
-    // ),
-  ];
+  List<AppBarOption> _appbarOptions = [];
   List<BannerResult> homeBanner = [], trendingBanner = [];
   List<OrderHistoryItem> orders = [];
   User? _user;
   List<List<Video>> _videos = [];
-
+  int? currentVideoId;
   String _faq = "",
       _refundPolicy = "",
       _privacyPolicy = "",
@@ -64,14 +41,7 @@ class Repository extends ChangeNotifier {
 
   List<AppBarOption> get appbarOptions => _appbarOptions;
 
-  //
-  // List<String> bannerList = [
-  //   Assets.bannerImage,
-  //   Assets.bannerImage,
-  //   Assets.bannerImage,
-  //   Assets.bannerImage,
-  // ];
-
+  List<List<VideoDetails>> currentSeasons = [];
   Video? videoDetails;
   List<Subscription> subscriptions = [];
   List<AvailableLanguage> languageList = [
@@ -289,6 +259,10 @@ class Repository extends ChangeNotifier {
     _refundPolicy = val;
     notifyListeners();
   }
+void setVideo(int val) {
+  currentVideoId = val;
+    notifyListeners();
+  }
 
   void setPrivacy(String val) {
     _privacyPolicy = val;
@@ -297,6 +271,16 @@ class Repository extends ChangeNotifier {
 
   void setVideoDetails(Video? details) {
     videoDetails = details;
+    notifyListeners();
+  }
+
+  void setSeasons(List<List<VideoDetails>> list) {
+    currentSeasons = list;
+    notifyListeners();
+  }
+  void addSeasons(List<VideoDetails> list) {
+    currentSeasons.add(list);
+    debugPrint("List added ${list.length}");
     notifyListeners();
   }
 

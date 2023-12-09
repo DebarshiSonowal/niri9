@@ -12,11 +12,13 @@ import '../Models/category.dart';
 import '../Models/episode.dart';
 import '../Models/generic_response.dart';
 import '../Models/genres.dart';
+import '../Models/initiate_order_response.dart';
 import '../Models/languages.dart';
 import '../Models/login.dart';
 import '../Models/order_history_details.dart';
 import '../Models/payment_gateway.dart';
 import '../Models/sections.dart';
+import '../Models/series_episode_details.dart';
 import '../Models/settings.dart';
 import '../Models/social.dart';
 import '../Models/subscription.dart';
@@ -154,6 +156,48 @@ class ApiProvider {
     } on DioError catch (e) {
       debugPrint("getGenres  error: ${e.error} ${e.message}");
       return GenresResponse.withError(e.message);
+    }
+  }
+
+  Future<InitiateOrderResponse> initiateOrder(id, videoId, int type) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/sales/order";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    var data = {
+      "id": id,
+      "video_id": videoId,
+      "order_type": type == 0 ? 'subscription' : 'rent',
+      "currency": 'INR'
+    };
+    debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.post(
+        url,
+        data: jsonEncode(data),
+      );
+      debugPrint("initiateOrder response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return InitiateOrderResponse.fromJson(response?.data);
+      } else {
+        debugPrint("initiateOrder error response: ${response?.data}");
+        return InitiateOrderResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("initiateOrder  error: ${e.error} ${e.message}");
+      return InitiateOrderResponse.withError(e.message);
     }
   }
 
@@ -324,8 +368,8 @@ class ApiProvider {
     }
   }
 
-  Future<VideoResponse> getVideos(int page_no, Sections? section,
-      Category? category, Genres? genre, String? search, String? page) async {
+  Future<VideoResponse> getVideos(int page_no, String? section,
+      String? category, String? genre, String? search, String? page) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
         receiveTimeout: const Duration(seconds: Constants.waitTime),
@@ -342,11 +386,11 @@ class ApiProvider {
     Map<String, dynamic> data = {
       'page_no': page_no,
     };
-    if (section != null) {
-      data.addAll({
-        'section': section.slug ?? "",
-      });
-    }
+    // if (section != null) {
+    //   data.addAll({
+    //     'section': section ?? "",
+    //   });
+    // }
     if (search != null) {
       data.addAll({
         'search': search,
@@ -359,12 +403,12 @@ class ApiProvider {
     }
     if (category != null) {
       data.addAll({
-        'category': category.slug ?? "",
+        'category': category ?? "",
       });
     }
     if (genre != null) {
       data.addAll({
-        'genre': genre.slug ?? "",
+        'genre': genre ?? "",
       });
     }
     debugPrint(jsonEncode(data));
@@ -585,7 +629,7 @@ class ApiProvider {
     }
   }
 
-  Future<VideoDetails> getVideoDetails(id) async {
+  Future<VideoDetailsResponse> getVideoDetails(id) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
         receiveTimeout: const Duration(seconds: Constants.waitTime),
@@ -609,16 +653,16 @@ class ApiProvider {
       debugPrint(
           "VideoDetails response: ${response?.data} ${response?.headers}");
       if (response?.statusCode == 200 || response?.statusCode == 201) {
-        return VideoDetails.fromJson(response?.data);
+        return VideoDetailsResponse.fromJson(response?.data);
       } else {
         debugPrint("VideoDetails error response: ${response?.data}");
-        return VideoDetails.withError(response?.data['error']
+        return VideoDetailsResponse.withError(response?.data['error']
             ? response?.data['message']['success']
             : response?.data['message']['error']);
       }
     } on DioError catch (e) {
       debugPrint("VideoDetails  error: ${e.error} ${e.message}");
-      return VideoDetails.withError(e.message);
+      return VideoDetailsResponse.withError(e.message);
     }
   }
 
@@ -1130,8 +1174,7 @@ class ApiProvider {
         url,
         queryParameters: data,
       );
-      debugPrint(
-          "get BannerResponse: ${response?.data} ${response?.headers}");
+      debugPrint("get BannerResponse: ${response?.data} ${response?.headers}");
       if (response?.statusCode == 200 || response?.statusCode == 201) {
         return BannerResponse.fromJson(response?.data);
       } else {
@@ -1146,7 +1189,7 @@ class ApiProvider {
     }
   }
 
-  Future<EpisodeResponse> getEpisodes(int videoListId) async {
+  Future<EpisodeResponse> getEpisodeDetails(int videoListId) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
         receiveTimeout: const Duration(seconds: Constants.waitTime),
@@ -1180,6 +1223,46 @@ class ApiProvider {
     } on DioError catch (e) {
       debugPrint("EpisodeResponse  error: ${e.error} ${e.message}");
       return EpisodeResponse.withError(e.message);
+    }
+  }
+
+  Future<EpisodeListResponse> getEpisodes(int videoListId) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          // 'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/videos/episodes";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    var data = {
+      "series_id":"$videoListId"
+    };
+    debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.get(
+        url,
+        queryParameters: data,
+      );
+      debugPrint(
+          "EpisodeResponse response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return EpisodeListResponse.fromJson(response?.data);
+      } else {
+        debugPrint("EpisodeResponse error response: ${response?.data}");
+        return EpisodeListResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("EpisodeResponse  error: ${e.error} ${e.message}");
+      return EpisodeListResponse.withError(e.message);
     }
   }
 }

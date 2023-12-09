@@ -1,5 +1,6 @@
 import 'package:niri9/Models/genres.dart';
 import 'package:niri9/Models/rent.dart';
+import 'package:niri9/Models/video_details.dart';
 
 import 'languages.dart';
 import 'meta.dart';
@@ -41,6 +42,9 @@ class Video {
   List<Rent> rent = [];
   List<Language> related_language = [];
   List<Season> season_list = [];
+  List<VideoDetails> videos = [
+
+  ];
 
   Video.fromJson(json) {
     id = json['id'] ?? 0;
@@ -96,6 +100,9 @@ class Video {
     season_list = json['season_list'] == null
         ? []
         : (json['season_list'] as List).map((e) => Season.fromJson(e)).toList();
+    videos = json['video_list'] == null
+        ? []
+        : (json['video_list'] as List).map((e) => VideoDetails.fromJson(e)).toList();
   }
 }
 
@@ -128,18 +135,18 @@ class VideoResponse {
   }
 }
 
-class VideoDetails {
+class VideoDetailsResponse {
   bool? success;
   String? message;
   Video? video;
 
-  VideoDetails.fromJson(json) {
+  VideoDetailsResponse.fromJson(json) {
     success = json['success'] ?? false;
     message = json['message'] ?? "";
     video = json['result']==null ? null : Video.fromJson(json['result']);
   }
 
-  VideoDetails.withError(msg) {
+  VideoDetailsResponse.withError(msg) {
     success = false;
     message = msg;
   }

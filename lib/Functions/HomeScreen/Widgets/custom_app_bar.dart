@@ -81,7 +81,7 @@ class CustomAppbar extends StatelessWidget {
                             : data.appbarOptions.length),
                       ),
                     ),
-                    SizedBox(
+                    data.appbarOptions.length<=4?Container():SizedBox(
                       width: 10.w,
                       child: GestureDetector(
                         onTap: () {
@@ -92,31 +92,16 @@ class CustomAppbar extends StatelessWidget {
                           child: SingleChildScrollView(
                             physics: const NeverScrollableScrollPhysics(),
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Image.asset(
-                                  Assets.moreImage,
-                                  height: 16.sp,
-                                  width: 16.sp,
+                                  !isExpanded?Assets.lessImage:Assets.moreImage,
+                                  height: 12.sp,
+                                  width: 12.sp,
                                   // color: Colors.white,
                                 ),
-                                SizedBox(
-                                  height: 0.4.h,
-                                ),
-                                SizedBox(
-                                  width: 15.w,
-                                  child: Center(
-                                    child: Text(
-                                      "More",
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(
-                                            color: Colors.white,
-                                          ),
-                                    ),
-                                  ),
-                                ),
+
+
                               ],
                             ),
                           ),
@@ -169,7 +154,7 @@ class CustomAppbar extends StatelessWidget {
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
-                          var item = data.appbarOptions[index];
+                          var item = data.appbarOptions.sublist(4)[index];
                           return CustomAppbarItem(
                             item: item,
                             index: index,

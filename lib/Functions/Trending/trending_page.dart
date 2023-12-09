@@ -22,7 +22,7 @@ class TrendingPage extends StatefulWidget {
 }
 
 class _TrendingPageState extends State<TrendingPage> {
-
+bool isEnd=false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,26 +71,26 @@ class _TrendingPageState extends State<TrendingPage> {
                   ),
                 );
               }),
-              Consumer<Repository>(builder: (context, data, _) {
-                return Flexible(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      var item = data.premiumOthersList[index];
-                      return DynamicPremiumOtherListItem(
-                        text: item.title ?? "",
-                        list: item.list ?? [],
-                        onTap: () {
-                          Navigation.instance
-                              .navigate(Routes.moreScreen, args: 0);
-                        },
-                      );
-                    },
-                    itemCount: data.premiumOthersList.length,
-                  ),
-                );
-              }),
+              // Consumer<Repository>(builder: (context, data, _) {
+              //   return Flexible(
+              //     child: ListView.builder(
+              //       shrinkWrap: true,
+              //       physics: const NeverScrollableScrollPhysics(),
+              //       itemBuilder: (context, index) {
+              //         var item = data.premiumOthersList[index];
+              //         return DynamicPremiumOtherListItem(
+              //           text: item.title ?? "",
+              //           list: item.list ?? [],
+              //           onTap: () {
+              //             Navigation.instance
+              //                 .navigate(Routes.moreScreen, args: 0);
+              //           },
+              //         );
+              //       },
+              //       itemCount: data.premiumOthersList.length,
+              //     ),
+              //   );
+              // }),
             ],
           ),
         ),
@@ -114,7 +114,7 @@ class _TrendingPageState extends State<TrendingPage> {
     }
     final response1 = await ApiProvider.instance.getSections("trending");
     if (response1.status??false){
-      Provider.of<Repository>(context,listen: false).addTrendingBanner(response.result??[]);
+      Provider.of<Repository>(context,listen: false).addTrendingSections(response1.sections??[]);
     }
   }
 }
