@@ -29,7 +29,7 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
               children: [
                 (data.videoDetails?.season_list ?? []).isNotEmpty
                     ? Container(
-                        height: 10.h,
+                        height: 8.h,
                         width: double.infinity,
                         padding: EdgeInsets.symmetric(
                           horizontal: 5.w,

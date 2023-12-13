@@ -9,7 +9,7 @@
 class Category{
   int? id,sequence;
   String? name,slug,profile_icon,web_url;
-
+  bool? has_festival;
   Category.fromJson(json){
     id = json['id']??0;
     sequence = json['sequence']??0;
@@ -17,6 +17,7 @@ class Category{
     slug = json['slug']??"";
     profile_icon = json['profile_icon']??"";
     web_url = json['web_url']??"";
+    has_festival = json['has_festival']??false;
   }
 
 }

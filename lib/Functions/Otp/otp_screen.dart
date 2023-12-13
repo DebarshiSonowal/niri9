@@ -53,7 +53,11 @@ class _OtpPageState extends State<OtpPage> {
     super.initState();
 
     Future.delayed(const Duration(seconds: 2), () {
-      phoneSignIn(phoneNumber: widget.mobile.toString().substring(3));
+      if (isIndianNumber(widget.mobile)) {
+        sendOTP(widget.mobile.substring(3));
+      } else {
+        phoneSignIn(phoneNumber: widget.mobile.toString().substring(3));
+      }
     });
   }
 
@@ -158,24 +162,7 @@ class _OtpPageState extends State<OtpPage> {
                   ),
                   onPressed: () async {
                     debugPrint("Verified $_verificationId");
-                    try {
-                      PhoneAuthCredential credential =
-                          PhoneAuthProvider.credential(
-                              verificationId: _verificationId ?? "",
-                              smsCode: otpController.text);
-                      await _auth
-                          .signInWithCredential(credential)
-                          .then((value) {
-                        loginByOTP(widget.mobile);
-                        // Navigation.instance
-                        //     .navigateAndRemoveUntil(Routes.homeScreen);
-                      });
-                    } on FirebaseAuthException catch (_, e) {
-                      debugPrint("the error is ${_.code} ${_.message} ${e}");
-                      // if(dev)
-                      Navigation.instance.goBack();
-                      showError("${_.message}");
-                    }
+                    verifyOTP(widget.mobile, otpController.text);
                   },
                   child: Text(
                     "Submit",
@@ -315,19 +302,21 @@ class _OtpPageState extends State<OtpPage> {
     });
   }
 
-  void loginByOTP(String mobile) async {
+  void loginByOTP(String mobile, String otp) async {
     Navigation.instance.navigate(Routes.loadingScreen);
     final response = await ApiProvider.instance.login(
-        "mobile",
-        // selectedCountryCode.dialCode.toString(),
-        mobile.toString().substring(0, 3),
-        mobile.toString().substring(3),
-        "",
-        "",
-        "",
-        "",
-        "",
-        "");
+      "mobile",
+      // selectedCountryCode.dialCode.toString(),
+      mobile.toString().substring(0, 3),
+      mobile.toString().substring(3),
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      otp,
+    );
     if (response.success ?? false) {
       Navigation.instance.goBack();
       Storage.instance.setUser(response.token ?? "");
@@ -336,6 +325,48 @@ class _OtpPageState extends State<OtpPage> {
     } else {
       Navigation.instance.goBack();
       showError(response.message ?? "Something Went Wrong");
+    }
+  }
+
+  void verifyOTP(String mobile, String otp) async {
+    debugPrint("OTP's ${isIndianNumber(otp)}");
+    if (isIndianNumber(mobile)) {
+      loginByOTP(widget.mobile, otp);
+    } else {
+      try {
+        PhoneAuthCredential credential = PhoneAuthProvider.credential(
+            verificationId: _verificationId ?? "", smsCode: otpController.text);
+        await _auth.signInWithCredential(credential).then((value) {
+          loginByOTP(widget.mobile, "");
+          // Navigation.instance
+          //     .navigateAndRemoveUntil(Routes.homeScreen);
+        });
+      } on FirebaseAuthException catch (_, e) {
+        debugPrint("the error is ${_.code} ${_.message} ${e}");
+        // if(dev)
+        Navigation.instance.goBack();
+        showError("${_.message}");
+      }
+    }
+  }
+
+  bool isIndianNumber(String phoneNumber) {
+    // Remove any leading '+' or '0' from the phone number
+    phoneNumber = phoneNumber.replaceAll(RegExp(r'^[+0]+'), '');
+
+    // Check if the phone number starts with '91'
+    return phoneNumber.startsWith('91');
+  }
+
+  void sendOTP(String mobile) async{
+    Navigation.instance.navigate(Routes.loadingScreen);
+    final response = await ApiProvider.instance.generateOTP(mobile);
+    if(response.success??false){
+      Navigation.instance.goBack();
+      Fluttertoast.showToast(msg: "OTP sent successfully");
+    }else{
+      Navigation.instance.goBack();
+      showError(response.message??"Something Went Wrong");
     }
   }
 }

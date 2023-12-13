@@ -46,7 +46,7 @@ class _SearchPageState extends State<SearchPage> {
         selectedCategory = Provider.of<Repository>(context, listen: false)
             .categories
             .firstWhere((element) => element.name == widget.filters);
-        search(selectedCategory, selectedSections, selectedGenre, "", page_no);
+        search("");
       }
     });
   }
@@ -63,8 +63,7 @@ class _SearchPageState extends State<SearchPage> {
         preferredSize: Size.fromHeight(12.4.h),
         child: SearchAppbar(
           search: (String val) {
-            search(selectedCategory, selectedSections, selectedGenre, val,
-                page_no);
+            search(val);
           },
         ),
       ),
@@ -174,17 +173,9 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  void search(Category? category, Sections? sections, Genres? genres,
-      String? term, int page_no) async {
+  void search(String search) async {
     Navigation.instance.navigate(Routes.loadingScreen);
-    final response = await ApiProvider.instance.getVideos(
-        page_no,
-        sections?.slug,
-        category?.slug,
-        // genres?.slug,
-        "",
-        term,
-        "");
+    final response = await ApiProvider.instance.search(search);
     if (response.success ?? false) {
       Navigation.instance.goBack();
       Provider.of<Repository>(context, listen: false)

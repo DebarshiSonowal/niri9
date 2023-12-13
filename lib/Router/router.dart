@@ -11,6 +11,7 @@ import 'package:niri9/Functions/Otp/otp_screen.dart';
 // import 'package:niri9/Functions/Premium/trending_page.dart';
 import 'package:niri9/Functions/Privacy/privacy_policy.dart';
 import 'package:niri9/Functions/ProfilePage/profile_page.dart';
+import 'package:niri9/Functions/ProfileUpdate/profile_update_page.dart';
 import 'package:niri9/Functions/RefundPolicy/refund_policy.dart';
 import 'package:niri9/Functions/Rent/rent_page.dart';
 import 'package:niri9/Functions/Search/search_page.dart';
@@ -18,6 +19,7 @@ import 'package:niri9/Functions/TermsConditions/terms_conditions.dart';
 import 'package:niri9/Router/routes.dart';
 
 import '../Functions/AboutPage/about_page.dart';
+import '../Functions/CategorySpecific/category_specific_screen.dart';
 import '../Functions/Cupon/apply_cupons.dart';
 import '../Functions/SplashScreen/splash_screen.dart';
 import '../Functions/SubscriptionPage/subscription_page.dart';
@@ -51,12 +53,17 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return FadeTransitionPageRouteBuilder(page: const RentPage());
     case Routes.accountScreen:
       return FadeTransitionPageRouteBuilder(page: const AccountPage());
+    case Routes.profileUpdateScreen:
+      return FadeTransitionPageRouteBuilder(page: const ProfileUpdatePage());
     case Routes.moreScreen:
       return FadeTransitionPageRouteBuilder(
           page: MorePage(section: settings.arguments as String));
     case Routes.selectedLanguageScreen:
       return FadeTransitionPageRouteBuilder(
-          page: LanguageSelectedPage(index: settings.arguments as int));
+          page: LanguageSelectedPage(language: settings.arguments as String));
+    case Routes.selectedCategoryScreen:
+      return FadeTransitionPageRouteBuilder(
+          page: CategorySpecificScreen(searchTerm: settings.arguments as String));
     case Routes.filmFestivalScreen:
       return FadeTransitionPageRouteBuilder(page: const FilmFestivalPage());
     case Routes.watchScreen:

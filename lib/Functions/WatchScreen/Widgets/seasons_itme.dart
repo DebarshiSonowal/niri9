@@ -22,20 +22,20 @@ class SeasonsItem extends StatelessWidget {
       onTap: () => onTap(),
       child: Card(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Container(
           padding: EdgeInsets.symmetric(
-            vertical: 1.h,
+            vertical: 0.5.h,
             horizontal: 2.w,
           ),
           decoration: BoxDecoration(
             color: selected == index ? Colors.white : const Color(0xff7c7c7c),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
             child: Text(
-              list[index].title??"",
+              list[index].season??"",
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Colors.black,
                 fontSize: 9.sp,

@@ -7,9 +7,11 @@ class Routes {
   static const accountScreen = "/account";
   static const moreScreen = "/more";
   static const selectedLanguageScreen = "/selected_language";
+  static const selectedCategoryScreen = "/selected_category";
   static const filmFestivalScreen = "/film_festival";
   static const watchScreen = "/watch";
   static const subscriptionScreen = "/subscription";
+  static const profileUpdateScreen = "/profile_update";
   static const loginScreen = "/login";
 
   //Extra

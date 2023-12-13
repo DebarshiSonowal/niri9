@@ -24,7 +24,9 @@ import 'Widgets/episodes_slider.dart';
 import 'Widgets/icon_text_button.dart';
 import 'Widgets/info_bar.dart';
 import 'Widgets/options_bar.dart';
+import 'Widgets/shimmering_screen_loader.dart';
 import 'Widgets/video_section.dart';
+import 'Widgets/watch_primary_screen.dart';
 
 class WatchScreen extends StatefulWidget {
   const WatchScreen({Key? key, required this.index}) : super(key: key);
@@ -104,7 +106,7 @@ class _WatchScreenState extends State<WatchScreen> {
                         });
                       },
                       setVideo: (VideoDetails item) {
-                        initiateVideoPlayer(context, item.videoPlayer);
+                        initializeVideoPlayer(context, item.videoPlayer);
                         Provider.of<Repository>(context, listen: false)
                             .setVideo(item.id ?? 0);
                       },
@@ -131,17 +133,7 @@ class _WatchScreenState extends State<WatchScreen> {
 
       await fetchEpisodes(response.video?.series_id ?? 0);
       setState(() {});
-      if (Storage.instance.isLoggedIn) {
-        _future = initiateVideoPlayer(
-            context,
-            Provider.of<Repository>(context, listen: false)
-                .videoDetails
-                ?.videos
-                .first
-                .videoPlayer);
-      } else {
-        _future = initiateVideoPlayer(context, Assets.videoUrl);
-      }
+      startConditionChecking();
 
       return true;
     } else {
@@ -161,61 +153,65 @@ class _WatchScreenState extends State<WatchScreen> {
     } else {}
   }
 
-  Future<bool> initiateVideoPlayer(context, url) async {
-    videoPlayerController =
-        VideoPlayerController.networkUrl(Uri.parse(url ?? Assets.videoUrl));
-    debugPrint(
-        "Initializing video player ${Provider.of<Repository>(context, listen: false).videoDetails?.videos.first.videoPlayer}");
-    await videoPlayerController.initialize();
+  Future<bool> initializeVideoPlayer(context, url) async {
+    try {
+      videoPlayerController =
+          VideoPlayerController.networkUrl(Uri.parse(url ?? Assets.videoUrl));
+      await videoPlayerController.initialize();
 
-    videoPlayerController.addListener(() {
-      debugPrint("listener is triggered video player");
-      int currentDuration = videoPlayerController.value.position.inMilliseconds;
+      videoPlayerController.addListener(() {
+        debugPrint("listener is triggered video player");
+        int currentDuration =
+            videoPlayerController.value.position.inMilliseconds;
 
-      if (currentDuration >= 10000 && uploadTimer == null) {
-        // Start a Timer after 10 seconds to call updateUploadStatus once
-        uploadTimer = Timer(const Duration(seconds: 10), () {
-          if (videoPlayerController.value.isPlaying) {
-            // Call updateUploadStatus when the video is playing
+        if (currentDuration >= 10000 && uploadTimer == null) {
+          // Start a Timer after 10 seconds to call updateUploadStatus once
+          uploadTimer = Timer(const Duration(seconds: 10), () {
+            if (videoPlayerController.value.isPlaying) {
+              // Call updateUploadStatus when the video is playing
+              updateUploadStatus(
+                _customVideoPlayerController,
+                Provider.of<Repository>(context, listen: false).videoDetails!,
+                "play",
+                currentDuration,
+              );
+            }
+            uploadTimer?.cancel(); // Cancel the Timer
+            uploadTimer = null; // Reset the Timer
+          });
+        }
+
+        // Check if the video is currently playing
+        if (videoPlayerController.value.isPlaying) {
+          if (!isPlaying) {
+            // Call updateUploadStatus when video starts playing
             updateUploadStatus(
               _customVideoPlayerController,
               Provider.of<Repository>(context, listen: false).videoDetails!,
               "play",
               currentDuration,
             );
+            isPlaying = true;
           }
-          uploadTimer?.cancel(); // Cancel the Timer
-          uploadTimer = null; // Reset the Timer
-        });
-      }
-
-      // Check if the video is currently playing
-      if (videoPlayerController.value.isPlaying) {
-        if (!isPlaying) {
-          // Call updateUploadStatus when video starts playing
-          updateUploadStatus(
-            _customVideoPlayerController,
-            Provider.of<Repository>(context, listen: false).videoDetails!,
-            "play",
-            currentDuration,
-          );
-          isPlaying = true;
+        } else {
+          isPlaying = false;
         }
-      } else {
-        isPlaying = false;
-      }
 
-      setState(() {});
-    });
+        setState(() {});
+      });
 
-    _customVideoPlayerController = CustomVideoPlayerController(
-        context: context,
-        videoPlayerController: videoPlayerController,
-        customVideoPlayerSettings: const CustomVideoPlayerSettings(
-          playOnlyOnce: true,
-          // customVideoPlayerPopupSettings: ,
-        ));
-    videoPlayerController.play();
+      _customVideoPlayerController = CustomVideoPlayerController(
+          context: context,
+          videoPlayerController: videoPlayerController,
+          customVideoPlayerSettings: const CustomVideoPlayerSettings(
+            playOnlyOnce: true,
+            // customVideoPlayerPopupSettings: ,
+          ));
+      videoPlayerController.play();
+    } catch (e) {
+      print(e);
+      return false;
+    }
     return true;
   }
 
@@ -235,427 +231,83 @@ class _WatchScreenState extends State<WatchScreen> {
       return false;
     }
   }
-}
 
-class ShimmeringWatchScreenLoader extends StatelessWidget {
-  const ShimmeringWatchScreenLoader({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: double.infinity,
-      child: Column(
-        children: [
-          Shimmer.fromColors(
-            baseColor: Colors.black,
-            highlightColor: Colors.grey.shade800,
-            child: Container(
-              height: 20.h,
-              color: Colors.black,
-            ),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 5.w,
-              vertical: 2.h,
-            ),
-            height: 10.h,
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: Colors.white30,
-                  child: Container(
-                    height: 2.h,
-                    width: 30.w,
-                    color: Colors.white30,
-                  ),
-                ),
-                SizedBox(
-                  height: 12.sp,
-                ),
-                Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: Colors.white30,
-                  child: Container(
-                    height: 2.h,
-                    width: 50.w,
-                    color: Colors.white30,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Divider(
-            color: Colors.white30,
-            thickness: 0.1.h,
-          ),
-          SizedBox(
-            height: 1.5.h,
-          ),
-          Container(
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  color: Colors.white54,
-                  width: 0.03.h,
-                ),
-                bottom: BorderSide(
-                  color: Colors.white54,
-                  width: 0.03.h,
-                ),
-              ),
-            ),
-            height: 10.h,
-            width: double.infinity,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  flex: 4,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 5.w,
-                      vertical: 1.h,
-                    ),
-                    color: const Color(0xff2a2829),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Shimmer.fromColors(
-                              baseColor: Colors.white,
-                              highlightColor: Colors.white30,
-                              child: Icon(
-                                Icons.share,
-                                color: Colors.white30,
-                                size: 22.sp,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 1.2.h,
-                            ),
-                            Shimmer.fromColors(
-                              baseColor: Colors.white,
-                              highlightColor: Colors.white30,
-                              child: Container(
-                                height: 2.h,
-                                width: 10.w,
-                                color: Colors.white30,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          width: 5.w,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Shimmer.fromColors(
-                              baseColor: Colors.white,
-                              highlightColor: Colors.white30,
-                              child: Icon(
-                                Icons.playlist_add,
-                                color: Colors.white30,
-                                size: 22.sp,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 1.2.h,
-                            ),
-                            Shimmer.fromColors(
-                              baseColor: Colors.white,
-                              highlightColor: Colors.white30,
-                              child: Container(
-                                height: 2.h,
-                                width: 10.w,
-                                color: Colors.white30,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          width: 5.w,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Shimmer.fromColors(
-                              baseColor: Colors.white,
-                              highlightColor: Colors.white30,
-                              child: Icon(
-                                Icons.money,
-                                color: Colors.white30,
-                                size: 22.sp,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 1.2.h,
-                            ),
-                            Shimmer.fromColors(
-                              baseColor: Colors.white,
-                              highlightColor: Colors.white30,
-                              child: Container(
-                                height: 2.h,
-                                width: 10.w,
-                                color: Colors.white30,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: Colors.white30,
-                          child: Icon(
-                            Icons.play_circle_filled,
-                            color: Colors.white30,
-                            size: 22.sp,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 1.2.h,
-                        ),
-                        Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: Colors.white30,
-                          child: Container(
-                            height: 2.h,
-                            width: 20.w,
-                            color: Colors.white30,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 1.5.h,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 5.w,
-              vertical: 1.h,
-            ),
-            child: Row(
-              children: [
-                Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: Colors.white30,
-                  child: Container(
-                    height: 1.5.h,
-                    width: 15.w,
-                    color: Colors.white30,
-                  ),
-                ),
-                SizedBox(
-                  width: 4.w,
-                ),
-                Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: Colors.white30,
-                  child: Container(
-                    height: 1.5.h,
-                    width: 15.w,
-                    color: Colors.white30,
-                  ),
-                ),
-                const Spacer(),
-                Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: Colors.white30,
-                  child: Container(
-                    height: 1.5.h,
-                    width: 15.w,
-                    color: Colors.white30,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 3.h,
-          ),
-          Shimmer.fromColors(
-            baseColor: Colors.white,
-            highlightColor: Colors.white30,
-            child: Container(
-              height: 5.h,
-              width: 90.w,
-              color: Colors.white30,
-            ),
-          ),
-          SizedBox(
-            height: 1.h,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Shimmer.fromColors(
-                baseColor: Colors.white,
-                highlightColor: Colors.white30,
-                child: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.white30,
-                  size: 22.sp,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          Shimmer.fromColors(
-            baseColor: Colors.white,
-            highlightColor: Colors.white30,
-            child: Container(
-              margin: EdgeInsets.symmetric(
-                horizontal: 8.w,
-              ),
-              height: 13.h,
-              width: 90.w,
-              color: Colors.white30,
-            ),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          // SizedBox(
-          //   height: 20.h,
-          //   width: double.infinity,
-          //   child: ListView.builder(
-          //     scrollDirection: Axis.horizontal,
-          //     itemBuilder: (context, index) {
-          //       return Container(
-          //         color: Colors.black,
-          //         width: 10.w,
-          //         height: 20.h,
-          //       );
-          //     },
-          //     itemCount: 4,
-          //   ),
-          // ),
-        ],
-      ),
-    );
-  }
-}
-
-class WatchPrimaryScreen extends StatelessWidget {
-  const WatchPrimaryScreen({
-    super.key,
-    required CustomVideoPlayerController customVideoPlayerController,
-    required this.videoPlayerController,
-    required this.showing,
-    required this.onClicked,
-    required this.setVideo,
-  }) : _customVideoPlayerController = customVideoPlayerController;
-
-  final CustomVideoPlayerController _customVideoPlayerController;
-  final VideoPlayerController videoPlayerController;
-  final bool showing;
-  final Function onClicked;
-  final Function(VideoDetails item) setVideo;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 100.w,
-      height: 100.h,
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              color: Colors.black,
-              padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.2.h),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigation.instance.goBack();
-                    },
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                      size: 13.sp,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            VideoSection(
-              customVideoPlayerController: _customVideoPlayerController,
-              isPlaying: videoPlayerController.value.isPlaying,
-              showing: showing,
-              onClicked: onClicked,
-            ),
-            const InfoBar(),
-            const OptionsBar(),
-            const DescriptionSection(),
-            EpisodeSlider(
-              setVideo: (VideoDetails item) => setVideo(item),
-              // selected: selected,
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 7.w,
-                vertical: 3.h,
-              ),
-              child: Image.asset(
-                Assets.advertiseBannerImage,
-                height: 12.h,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Consumer<Repository>(builder: (context, data, _) {
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  var item = data.homeSections[index];
-                  return item.videos.isNotEmpty
-                      ? DynamicListItem(
-                          text: item.title ?? "",
-                          list: item.videos ?? [],
-                          onTap: () {
-                            Navigation.instance
-                                .navigate(Routes.moreScreen, args: 0);
-                          },
-                        )
-                      : Container();
-                },
-                itemCount: data.homeSections.length,
-              );
-            }),
-          ],
-        ),
-      ),
-    );
+  void startConditionChecking() {
+    if (Storage.instance.isLoggedIn &&
+        (Provider.of<Repository>(context, listen: false)
+                .videoDetails
+                ?.view_permission ??
+            false)) {
+      if (Provider.of<Repository>(context, listen: false)
+                  .videoDetails
+                  ?.recentViewedList !=
+              null &&
+          (Provider.of<Repository>(context, listen: false)
+                      .videoDetails
+                      ?.recentViewedList
+                      ?.videoListId ??
+                  0) !=
+              0) {
+        Provider.of<Repository>(context, listen: false).setVideo(
+            Provider.of<Repository>(context, listen: false)
+                    .videoDetails
+                    ?.recentViewedList
+                    ?.videoId ??
+                0);
+        final url = Provider.of<Repository>(context, listen: false)
+                .videoDetails
+                ?.videos
+                .where((element) =>
+                    (Provider.of<Repository>(context, listen: false)
+                            .videoDetails
+                            ?.recentViewedList
+                            ?.videoListId ??
+                        0) ==
+                    element.id)
+                .first
+                .videoPlayer ??
+            Provider.of<Repository>(context, listen: false)
+                .videoDetails
+                ?.videos
+                .first
+                .videoPlayer;
+        setState(() {
+          for (var i = 0;
+              i <
+                  (Provider.of<Repository>(context, listen: false)
+                          .videoDetails
+                          ?.season_list
+                          .length ??
+                      0);
+              i++) {
+            if(Provider.of<Repository>(context, listen: false)
+                .videoDetails
+                ?.season_list[i].id==Provider.of<Repository>(context, listen: false)
+                .videoDetails
+                ?.recentViewedList?.videoListId){
+              selected = i;
+              break;
+            }
+          }
+        });
+        _future = initializeVideoPlayer(context, url);
+        // videoPlayerController.seekTo(Duration());
+      } else {
+        _future = initializeVideoPlayer(
+            context,
+            Provider.of<Repository>(context, listen: false)
+                .videoDetails
+                ?.videos
+                .first
+                .videoPlayer);
+      }
+    } else {
+      _future = initializeVideoPlayer(
+          context,
+          Provider.of<Repository>(context, listen: false)
+                  .videoDetails
+                  ?.trailer_player ??
+              Assets.videoUrl);
+    }
   }
 }

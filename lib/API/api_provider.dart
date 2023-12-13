@@ -10,6 +10,7 @@ import '../Helper/storage.dart';
 import '../Models/banner.dart';
 import '../Models/category.dart';
 import '../Models/episode.dart';
+import '../Models/film_festival.dart';
 import '../Models/generic_response.dart';
 import '../Models/genres.dart';
 import '../Models/initiate_order_response.dart';
@@ -37,15 +38,17 @@ class ApiProvider {
   Dio? dio;
 
   Future<LoginResponse> login(
-      String provider,
-      String country_code,
-      String mobile,
-      String f_name,
-      String l_name,
-      String email,
-      String profile_pic,
-      String social_id,
-      String device_token) async {
+    String provider,
+    String country_code,
+    String mobile,
+    String f_name,
+    String l_name,
+    String email,
+    String profile_pic,
+    String social_id,
+    String device_token,
+    String? otp,
+  ) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
         receiveTimeout: const Duration(seconds: Constants.waitTime),
@@ -70,6 +73,11 @@ class ApiProvider {
     if (mobile != "") {
       data.addAll({
         "mobile": mobile,
+      });
+    }
+    if (otp != "") {
+      data.addAll({
+        "otp": otp ?? "",
       });
     }
     if (f_name != "") {
@@ -120,6 +128,86 @@ class ApiProvider {
     } on DioError catch (e) {
       debugPrint("login error: ${e.error} ${e.message}");
       return LoginResponse.withError(e.message);
+    }
+  }
+
+  Future<GenericOTPResponse> generateOTP(String mobile) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          // 'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/users/generate-otp";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    var data = {
+      "mobile": mobile,
+    };
+    debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.post(
+        url,
+        data: jsonEncode(data),
+      );
+      debugPrint(
+          "getLanguages response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return GenericOTPResponse.fromJson(response?.data);
+      } else {
+        debugPrint("getLanguages error response: ${response?.data}");
+        return GenericOTPResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("getLanguages  error: ${e.error} ${e.message}");
+      return GenericOTPResponse.withError(e.message);
+    }
+  }
+
+  Future<FilmFestivalResponse> getFestival(int id) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          // 'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/festival";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    var data = {
+      "mobile": id,
+    };
+    debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.post(
+        url,
+        data: jsonEncode(data),
+      );
+      debugPrint(
+          "getFestival response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return FilmFestivalResponse.fromJson(response?.data);
+      } else {
+        debugPrint("getFestival error response: ${response?.data}");
+        return FilmFestivalResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("getFestival  error: ${e.error} ${e.message}");
+      return FilmFestivalResponse.withError(e.message);
     }
   }
 
@@ -186,7 +274,8 @@ class ApiProvider {
         url,
         data: jsonEncode(data),
       );
-      debugPrint("initiateOrder response: ${response?.data} ${response?.headers}");
+      debugPrint(
+          "initiateOrder response: ${response?.data} ${response?.headers}");
       if (response?.statusCode == 200 || response?.statusCode == 201) {
         return InitiateOrderResponse.fromJson(response?.data);
       } else {
@@ -368,7 +457,7 @@ class ApiProvider {
     }
   }
 
-  Future<VideoResponse> getVideos(int page_no, String? section,
+  Future<VideoResponse> getVideos(int page_no, String? language,
       String? category, String? genre, String? search, String? page) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
@@ -386,11 +475,11 @@ class ApiProvider {
     Map<String, dynamic> data = {
       'page_no': page_no,
     };
-    // if (section != null) {
-    //   data.addAll({
-    //     'section': section ?? "",
-    //   });
-    // }
+    if (language != null) {
+      data.addAll({
+        'language': language ?? "",
+      });
+    }
     if (search != null) {
       data.addAll({
         'search': search,
@@ -430,6 +519,47 @@ class ApiProvider {
       }
     } on DioError catch (e) {
       debugPrint("VideoResponse  error: ${e.error} ${e.message}");
+      return VideoResponse.withError(e.message);
+    }
+  }
+
+  Future<VideoResponse> search(String search) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          // 'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/videos/search";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    Map<String, dynamic> data = {
+      'search': search,
+    };
+
+    debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.get(
+        url,
+        data: jsonEncode(data),
+      );
+      debugPrint(
+          "SearchResponse response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return VideoResponse.fromJson(response?.data);
+      } else {
+        debugPrint("SearchResponse error response: ${response?.data}");
+        return VideoResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("SearchResponse  error: ${e.error} ${e.message}");
       return VideoResponse.withError(e.message);
     }
   }
@@ -962,6 +1092,61 @@ class ApiProvider {
     }
   }
 
+  Future<GenericResponse> updateProfile(
+      String email, String fname, String lname) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/users/profile";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    debugPrint("${email} ${fname} ${lname}");
+    var data = {};
+    if (email != "") {
+      data.addAll({
+        "email": email,
+      });
+    }
+    if (fname != "") {
+      data.addAll({
+        "f_name": fname,
+      });
+    }
+    if (lname != "") {
+      data.addAll({
+        "last_name": lname,
+      });
+    }
+    debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.post(
+        url,
+        data: jsonEncode(data),
+      );
+      debugPrint(
+          "updateProfile response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return GenericResponse.fromJson(response?.data);
+      } else {
+        debugPrint("updateProfile error response: ${response?.data}");
+        return GenericResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("updateProfile  error: ${e.error} ${e.message}");
+      return GenericResponse.withError(e.message);
+    }
+  }
+
   Future<GenericResponse> getTermsPolicy() async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
@@ -1108,7 +1293,7 @@ class ApiProvider {
     }
   }
 
-  Future<SectionsResponse> getSections(String page) async {
+  Future<SectionsResponse> getSections(String page, String page_no) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
         receiveTimeout: const Duration(seconds: Constants.waitTime),
@@ -1125,6 +1310,9 @@ class ApiProvider {
     var data = {
       'page': page,
     };
+    data.addAll({
+      'page_no': page_no ?? '1',
+    });
     debugPrint(jsonEncode(data));
     // debugPrint(jsonEncode(data));
 
@@ -1240,9 +1428,7 @@ class ApiProvider {
     // var url = "http://asamis.assam.gov.in/api/login";
     dio = Dio(option);
     debugPrint(url.toString());
-    var data = {
-      "series_id":"$videoListId"
-    };
+    var data = {"series_id": "$videoListId"};
     debugPrint(jsonEncode(data));
 
     try {

@@ -76,7 +76,7 @@ class _HomeBannerState extends State<HomeBanner> {
                   ),
                   ShareIndicator(
                     onTap: () {
-                      Share.share('check out NIRI9 from ');
+                      Share.share('check out NIRI9 from https://play.google.com/store/apps/details?id=com.niri.niri9');
                     },
                   ),
                 ],

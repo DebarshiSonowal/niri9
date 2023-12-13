@@ -23,6 +23,7 @@ class TrendingPage extends StatefulWidget {
 
 class _TrendingPageState extends State<TrendingPage> {
 bool isEnd=false;
+int page=1;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,7 +113,7 @@ bool isEnd=false;
     if (response.success??false){
       Provider.of<Repository>(context,listen: false).addTrendingBanner(response.result??[]);
     }
-    final response1 = await ApiProvider.instance.getSections("trending");
+    final response1 = await ApiProvider.instance.getSections("trending","$page");
     if (response1.status??false){
       Provider.of<Repository>(context,listen: false).addTrendingSections(response1.sections??[]);
     }

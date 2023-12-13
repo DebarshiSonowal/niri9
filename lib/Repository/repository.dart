@@ -225,7 +225,9 @@ class Repository extends ChangeNotifier {
     PlanPricing(true, true, true, 4, "HD 1080P", "599", "Premium"),
   ];
 
-  List<Sections> _homeSections = [], _trendingSections = [];
+  List<Sections> _homeSections = [],
+      _trendingSections = [],
+      _languageSections = [];
 
   List<Genres> _genres = [];
 
@@ -259,8 +261,9 @@ class Repository extends ChangeNotifier {
     _refundPolicy = val;
     notifyListeners();
   }
-void setVideo(int val) {
-  currentVideoId = val;
+
+  void setVideo(int val) {
+    currentVideoId = val;
     notifyListeners();
   }
 
@@ -278,6 +281,7 @@ void setVideo(int val) {
     currentSeasons = list;
     notifyListeners();
   }
+
   void addSeasons(List<VideoDetails> list) {
     currentSeasons.add(list);
     debugPrint("List added ${list.length}");
@@ -286,8 +290,11 @@ void setVideo(int val) {
 
   void setCategories(List<Category> list) {
     _appbarOptions = list
-        .map((e) =>
-            AppBarOption(name: e.name ?? "", image: e.profile_icon ?? ""))
+        .map((e) => AppBarOption(
+            name: e.name ?? "",
+            image: e.profile_icon ?? "",
+            has_festival: e.has_festival,
+            sequence: e.sequence))
         .toList();
     _categories = list;
     notifyListeners();
@@ -336,6 +343,12 @@ void setVideo(int val) {
 
   void addTrendingSections(List<Sections> list) {
     _trendingSections = list;
+    debugPrint("`addTrendingSections ${list}");
+    notifyListeners();
+  }
+
+  void addLanguageSections(List<Sections> list) {
+    _languageSections = list;
     debugPrint("`addTrendingSections ${list}");
     notifyListeners();
   }
@@ -394,6 +407,7 @@ void setVideo(int val) {
   List<Sections> get homeSections => _homeSections;
 
   List<Sections> get trendingSections => _trendingSections;
+  List<Sections> get languageSections => _languageSections;
 
   List<List<Video>> get videos => _videos;
 

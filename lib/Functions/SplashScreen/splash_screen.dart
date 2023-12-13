@@ -82,14 +82,14 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> fetchSections() async {
-    final response = await ApiProvider.instance.getSections("home");
+    final response = await ApiProvider.instance.getSections("home",'1');
     if (response.status ?? false) {
       // if (!context.mounted) return;
       Provider.of<Repository>(context, listen: false)
           .addHomeSections(response.sections);
       // await fetchVideos(response.sections[0]);
     }
-    final response1 = await ApiProvider.instance.getSections("trending");
+    final response1 = await ApiProvider.instance.getSections("trending",'1');
     if (response1.status ?? false) {
       // if (!context.mounted) return;
       Provider.of<Repository>(context, listen: false)

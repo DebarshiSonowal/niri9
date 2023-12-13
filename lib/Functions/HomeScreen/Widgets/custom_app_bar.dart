@@ -62,11 +62,11 @@ class CustomAppbar extends StatelessWidget {
                             item: item,
                             index: index,
                             onTap: () {
-                              if (item.name?.toLowerCase() == "film festival") {
+                              if (item.name?.toLowerCase() == "film festival"&&(item.has_festival??false)) {
                                 Navigation.instance
                                     .navigate(Routes.filmFestivalScreen);
                               }else{
-                                Navigation.instance.navigate(Routes.searchScreen,args: "${item.name}");
+                                Navigation.instance.navigate(Routes.selectedCategoryScreen,args: "${item.name}");
                               }
                             },
                           );

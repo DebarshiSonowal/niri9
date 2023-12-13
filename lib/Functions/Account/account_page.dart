@@ -70,12 +70,17 @@ class _AccountPageState extends State<AccountPage> {
                   SizedBox(
                     width: 2.w,
                   ),
-                  Text(
-                    "Manage Profiles",
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.white,
-                          fontSize: 13.sp,
-                        ),
+                  GestureDetector(
+                    onTap: (){
+                      Navigation.instance.navigate(Routes.profileUpdateScreen);
+                    },
+                    child: Text(
+                      "Manage Profiles",
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Colors.white,
+                            fontSize: 13.sp,
+                          ),
+                    ),
                   ),
                   SizedBox(
                     width: 2.w,

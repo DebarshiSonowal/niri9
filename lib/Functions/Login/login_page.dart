@@ -267,18 +267,20 @@ class _LoginPageState extends State<LoginPage> {
   void loginByGoogle(UserCredential value) async {
     Navigation.instance.navigate(Routes.loadingScreen);
     final response = await ApiProvider.instance.login(
-        "google",
-        // selectedCountryCode.dialCode.toString(),
-        "",
-        "",
-        (value.additionalUserInfo?.username ?? "").split(" ")[0],
-        (value.additionalUserInfo?.username ?? "").split(" ").length > 1
-            ? ((value.additionalUserInfo?.username ?? "").split(" ")[1])
-            : "",
-        value.user?.email ?? "",
-        value.user?.photoURL ?? "",
-        value.user?.uid ?? "",
-        "");
+      "google",
+      // selectedCountryCode.dialCode.toString(),
+      "",
+      "",
+      (value.additionalUserInfo?.username ?? "").split(" ")[0],
+      (value.additionalUserInfo?.username ?? "").split(" ").length > 1
+          ? ((value.additionalUserInfo?.username ?? "").split(" ")[1])
+          : "",
+      value.user?.email ?? "",
+      value.user?.photoURL ?? "",
+      value.user?.uid ?? "",
+      "",
+      "",
+    );
     if (response.success ?? false) {
       Navigation.instance.goBack();
       Storage.instance.setUser(response.token ?? "");
@@ -289,6 +291,8 @@ class _LoginPageState extends State<LoginPage> {
       showError(response.message ?? "Something Went Wrong");
     }
   }
+
+
 
   void showError(String msg) {
     AlertX.instance.showAlert(

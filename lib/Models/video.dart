@@ -1,4 +1,5 @@
 import 'package:niri9/Models/genres.dart';
+import 'package:niri9/Models/recently_viewed_list.dart';
 import 'package:niri9/Models/rent.dart';
 import 'package:niri9/Models/video_details.dart';
 
@@ -45,6 +46,7 @@ class Video {
   List<VideoDetails> videos = [
 
   ];
+  RecentViewedList? recentViewedList;
 
   Video.fromJson(json) {
     id = json['id'] ?? 0;
@@ -103,6 +105,7 @@ class Video {
     videos = json['video_list'] == null
         ? []
         : (json['video_list'] as List).map((e) => VideoDetails.fromJson(e)).toList();
+    recentViewedList = json['recent_viewed_list'] == null?null:RecentViewedList.fromJson(json['recent_viewed_list']);
   }
 }
 

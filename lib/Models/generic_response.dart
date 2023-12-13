@@ -13,3 +13,18 @@ class GenericResponse {
     message = msg;
   }
 }
+class GenericOTPResponse {
+  bool? success;
+  String? message, result;
+
+  GenericOTPResponse.fromJson(json) {
+    success = json['success'] ?? true;
+    message = json['result']['message']??"";
+    // result = json['result'] ?? "";
+  }
+
+  GenericOTPResponse.withError(msg){
+    success = false;
+    message = msg;
+  }
+}
