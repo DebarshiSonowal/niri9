@@ -285,8 +285,8 @@ class ApiProvider {
             : response?.data['message']['error']);
       }
     } on DioError catch (e) {
-      debugPrint("initiateOrder  error: ${e.error} ${e.message}");
-      return InitiateOrderResponse.withError(e.message);
+      debugPrint("initiateOrder  error: ${e.error} ${e.response} ${e.message}");
+      return InitiateOrderResponse.withError(e.response?.data['message']);
     }
   }
 
@@ -1014,6 +1014,91 @@ class ApiProvider {
       }
     } on DioError catch (e) {
       debugPrint("getLanguages  error: ${e.error} ${e.message}");
+      return GenericResponse.withError(e.message);
+    }
+  }
+
+  Future<GenericResponse> verifyPayment(
+      razorpay_payment_id, order_id, amount) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/sales/order/verify-payment";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    var data = {
+      "razorpay_payment_id": razorpay_payment_id,
+      "amount": amount,
+      "order_id": order_id,
+    };
+    debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.post(
+        url,
+        data: jsonEncode(data),
+      );
+      debugPrint(
+          "verifyPayment response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return GenericResponse.fromJson(response?.data);
+      } else {
+        debugPrint("verifyPayment error response: ${response?.data}");
+        return GenericResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("verifyPayment error: ${e.error} ${e.response?.data} ${e.message}");
+      return GenericResponse.withError(e.response?.data['message']);
+    }
+  }
+
+  Future<GenericResponse> applyDiscount(
+      int subscriptionId, String couponCode, String currency) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/discount/apply";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    var data = {
+      "id": subscriptionId,
+      "coupon_code": couponCode,
+      "currency": currency,
+    };
+    debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.post(
+        url,
+        data: jsonEncode(data),
+      );
+      debugPrint(
+          "applyDiscount response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return GenericResponse.fromJson(response?.data);
+      } else {
+        debugPrint("applyDiscount error response: ${response?.data}");
+        return GenericResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("applyDiscount error: ${e.error} ${e.message}");
       return GenericResponse.withError(e.message);
     }
   }

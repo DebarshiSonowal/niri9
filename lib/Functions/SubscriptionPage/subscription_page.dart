@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Constants/constants.dart';
@@ -31,6 +32,7 @@ class SubscriptionPage extends StatefulWidget {
 class _SubscriptionPageState extends State<SubscriptionPage> {
   int selected = 2;
   final _razorpay = Razorpay();
+  String? voucherNo,amount;
 
   @override
   void initState() {
@@ -54,7 +56,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(7.h),
-        child: const SubscriptionAppbar(title: "Subscription",),
+        child: const SubscriptionAppbar(
+          title: "Subscription",
+        ),
       ),
       backgroundColor: Constants.subscriptionBg,
       body: Container(
@@ -97,9 +101,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                 plan_type: data.subscriptions[0].plan_type!,
                                 discount: data.subscriptions[0].discount!,
                                 total_price:
-                                data.subscriptions[0].total_price_inr!,
+                                    data.subscriptions[0].total_price_inr!,
                                 base_price:
-                                data.subscriptions[0].base_price_inr!,
+                                    data.subscriptions[0].base_price_inr!,
                                 selected: selected,
                                 updateSet: (int val) {
                                   setState(() {
@@ -113,9 +117,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                 plan_type: data.subscriptions[1].plan_type!,
                                 discount: data.subscriptions[1].discount!,
                                 total_price:
-                                data.subscriptions[1].total_price_inr!,
+                                    data.subscriptions[1].total_price_inr!,
                                 base_price:
-                                data.subscriptions[1].base_price_inr!,
+                                    data.subscriptions[1].base_price_inr!,
                                 selected: selected,
                                 updateSet: (int val) {
                                   setState(() {
@@ -129,9 +133,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                 plan_type: data.subscriptions[2].plan_type!,
                                 discount: data.subscriptions[2].discount!,
                                 total_price:
-                                data.subscriptions[2].total_price_inr!,
+                                    data.subscriptions[2].total_price_inr!,
                                 base_price:
-                                data.subscriptions[2].base_price_inr!,
+                                    data.subscriptions[2].base_price_inr!,
                                 selected: selected,
                                 updateSet: (int val) {
                                   setState(() {
@@ -161,13 +165,12 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                           child: Center(
                             child: Text(
                               "Continue",
-                              style: Theme
-                                  .of(context)
+                              style: Theme.of(context)
                                   .textTheme
                                   .headlineMedium
                                   ?.copyWith(
-                                color: const Color(0xff002215),
-                              ),
+                                    color: const Color(0xff002215),
+                                  ),
                             ),
                           ),
                         ),
@@ -203,8 +206,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     debugPrint(
-        'success ${response.paymentId} ${response.orderId} ${response
-            .signature}');
+        'success ${response.paymentId} ${response.orderId} ${response.signature}');
+    verifyPayment( voucherNo,response.paymentId,amount);
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
@@ -227,23 +230,25 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           .addSubscriptions(response);
       setState(() {
         selected = response.subscriptions
-            .indexWhere((element) => (element.is_default ?? 0) == 1) ??
+                .indexWhere((element) => (element.is_default ?? 0) == 1) ??
             0;
       });
     }
   }
 
-  void initiatePayment({required double total, User? profile, required id}) {
+  void initiatePayment(
+      {required double total, User? profile, required id, String? rzp_key}) {
     var options = {
-      'key': 'jMpgLbygk3LidMcKkrq0zGJ6',
+      'key': rzp_key,
       // 'key': FlutterConfig.get('RAZORPAY_KEY'),
       'amount': "${total * 100}",
-      'order_id': id,
+      // 'order_id': id,
       "image": "https://tratri.in/assets/assets/images/logos/logo-razorpay.jpg",
-      'name': '${profile?.f_name} ${profile?.l_name}',
+      // 'name': '${profile?.f_name} ${profile?.l_name}',
       'description': 'Books',
       'prefill': {
         'contact': profile?.mobile ?? "",
+        'order_id': id,
         'email': profile?.email ?? ""
       },
       // 'note': {
@@ -251,7 +256,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
       //   'order_id': id,
       // },
     };
-
+    debugPrint("$options");
     try {
       _razorpay.open(options);
     } catch (e) {
@@ -260,24 +265,38 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   }
 
   void initiateOrder(Repository data) async {
-    final response = await ApiProvider.instance.initiateOrder(
-        data.subscriptions[selected].id ?? 0, 0, 0);
+    final response = await ApiProvider.instance
+        .initiateOrder(data.subscriptions[selected].id ?? 0, 0, 0);
     if (response.success ?? false) {
-      initiatePayment(
-          total: data.subscriptions[selected]
-              .total_price_inr ??
-              0,
-          profile: Provider
-              .of<Repository>(
-              Navigation.instance.navigatorKey
-                  .currentContext ??
-                  context,
-              listen: false)
-              .user,
-          id:data.subscriptions[selected].id,
-      );
-    } else {
 
+      setState(() {
+        voucherNo = response.result?.voucherNo;
+        amount = response.result?.grandTotal ?? "0";
+      });
+      initiatePayment(
+        rzp_key: response.result?.rzp_key ?? "",
+        total: double.parse(response.result?.grandTotal ?? "0"),
+        profile: Provider.of<Repository>(
+                Navigation.instance.navigatorKey.currentContext ?? context,
+                listen: false)
+            .user,
+        id: response.result?.voucherNo ?? "",
+      );
+
+    } else {
+      Fluttertoast.showToast(msg: response.message ?? "Something Went wrong");
+    }
+  }
+
+  Future<void> verifyPayment(
+      String? orderId, String? paymentId, String? amount) async {
+    final response =
+        await ApiProvider.instance.verifyPayment(paymentId, orderId, amount);
+    if (response.success ?? false) {
+      Fluttertoast.showToast(
+          msg: response.message ?? "Payment was successfully");
+    } else {
+      Fluttertoast.showToast(msg: response.message ?? "Something went wrong");
     }
   }
 }

@@ -8,15 +8,18 @@ class InitiateOrderResponse {
 
   InitiateOrderResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'];
-    result =
-    json['result'] != null ? InitiateOrderData.fromJson(json['result']) : null;
+    result = json['result'] != null
+        ? InitiateOrderData.fromJson(json['result'])
+        : null;
     message = json['message'];
     code = json['code'];
   }
-  InitiateOrderResponse.withError(msg){
+
+  InitiateOrderResponse.withError(msg) {
     success = false;
     message = msg;
   }
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['success'] = this.success;
@@ -32,12 +35,12 @@ class InitiateOrderResponse {
 class InitiateOrderData {
   int? id;
   String? voucherNo;
-  int? sellingTotal;
+  String? sellingTotal;
   double? baseTotal;
-  int? discount;
-  double? total;
-  double? taxAmt;
-  int? grandTotal;
+  String? discount;
+  String? total;
+  String? taxAmt;
+  String? grandTotal;
   int? isPaid;
   int? status;
   String? currency;
@@ -49,39 +52,43 @@ class InitiateOrderData {
   String? productName;
   String? invoiceNo;
   String? invoiceDate;
-  int? invoiceAmount;
+  String? invoiceAmount;
   String? customerEmail;
   String? customerMobile;
+  String? rzp_key;
 
-  InitiateOrderData(
-      {this.id,
-        this.voucherNo,
-        this.sellingTotal,
-        this.baseTotal,
-        this.discount,
-        this.total,
-        this.taxAmt,
-        this.grandTotal,
-        this.isPaid,
-        this.status,
-        this.currency,
-        this.taxData,
-        this.customerId,
-        this.orderDate,
-        this.customerName,
-        this.productId,
-        this.productName,
-        this.invoiceNo,
-        this.invoiceDate,
-        this.invoiceAmount,
-        this.customerEmail,
-        this.customerMobile});
+  InitiateOrderData({
+    this.id,
+    this.voucherNo,
+    this.sellingTotal,
+    this.baseTotal,
+    this.discount,
+    this.total,
+    this.taxAmt,
+    this.grandTotal,
+    this.isPaid,
+    this.status,
+    this.currency,
+    this.taxData,
+    this.customerId,
+    this.orderDate,
+    this.customerName,
+    this.productId,
+    this.productName,
+    this.invoiceNo,
+    this.invoiceDate,
+    this.invoiceAmount,
+    this.customerEmail,
+    this.customerMobile,
+    this.rzp_key,
+  });
 
   InitiateOrderData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     voucherNo = json['voucher_no'];
     sellingTotal = json['selling_total'];
-    baseTotal = json['base_total'];
+    baseTotal =
+        json['base_total'] == null ? 0 : double.tryParse(json['base_total']);
     discount = json['discount'];
     total = json['total'];
     taxAmt = json['tax_amt'];
@@ -102,6 +109,7 @@ class InitiateOrderData {
     invoiceAmount = json['invoice_amount'];
     customerEmail = json['customer_email'];
     customerMobile = json['customer_mobile'];
+    rzp_key = json['rzp_key'];
   }
 
   Map<String, dynamic> toJson() {
@@ -135,10 +143,10 @@ class InitiateOrderData {
 }
 
 class TaxData {
-  int? gst;
-  int? cgst;
-  int? sgst;
-  int? igst;
+  String? gst;
+  String? cgst;
+  String? sgst;
+  String? igst;
   double? gstAmt;
   double? cgstAmt;
   double? sgstAmt;
@@ -146,13 +154,13 @@ class TaxData {
 
   TaxData(
       {this.gst,
-        this.cgst,
-        this.sgst,
-        this.igst,
-        this.gstAmt,
-        this.cgstAmt,
-        this.sgstAmt,
-        this.igstAmt});
+      this.cgst,
+      this.sgst,
+      this.igst,
+      this.gstAmt,
+      this.cgstAmt,
+      this.sgstAmt,
+      this.igstAmt});
 
   TaxData.fromJson(Map<String, dynamic> json) {
     gst = json['gst'];

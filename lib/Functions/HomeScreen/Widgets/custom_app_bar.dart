@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Models/appbar_option.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:provider/provider.dart';
@@ -37,6 +38,40 @@ class CustomAppbar extends StatelessWidget {
                 width: 14.w,
                 fit: BoxFit.cover,
               ),
+              SizedBox(
+                width: 2.w,
+              ),
+              SizedBox(
+                height: 3.2.h,
+                // margin: EdgeInsets.symmetric(
+                //   horizontal: 2.w,
+                //   vertical: 0.1.h,
+                // ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (Storage.instance.isLoggedIn) {
+                      Navigation.instance.navigate(Routes.subscriptionScreen);
+                    } else {
+                      Navigation.instance.navigate(Routes.loginScreen);
+                    }
+                  },
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                        side: const BorderSide(color: Colors.red),
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    "Subscribe",
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.white,
+                          fontSize: 8.sp,
+                        ),
+                  ),
+                ),
+              ),
             ],
           ),
           Consumer<Repository>(
@@ -62,11 +97,14 @@ class CustomAppbar extends StatelessWidget {
                             item: item,
                             index: index,
                             onTap: () {
-                              if (item.name?.toLowerCase() == "film festival"&&(item.has_festival??false)) {
+                              if (item.name?.toLowerCase() == "film festival" &&
+                                  (item.has_festival ?? false)) {
                                 Navigation.instance
                                     .navigate(Routes.filmFestivalScreen);
-                              }else{
-                                Navigation.instance.navigate(Routes.selectedCategoryScreen,args: "${item.name}");
+                              } else {
+                                Navigation.instance.navigate(
+                                    Routes.selectedCategoryScreen,
+                                    args: "${item.name}");
                               }
                             },
                           );
@@ -81,33 +119,35 @@ class CustomAppbar extends StatelessWidget {
                             : data.appbarOptions.length),
                       ),
                     ),
-                    data.appbarOptions.length<=4?Container():SizedBox(
-                      width: 10.w,
-                      child: GestureDetector(
-                        onTap: () {
-                          updateState();
-                        },
-                        child: SizedBox(
-                          width: 15.w,
-                          child: SingleChildScrollView(
-                            physics: const NeverScrollableScrollPhysics(),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Image.asset(
-                                  !isExpanded?Assets.lessImage:Assets.moreImage,
-                                  height: 12.sp,
-                                  width: 12.sp,
-                                  // color: Colors.white,
+                    data.appbarOptions.length <= 4
+                        ? Container()
+                        : SizedBox(
+                            width: 10.w,
+                            child: GestureDetector(
+                              onTap: () {
+                                updateState();
+                              },
+                              child: SizedBox(
+                                width: 15.w,
+                                child: SingleChildScrollView(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Image.asset(
+                                        !isExpanded
+                                            ? Assets.lessImage
+                                            : Assets.moreImage,
+                                        height: 12.sp,
+                                        width: 12.sp,
+                                        // color: Colors.white,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-
-
-                              ],
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               );

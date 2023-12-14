@@ -21,19 +21,78 @@ class SettingsResponse {
   bool? success;
   String? message, site_name, site_url, owner;
   Settings? settings;
+  VideoPercent? videoPercent;
+  VideoSetting? videoSetting;
 
   SettingsResponse.fromJson(json) {
     success = json["success"] ?? false;
     message = json["message"] ?? "";
-    site_name = json["site_name"] ?? "";
-    site_url = json["site_url"] ?? "";
-    owner = json["owner"] ?? "";
-    settings =
-        json["settings"] == null ? null : Settings.fromJson(json["settings"]);
+    site_name = json["result"]["site_name"] ?? "";
+    site_url = json["result"]["site_url"] ?? "";
+    owner = json["result"]["owner"] ?? "";
+    settings = json["result"]['app_setting'] == null
+        ? null
+        : Settings.fromJson(json["result"]['app_setting']);
+    videoPercent = json['result']['video_percent'] == null
+        ? null
+        : VideoPercent.fromJson(json['result']['video_percent']);
+    videoSetting = json['result']['video_setting'] == null
+        ? null
+        : VideoSetting.fromJson(json['result']['video_setting']);
+
+
   }
 
   SettingsResponse.withError(msg) {
     success = false;
     message = msg;
+  }
+}
+
+class VideoPercent {
+  String? percent;
+  String? amount;
+
+  VideoPercent({this.percent, this.amount});
+
+  VideoPercent.fromJson(Map<String, dynamic> json) {
+    percent = json['percent'];
+    amount = json['amount'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['percent'] = this.percent;
+    data['amount'] = this.amount;
+    return data;
+  }
+}
+
+class VideoSetting {
+  String? rentAllowMaxTime;
+  String? subscriptionAllowMaxTime;
+  String? sendToServerInterval;
+  String? forwardTime;
+
+  VideoSetting(
+      {this.rentAllowMaxTime,
+      this.subscriptionAllowMaxTime,
+      this.sendToServerInterval,
+      this.forwardTime});
+
+  VideoSetting.fromJson(Map<String, dynamic> json) {
+    rentAllowMaxTime = json['rent_allow_max_time'];
+    subscriptionAllowMaxTime = json['subscription_allow_max_time'];
+    sendToServerInterval = json['send_to_server_interval'];
+    forwardTime = json['forward_time'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['rent_allow_max_time'] = this.rentAllowMaxTime;
+    data['subscription_allow_max_time'] = this.subscriptionAllowMaxTime;
+    data['send_to_server_interval'] = this.sendToServerInterval;
+    data['forward_time'] = this.forwardTime;
+    return data;
   }
 }

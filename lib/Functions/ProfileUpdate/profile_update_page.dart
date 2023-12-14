@@ -32,9 +32,22 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
               height: 4.h,
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.start ,
               children: [
+                // SizedBox(
+                //   width: 2.w,
+                // ),
+                IconButton(
+                  onPressed: () {
+                    Navigation.instance.goBack();
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                ),
                 SizedBox(
-                  width: 4.w,
+                  width: 32.w,
                 ),
                 Image.asset(
                   Assets.logoTransparent,
@@ -42,6 +55,12 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                   width: 14.w,
                   fit: BoxFit.cover,
                 ),
+                // SizedBox(
+                //   width: 2.w,
+                // ),
+                // SizedBox(
+                //   width: 1.w,
+                // ),
               ],
             ),
           ],
@@ -192,14 +211,14 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
     Navigation.instance.navigate(Routes.loadingScreen);
     final response =
         await ApiProvider.instance.updateProfile(email, fname, lname);
-    if(response.success??false){
+    if (response.success ?? false) {
       Navigation.instance.goBack();
-      Fluttertoast.showToast(msg: response.message??"Profile updated");
+      Fluttertoast.showToast(msg: response.message ?? "Profile updated");
       Navigation.instance.goBack();
-
-    }else{
+    } else {
       Navigation.instance.goBack();
-      Fluttertoast.showToast(msg: response.message??"Profile update unsuccessful");
+      Fluttertoast.showToast(
+          msg: response.message ?? "Profile update unsuccessful");
     }
   }
 }
