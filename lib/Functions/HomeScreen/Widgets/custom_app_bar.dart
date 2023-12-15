@@ -42,7 +42,7 @@ class CustomAppbar extends StatelessWidget {
                 width: 2.w,
               ),
               SizedBox(
-                height: 3.2.h,
+                height: 3.h,
                 // margin: EdgeInsets.symmetric(
                 //   horizontal: 2.w,
                 //   vertical: 0.1.h,
@@ -56,18 +56,24 @@ class CustomAppbar extends StatelessWidget {
                     }
                   },
                   style: ButtonStyle(
+                    padding:  MaterialStateProperty.all<EdgeInsets>(
+                      EdgeInsets.symmetric(
+                        horizontal: 2.w,
+                        vertical: 0.2.h,
+                      )
+                    ),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                        side: const BorderSide(color: Colors.red),
+                        borderRadius: BorderRadius.circular(10.0),
+                        side: const BorderSide(color: Color(0xffFFD700)),
                       ),
                     ),
                   ),
                   child: Text(
                     "Subscribe",
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.white,
-                          fontSize: 8.sp,
+                          color: const Color(0xffFFD700),
+                          fontSize: 8.5.sp,
                         ),
                   ),
                 ),

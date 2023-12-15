@@ -117,7 +117,10 @@ final ScrollController _scrollController = ScrollController();
                     ),
                     itemBuilder: (BuildContext context, int index) {
                       var item = data.specificVideos[index];
-                      return OttItem(item: item, onTap: () {});
+                      return OttItem(item: item, onTap: () {
+                        Navigation.instance
+                            .navigate(Routes.watchScreen, args: item.id);
+                      });
                     },
                   );
                 }),

@@ -68,6 +68,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await fetchFaq();
     await fetchHelp();
     await fetchTerms();
+    await fetchSettings();
     Navigation.instance.navigateAndRemoveUntil(Routes.homeScreen);
   }
 
@@ -154,6 +155,16 @@ class _SplashScreenState extends State<SplashScreen> {
     if (response.success ?? false) {
       Provider.of<Repository>(context, listen: false)
           .setTermsConditions(response.result ?? "");
+    }
+  }
+
+  Future<void> fetchSettings() async {
+    final response = await ApiProvider.instance.getSettings();
+    if (response.success ?? false) {
+      Provider.of<Repository>(context, listen: false)
+          .setVideoPercent(response.videoPercent);
+      Provider.of<Repository>(context, listen: false)
+          .setVideoSettings(response.videoSetting);
     }
   }
 }

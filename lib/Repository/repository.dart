@@ -20,6 +20,7 @@ import '../Models/ott.dart';
 import '../Models/plan_pricing.dart';
 import '../Models/sections.dart';
 import '../Models/series_episode_details.dart';
+import '../Models/settings.dart';
 import '../Models/types.dart';
 import '../Models/user.dart';
 
@@ -38,7 +39,8 @@ class Repository extends ChangeNotifier {
       _privacyPolicy = "",
       _help_center = "",
       _termsConditions = "";
-
+  VideoPercent? videoPercent;
+  VideoSetting? videoSetting;
   List<AppBarOption> get appbarOptions => _appbarOptions;
 
   List<List<VideoDetails>> currentSeasons = [];
@@ -385,6 +387,16 @@ class Repository extends ChangeNotifier {
 
   void addRental(List<Video> videos) {
     _rental = videos;
+    notifyListeners();
+  }
+
+  // VideoSetting? videoSetting
+  void setVideoSettings(VideoSetting? val) {
+    videoSetting = val;
+    notifyListeners();
+  }
+  void setVideoPercent(VideoPercent? val) {
+    videoPercent = val;
     notifyListeners();
   }
 

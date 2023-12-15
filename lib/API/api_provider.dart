@@ -364,7 +364,7 @@ class ApiProvider {
     }
   }
 
-  Future<GenresResponse> updateVideoTime(
+  Future<GenericResponse> updateVideoTime(
     video_list_id,
     view_duration,
     unique_id,
@@ -405,18 +405,18 @@ class ApiProvider {
         url,
         data: jsonEncode(data),
       );
-      debugPrint("getGenres response: ${response?.data} ${response?.headers}");
+      debugPrint("updateViewDuration response: ${response?.data} ${response?.headers}");
       if (response?.statusCode == 200 || response?.statusCode == 201) {
-        return GenresResponse.fromJson(response?.data);
+        return GenericResponse.fromJson(response?.data);
       } else {
-        debugPrint("getGenres error response: ${response?.data}");
-        return GenresResponse.withError(response?.data['error']
+        debugPrint("updateViewDuration error response: ${response?.data}");
+        return GenericResponse.withError(response?.data['error']
             ? response?.data['message']['success']
             : response?.data['message']['error']);
       }
     } on DioError catch (e) {
-      debugPrint("getGenres  error: ${e.error} ${e.message}");
-      return GenresResponse.withError(e.message);
+      debugPrint("updateViewDuration error: ${e.error} ${e.response?.data} ${e.message}");
+      return GenericResponse.withError(e.response?.data['message']);
     }
   }
 

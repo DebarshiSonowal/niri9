@@ -1,7 +1,9 @@
 // import 'package:appinio_video_player/appinio_video_player.dart';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:appinio_video_player/appinio_video_player.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Constants/constants.dart';
@@ -61,6 +63,8 @@ class _WatchScreenState extends State<WatchScreen> {
   int selected = 0;
   Future<bool>? _future;
   Timer? _timer;
+  int lastUpdateDuration = 0;
+  int selectedVideoListId = 0;
 
   @override
   void initState() {
@@ -95,20 +99,26 @@ class _WatchScreenState extends State<WatchScreen> {
                       videoPlayerController: videoPlayerController,
                       showing: showing,
                       onClicked: () {
-                        setState(() {
-                          showing = true;
-                        });
+                        showing = true;
+                        if (mounted) {
+                          setState(() {});
+                        }
                         if (_timer?.isActive ?? false) _timer?.cancel();
-                        _timer = Timer(const Duration(seconds: 5), () {
-                          setState(() {
-                            showing = false;
-                          });
+                        _timer = Timer(const Duration(seconds: 3), () {
+                          showing = false;
+                          if (mounted) {
+                            setState(() {});
+                          }
                         });
                       },
                       setVideo: (VideoDetails item) {
                         initializeVideoPlayer(context, item.videoPlayer);
                         Provider.of<Repository>(context, listen: false)
                             .setVideo(item.id ?? 0);
+                        selectedVideoListId = item.id ?? 0;
+                        if (mounted) {
+                          setState(() {});
+                        }
                       },
                     )
                   : const ShimmeringWatchScreenLoader();
@@ -142,13 +152,33 @@ class _WatchScreenState extends State<WatchScreen> {
     }
   }
 
+  Future<String?> _getId() async {
+    var deviceInfo = DeviceInfoPlugin();
+    if (Platform.isIOS) {
+      // import 'dart:io'
+      var iosDeviceInfo = await deviceInfo.iosInfo;
+      return iosDeviceInfo.identifierForVendor; // unique ID on iOS
+    } else if (Platform.isAndroid) {
+      var androidDeviceInfo = await deviceInfo.androidInfo;
+      return androidDeviceInfo.id; // unique ID on Android
+    }
+  }
+
   void updateUploadStatus(
       CustomVideoPlayerController _customVideoPlayerController,
       Video video,
       String event_name,
       int currentDuration) async {
-    final response = await ApiProvider.instance.updateVideoTime(video.id,
-        video.readable_time, "", currentDuration, "mobile", event_name);
+    final response = await ApiProvider.instance.updateVideoTime(
+        // video.id,
+        selectedVideoListId,
+        currentDuration,
+        // video.readable_time,
+        await _getId() ?? "",
+        currentDuration,
+        "phone",
+        // "mobile",
+        event_name);
     if (response.success ?? false) {
     } else {}
   }
@@ -164,15 +194,28 @@ class _WatchScreenState extends State<WatchScreen> {
         int currentDuration =
             videoPlayerController.value.position.inMilliseconds;
 
-        if (currentDuration >= 10000 && uploadTimer == null) {
+        if (currentDuration >=
+                (int.parse(Provider.of<Repository>(context, listen: false)
+                            .videoSetting
+                            ?.forwardTime ??
+                        "10") *
+                    1000) &&
+            uploadTimer == null) {
+          debugPrint("upload timer $currentDuration");
           // Start a Timer after 10 seconds to call updateUploadStatus once
-          uploadTimer = Timer(const Duration(seconds: 10), () {
+          uploadTimer = Timer(
+              Duration(
+                  seconds: int.parse(
+                      Provider.of<Repository>(context, listen: false)
+                              .videoSetting
+                              ?.forwardTime ??
+                          "10")), () {
             if (videoPlayerController.value.isPlaying) {
               // Call updateUploadStatus when the video is playing
               updateUploadStatus(
                 _customVideoPlayerController,
                 Provider.of<Repository>(context, listen: false).videoDetails!,
-                "play",
+                "auto",
                 currentDuration,
               );
             }
@@ -196,6 +239,7 @@ class _WatchScreenState extends State<WatchScreen> {
         } else {
           isPlaying = false;
         }
+
 
         setState(() {});
       });
@@ -226,6 +270,9 @@ class _WatchScreenState extends State<WatchScreen> {
       }
       Provider.of<Repository>(context, listen: false)
           .setVideo(response.result[0].id ?? 0);
+      setState(() {
+        selectedVideoListId = response.result[0].video_list.first.id??0;
+      });
       return true;
     } else {
       return false;
@@ -254,7 +301,7 @@ class _WatchScreenState extends State<WatchScreen> {
                     ?.recentViewedList
                     ?.videoId ??
                 0);
-        final url = Provider.of<Repository>(context, listen: false)
+        final url = (Provider.of<Repository>(context, listen: false)
                 .videoDetails
                 ?.videos
                 .where((element) =>
@@ -265,13 +312,19 @@ class _WatchScreenState extends State<WatchScreen> {
                         0) ==
                     element.id)
                 .first
-                .videoPlayer ??
-            Provider.of<Repository>(context, listen: false)
+                .videoPlayer) ??
+            (Provider.of<Repository>(context, listen: false)
                 .videoDetails
                 ?.videos
                 .first
-                .videoPlayer;
+                .videoPlayer);
         setState(() {
+
+          selectedVideoListId = Provider.of<Repository>(context, listen: false)
+              .videoDetails
+              ?.recentViewedList
+              ?.videoListId ??
+              0;
           for (var i = 0;
               i <
                   (Provider.of<Repository>(context, listen: false)
@@ -280,11 +333,14 @@ class _WatchScreenState extends State<WatchScreen> {
                           .length ??
                       0);
               i++) {
-            if(Provider.of<Repository>(context, listen: false)
-                .videoDetails
-                ?.season_list[i].id==Provider.of<Repository>(context, listen: false)
-                .videoDetails
-                ?.recentViewedList?.videoListId){
+            if (Provider.of<Repository>(context, listen: false)
+                    .videoDetails
+                    ?.season_list[i]
+                    .id ==
+                Provider.of<Repository>(context, listen: false)
+                    .videoDetails
+                    ?.recentViewedList
+                    ?.videoListId) {
               selected = i;
               break;
             }
@@ -300,6 +356,14 @@ class _WatchScreenState extends State<WatchScreen> {
                 ?.videos
                 .first
                 .videoPlayer);
+        setState(() {
+          selectedVideoListId = Provider.of<Repository>(context, listen: false)
+                  .videoDetails
+                  ?.videos
+                  .first
+                  .id ??
+              0;
+        });
       }
     } else {
       _future = initializeVideoPlayer(
