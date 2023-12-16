@@ -546,7 +546,7 @@ class ApiProvider {
     try {
       Response? response = await dio?.get(
         url,
-        data: jsonEncode(data),
+        queryParameters: data,
       );
       debugPrint(
           "SearchResponse response: ${response?.data} ${response?.headers}");
@@ -1177,7 +1177,7 @@ class ApiProvider {
     }
   }
 
-  Future<GenericResponse> updateProfile(
+  Future<ProfileResponse> updateProfile(
       String email, String fname, String lname) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
@@ -1206,7 +1206,7 @@ class ApiProvider {
     }
     if (lname != "") {
       data.addAll({
-        "last_name": lname,
+        "l_name": lname,
       });
     }
     debugPrint(jsonEncode(data));
@@ -1219,16 +1219,16 @@ class ApiProvider {
       debugPrint(
           "updateProfile response: ${response?.data} ${response?.headers}");
       if (response?.statusCode == 200 || response?.statusCode == 201) {
-        return GenericResponse.fromJson(response?.data);
+        return ProfileResponse.fromJson(response?.data);
       } else {
         debugPrint("updateProfile error response: ${response?.data}");
-        return GenericResponse.withError(response?.data['error']
+        return ProfileResponse.withError(response?.data['error']
             ? response?.data['message']['success']
             : response?.data['message']['error']);
       }
     } on DioError catch (e) {
       debugPrint("updateProfile  error: ${e.error} ${e.message}");
-      return GenericResponse.withError(e.message);
+      return ProfileResponse.withError(e.response?.data['message']??e.message);
     }
   }
 

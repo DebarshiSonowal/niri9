@@ -57,36 +57,38 @@ class TermsConditionsScreen extends StatelessWidget {
         padding: EdgeInsets.symmetric(
           horizontal: 5.w,
         ),
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Terms & Conditions",
-              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                color: Colors.white,
+        child: SingleChildScrollView(
+          child: Column(
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Terms & Conditions",
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  color: Colors.white,
+                ),
               ),
-            ),
-            SizedBox(
-              height: 4.h,
-            ),
-            Consumer<Repository>(
-                builder: (context,data,_) {
-                  return Html(
-                    data:data.termsConditions ?? "",
-                    // style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    //   color: Colors.white70,
-                    // ),
-                  );
-                }
-            ),
-            // const Spacer(),
-            Image.asset(
-              Assets.logoTransparent,
-              height: 15.h,
-              width: 30.w,
-              fit: BoxFit.cover,
-            ),
-          ],
+              SizedBox(
+                height: 4.h,
+              ),
+              Consumer<Repository>(
+                  builder: (context,data,_) {
+                    return Html(
+                      data:data.termsConditions ?? "",
+                      // style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      //   color: Colors.white70,
+                      // ),
+                    );
+                  }
+              ),
+              // const Spacer(),
+              Image.asset(
+                Assets.logoTransparent,
+                height: 15.h,
+                width: 30.w,
+                fit: BoxFit.cover,
+              ),
+            ],
+          ),
         ),
       ),
     );

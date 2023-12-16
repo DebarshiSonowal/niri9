@@ -38,106 +38,113 @@ class _ProfilePageState extends State<ProfilePage> {
           vertical: 1.h,
         ),
         child: Consumer<Repository>(builder: (context, data, _) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 4.h,
-              ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: CachedNetworkImage(
-                  imageUrl:
-                      "https://plus.unsplash.com/premium_photo-1664540415069-bc45ce3e711e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-                  height: 20.h,
-                  width: 20.h,
-                  fit: BoxFit.fill,
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 4.h,
                 ),
-              ),
-              SizedBox(
-                height: 3.h,
-              ),
-              Text(
-                "${data.user?.f_name} ${data.user?.l_name}",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.white,
-                    ),
-              ),
-              SizedBox(
-                height: 4.h,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 20.w,
-                    child: Text(
-                      "Email:",
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: Colors.white54,
-                          ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 5.w,
-                  ),
-                  SizedBox(
-                    width: 20.w,
-                    child: Text(
-                      data.user?.email??"N/A",
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: Colors.white,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 3.h,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 20.w,
-                    child: Text(
-                      "Mobile:",
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: Colors.white54,
-                          ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 5.w,
-                  ),
-                  SizedBox(
-                    width: 20.w,
-                    child: Text(
-                      "${data.user?.mobile??"N/A"}",
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: Colors.white,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 3.h,
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 15.sp,),
-                child: Text(
-                  "Current Subscription",
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: Colors.white,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: CachedNetworkImage(
+                    imageUrl:
+                        "https://plus.unsplash.com/premium_photo-1664540415069-bc45ce3e711e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
+                    height: 20.h,
+                    width: 20.h,
+                    fit: BoxFit.fill,
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 2.h,
-              ),
-              const PremiumCard(),
-            ],
+                SizedBox(
+                  height: 3.h,
+                ),
+                Text(
+                  "${data.user?.f_name} ${data.user?.l_name}",
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: Colors.white,
+                        fontSize: 12.sp,
+                      ),
+                ),
+                SizedBox(
+                  height: 4.h,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 20.w,
+                      child: Text(
+                        "Email:",
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: Colors.white54,
+                            ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5.w,
+                    ),
+                    SizedBox(
+                      width: 40.w,
+                      child: Text(
+                        data.user?.email ?? "N/A",
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: Colors.white,
+                          fontSize: 8.sp,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 3.h,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 20.w,
+                      child: Text(
+                        "Mobile:",
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: Colors.white54,
+                            ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5.w,
+                    ),
+                    SizedBox(
+                      width: 40.w,
+                      child: Text(
+                        "${data.user?.mobile ?? "N/A"}",
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: Colors.white,
+                          fontSize: 8.sp,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 3.h,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 15.sp,
+                  ),
+                  child: Text(
+                    "Current Subscription",
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: Colors.white,
+                        ),
+                  ),
+                ),
+                SizedBox(
+                  height: 2.h,
+                ),
+                const PremiumCard(),
+              ],
+            ),
           );
         }),
       ),
@@ -148,7 +155,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
-      if (Storage.instance.isLoggedIn??false) {
+      if (Storage.instance.isLoggedIn ?? false) {
         fetchProfile(context);
       }
     });

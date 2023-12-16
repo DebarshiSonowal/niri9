@@ -3,6 +3,7 @@ import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Models/appbar_option.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Constants/assets.dart';
@@ -47,34 +48,38 @@ class CustomAppbar extends StatelessWidget {
                 //   horizontal: 2.w,
                 //   vertical: 0.1.h,
                 // ),
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (Storage.instance.isLoggedIn) {
-                      Navigation.instance.navigate(Routes.subscriptionScreen);
-                    } else {
-                      Navigation.instance.navigate(Routes.loginScreen);
-                    }
-                  },
-                  style: ButtonStyle(
-                    padding:  MaterialStateProperty.all<EdgeInsets>(
-                      EdgeInsets.symmetric(
+                child: Shimmer.fromColors(
+                  baseColor: const Color(0xffffed8c),
+                  highlightColor: const Color(0xffFFD700),
+                  child: GestureDetector(
+                    onTap: () {
+                      if (Storage.instance.isLoggedIn) {
+                        Navigation.instance.navigate(Routes.subscriptionScreen);
+                      } else {
+                        Navigation.instance.navigate(Routes.loginScreen);
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
                         horizontal: 2.w,
-                        vertical: 0.2.h,
-                      )
-                    ),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        side: const BorderSide(color: Color(0xffFFD700)),
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color(0xffffed8c),
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Subscribe",
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: const Color(0xffffed8c),
+                                    fontSize: 8.sp,
+                                  ),
+                        ),
                       ),
                     ),
-                  ),
-                  child: Text(
-                    "Subscribe",
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: const Color(0xffFFD700),
-                          fontSize: 8.5.sp,
-                        ),
                   ),
                 ),
               ),
