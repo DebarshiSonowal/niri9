@@ -505,7 +505,8 @@ class ApiProvider {
     try {
       Response? response = await dio?.get(
         url,
-        data: jsonEncode(data),
+        queryParameters: data,
+        // data: jsonEncode(data),
       );
       debugPrint(
           "VideoResponse response: ${response?.data} ${response?.headers}");
