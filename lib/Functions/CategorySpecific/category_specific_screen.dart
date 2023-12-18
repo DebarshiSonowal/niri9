@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../API/api_provider.dart';
 import '../../Constants/constants.dart';
+import '../../Models/video.dart';
 import '../../Navigation/Navigate.dart';
 import '../../Repository/repository.dart';
 import '../../Router/routes.dart';
@@ -14,7 +16,9 @@ import '../HomeScreen/Widgets/ott_item.dart';
 
 class CategorySpecificScreen extends StatefulWidget {
   const CategorySpecificScreen({super.key, required this.searchTerm});
+
   final String searchTerm;
+
   @override
   State<CategorySpecificScreen> createState() => _CategorySpecificScreenState();
 }
@@ -22,14 +26,14 @@ class CategorySpecificScreen extends StatefulWidget {
 class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
-  RefreshController(initialRefresh: true);
-  int page=1;
+      RefreshController(initialRefresh: true);
+  int page = 1;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(() {
-      if (_refreshController.position?.atEdge??false) {
+      if (_refreshController.position?.atEdge ?? false) {
         bool isTop = _refreshController.position?.pixels == 0;
         if (isTop) {
           _refreshController.requestRefresh();
@@ -40,6 +44,7 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
       }
     });
   }
+
   void _onRefresh() async {
     setState(() {
       page = 1;
@@ -63,16 +68,20 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
     });
     fetchVideos(context);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:PreferredSize(
+      appBar: PreferredSize(
           preferredSize: Size.fromHeight(7.h),
           child: CategorySpecificAppbar(searchTerm: widget.searchTerm)),
       body: Container(
         height: double.infinity,
         width: double.infinity,
         color: Constants.backgroundColor,
+        padding: EdgeInsets.symmetric(
+          horizontal: 4.w,
+        ),
         child: SmartRefresher(
           enablePullDown: true,
           enablePullUp: true,
@@ -100,47 +109,85 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
           controller: _refreshController,
           onRefresh: _onRefresh,
           onLoading: _onLoading,
-          child: Consumer<Repository>(builder: (context, data, _) {
-            return SizedBox(
-              height: 100.h,
-              width: double.infinity,
-              child: Consumer<Repository>(builder: (context, data, _) {
-                return SingleChildScrollView(
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    controller: _scrollController,
-                    itemCount: data.specificVideos.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 2.w,
-                      mainAxisSpacing: 0.5.h,
-                      childAspectRatio: 8.5 / 11,
+          child: FutureBuilder<List<Video>>(
+              future: fetchVideos(context),
+              builder: (context, _) {
+                if (_.hasData) {
+                  return SizedBox(
+                    height: 100.h,
+                    width: double.infinity,
+                    child: Consumer<Repository>(builder: (context, data, _) {
+                      return SingleChildScrollView(
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          controller: _scrollController,
+                          itemCount: data.specificVideos.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 1.5.w,
+                            mainAxisSpacing: 1.h,
+                            childAspectRatio: 6.5 / 8.5,
+                          ),
+                          itemBuilder: (BuildContext context, int index) {
+                            var item = data.specificVideos[index];
+                            return OttItem(item: item, onTap: () {});
+                          },
+                        ),
+                      );
+                    }),
+                  );
+                }
+                if (_.hasError) {
+                  return Center(
+                    child: Text(
+                      "Not Available",
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.white,
+                          ),
                     ),
-                    itemBuilder: (BuildContext context, int index) {
-                      var item = data.specificVideos[index];
-                      return OttItem(item: item, onTap: () {});
-                    },
+                  );
+                }
+                return GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 1.5.w,
+                    mainAxisSpacing: 1.h,
+                    childAspectRatio: 6.5 / 8.5,
                   ),
+                  itemCount: 10,
+                  itemBuilder: (context, index) {
+                    return Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: Colors.white70,
+                      child: Container(
+                        height: 20.h,
+                        width: 20.w,
+                        color: Colors.white30,
+                      ),
+                    );
+                  },
                 );
               }),
-            );
-          }),
         ),
       ),
     );
   }
 
-  fetchVideos(context) async {
-    Navigation.instance.navigate(Routes.loadingScreen);
-    final response = await ApiProvider.instance.getVideos(page,null,widget.searchTerm,null,null,null);
+  Future<List<Video>> fetchVideos(context) async {
+    // Navigation.instance.navigate(Routes.loadingScreen);
+    final response = await ApiProvider.instance
+        .getVideos(page, null, widget.searchTerm, null, null, null);
     if (response.success ?? false) {
-      Navigation.instance.goBack();
+      // Navigation.instance.goBack();
       _refreshController.refreshCompleted();
       Provider.of<Repository>(context, listen: false)
           .setSearchVideos(response.videos);
+      return response.videos ?? List<Video>.empty();
     } else {
-      Navigation.instance.goBack();
+      // Navigation.instance.goBack();
       _refreshController.refreshCompleted();
+      return List<Video>.empty();
       // showError(response.message ?? "Something went wrong");
     }
   }
@@ -186,12 +233,11 @@ class CategorySpecificAppbar extends StatelessWidget {
                 // ),
                 Text(
                   searchTerm.capitalize(),
-                  style:
-                      Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            color: Colors.white,
-                            fontSize: 15.sp,
-                            // fontWeight: FontWeight.bold,
-                          ),
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: Colors.white,
+                        fontSize: 15.sp,
+                        // fontWeight: FontWeight.bold,
+                      ),
                 ),
                 Container()
               ],

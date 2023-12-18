@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:niri9/API/api_provider.dart';
+import 'package:niri9/Models/order_history.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:niri9/Repository/repository.dart';
 import 'package:niri9/Router/routes.dart';
@@ -84,167 +85,7 @@ class _OrderPageScreenState extends State<OrderPageScreen>
         child: TabBarView(
           controller: _tabController,
           children: [
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-              child: Consumer<Repository>(builder: (context, data, _) {
-                return ListView.builder(
-                  itemBuilder: (context, index) {
-                    var item = data.orders[index];
-                    return Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 4.w,
-                        vertical: 1.5.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Constants.subscriptionCardBg,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      width: double.infinity,
-                      height: 20.h,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                "Order Id: ",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                      color: Colors.white70,
-                                      fontSize: 8.sp,
-                                    ),
-                              ),
-                              SizedBox(
-                                child: Text(
-                                  "${item.id}",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
-                                      ?.copyWith(
-                                        color: Colors.white,
-                                        fontSize: 10.sp,
-                                      ),
-                                ),
-                              ),
-                              const Spacer(),
-                              Text(
-                                "Date: ",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                      color: Colors.white70,
-                                      fontSize: 8.sp,
-                                    ),
-                              ),
-                              SizedBox(
-                                child: Text(
-                                  "${item.orderDate?.split(" ").first}",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
-                                      ?.copyWith(
-                                        color: Colors.white,
-                                        fontSize: 10.sp,
-                                      ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 1.h,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                item.productName ?? "N/A",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                      color: Colors.white,
-                                      fontSize: 18.sp,
-                                    ),
-                              ),
-
-                            ],
-                          ),
-                          SizedBox(
-                            height: 1.h,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                "Total: ",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                  color: Colors.white70,
-                                  fontSize: 8.sp,
-                                ),
-                              ),
-                              Text(
-                                "₹${item.total}",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                        color: Colors.white, fontSize: 14.sp,),
-                              ),
-                              Text(
-                                "Tax: ",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                  color: Colors.white70,
-                                  fontSize: 8.sp,
-                                ),
-                              ),
-                              Text(
-                                "₹${item.taxAmt}",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                  color: Colors.white, fontSize: 14.sp,),
-                              ),
-                              Text(
-                                "Grand Total: ",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                  color: Colors.white70,
-                                  fontSize: 8.sp,
-                                ),
-                              ),
-                              Text(
-                                "₹${item.grandTotal}",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                  color: Colors.white, fontSize: 14.sp,),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  itemCount: data.orders.length,
-                );
-              }),
-            ),
+            const OrderItemsList(),
             Container(
               width: double.infinity,
               height: double.infinity,
@@ -265,5 +106,200 @@ class _OrderPageScreenState extends State<OrderPageScreen>
     } else {
       Navigation.instance.goBack();
     }
+  }
+}
+
+class OrderItemsList extends StatelessWidget {
+  const OrderItemsList({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      child: Consumer<Repository>(builder: (context, data, _) {
+        return ListView.separated(
+          itemBuilder: (context, index) {
+            var item = data.orders[index];
+            return OrderItemWidget(item: item);
+          },
+          itemCount: data.orders.length,
+          separatorBuilder: (BuildContext context, int index) {
+            return SizedBox(
+              height: 2.h,
+            );
+          },
+        );
+      }),
+    );
+  }
+}
+
+class OrderItemWidget extends StatelessWidget {
+  const OrderItemWidget({
+    super.key,
+    required this.item,
+  });
+
+  final OrderHistoryItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: 4.w,
+        vertical: 1.5.h,
+      ),
+      decoration: BoxDecoration(
+        color: Constants.subscriptionCardBg,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      width: double.infinity,
+      height: 20.h,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                "Order Id: ",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(
+                      color: Colors.white70,
+                      fontSize: 8.sp,
+                    ),
+              ),
+              SizedBox(
+                child: Text(
+                  "${item.id}",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(
+                        color: Colors.white,
+                        fontSize: 10.sp,
+                      ),
+                ),
+              ),
+              const Spacer(),
+              Text(
+                "Date: ",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(
+                      color: Colors.white70,
+                      fontSize: 8.sp,
+                    ),
+              ),
+              SizedBox(
+                child: Text(
+                  "${item.orderDate?.split(" ").first}",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(
+                        color: Colors.white,
+                        fontSize: 10.sp,
+                      ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 1.h,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                item.productName ?? "N/A",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(
+                      color: Colors.white,
+                      fontSize: 18.sp,
+                    ),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 1.h,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                "Total: ",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(
+                      color: Colors.white70,
+                      fontSize: 8.sp,
+                    ),
+              ),
+              Text(
+                "₹${item.total}",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                    ),
+              ),
+              Text(
+                "Tax: ",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(
+                      color: Colors.white70,
+                      fontSize: 8.sp,
+                    ),
+              ),
+              Text(
+                "₹${item.taxAmt}",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                    ),
+              ),
+              Text(
+                "Grand Total: ",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(
+                      color: Colors.white70,
+                      fontSize: 8.sp,
+                    ),
+              ),
+              Text(
+                "₹${item.grandTotal}",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                    ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

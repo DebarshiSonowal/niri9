@@ -83,7 +83,9 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
                 const HomeBanner(),
                 TitleBox(
                   text: "Explore in your language",
-                  onTap: () {},
+                  onTap: () {
+
+                  },
                   isEnd: isEnd,
                 ),
                 LanguageSection(

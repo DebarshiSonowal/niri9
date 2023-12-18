@@ -23,6 +23,7 @@ class WatchPrimaryScreen extends StatelessWidget {
     required this.showing,
     required this.onClicked,
     required this.setVideo,
+    required this.setVideoSource,
   }) : _customVideoPlayerController = customVideoPlayerController;
 
   final CustomVideoPlayerController _customVideoPlayerController;
@@ -30,6 +31,7 @@ class WatchPrimaryScreen extends StatelessWidget {
   final bool showing;
   final Function onClicked;
   final Function(VideoDetails item) setVideo;
+  final Function(MapEntry<String, VideoPlayerController> item) setVideoSource;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +46,7 @@ class WatchPrimaryScreen extends StatelessWidget {
               color: Colors.black,
               padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.2.h),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
                     onTap: () {
@@ -55,6 +58,15 @@ class WatchPrimaryScreen extends StatelessWidget {
                       size: 13.sp,
                     ),
                   ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     showQuality(context);
+                  //   },
+                  //   child: const Icon(
+                  //     Icons.settings,
+                  //     color: Colors.white,
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -78,11 +90,30 @@ class WatchPrimaryScreen extends StatelessWidget {
                 horizontal: 7.w,
                 vertical: 3.h,
               ),
-              child: Image.asset(
-                Assets.advertiseBannerImage,
-                height: 12.h,
-                width: double.infinity,
-                fit: BoxFit.cover,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 5.w,
+                    color: Colors.yellow,
+                    child: Center(
+                      child: Text(
+                        "Ad",
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Image.asset(
+                    Assets.advertiseBannerImage,
+                    height: 12.h,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+
+                ],
               ),
             ),
             Consumer<Repository>(builder: (context, data, _) {
@@ -93,13 +124,13 @@ class WatchPrimaryScreen extends StatelessWidget {
                   var item = data.homeSections[index];
                   return item.videos.isNotEmpty
                       ? DynamicListItem(
-                    text: item.title ?? "",
-                    list: item.videos ?? [],
-                    onTap: () {
-                      Navigation.instance
-                          .navigate(Routes.moreScreen, args: 0);
-                    },
-                  )
+                          text: item.title ?? "",
+                          list: item.videos ?? [],
+                          onTap: () {
+                            Navigation.instance
+                                .navigate(Routes.moreScreen, args: 0);
+                          },
+                        )
                       : Container();
                 },
                 itemCount: data.homeSections.length,
@@ -109,5 +140,44 @@ class WatchPrimaryScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void showQuality(context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
+              "Select Quality From Below\n",
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.white,
+                    fontSize: 12.sp,
+                  ),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (var i in _customVideoPlayerController
+                      .additionalVideoSources!.entries)
+                    ListTile(
+                      onTap: () {
+                        setVideoSource(i);
+                      },
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 0.2.h,
+                      ),
+                      title: Text(
+                        i.key,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.white,
+                            ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }

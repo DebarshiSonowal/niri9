@@ -137,10 +137,10 @@ class OrderHistoryItem {
 }
 
 class TaxData {
-  int? gst;
-  int? cgst;
-  int? sgst;
-  int? igst;
+  String? gst;
+  String? cgst;
+  String? sgst;
+  String? igst;
   double? gstAmt;
   double? cgstAmt;
   double? sgstAmt;
@@ -157,10 +157,10 @@ class TaxData {
         this.igstAmt});
 
   TaxData.fromJson(Map<String, dynamic> json) {
-    gst = json['gst'];
-    cgst = json['cgst'];
-    sgst = json['sgst'];
-    igst = json['igst'];
+    gst = json['gst'].toString();
+    cgst = json['cgst'].toString();
+    sgst = json['sgst'].toString();
+    igst = json['igst'].toString();
     gstAmt = json['gst_amt'];
     cgstAmt = json['cgst_amt'];
     sgstAmt = json['sgst_amt'];

@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:niri9/Constants/constants.dart';
+import 'package:niri9/Models/VideoResolution.dart';
 import 'package:niri9/Models/order_history.dart';
 import 'package:niri9/Models/user.dart';
 
@@ -405,7 +407,8 @@ class ApiProvider {
         url,
         data: jsonEncode(data),
       );
-      debugPrint("updateViewDuration response: ${response?.data} ${response?.headers}");
+      debugPrint(
+          "updateViewDuration response: ${response?.data} ${response?.headers}");
       if (response?.statusCode == 200 || response?.statusCode == 201) {
         return GenericResponse.fromJson(response?.data);
       } else {
@@ -415,7 +418,8 @@ class ApiProvider {
             : response?.data['message']['error']);
       }
     } on DioError catch (e) {
-      debugPrint("updateViewDuration error: ${e.error} ${e.response?.data} ${e.message}");
+      debugPrint(
+          "updateViewDuration error: ${e.error} ${e.response?.data} ${e.message}");
       return GenericResponse.withError(e.response?.data['message']);
     }
   }
@@ -1057,7 +1061,8 @@ class ApiProvider {
             : response?.data['message']['error']);
       }
     } on DioError catch (e) {
-      debugPrint("verifyPayment error: ${e.error} ${e.response?.data} ${e.message}");
+      debugPrint(
+          "verifyPayment error: ${e.error} ${e.response?.data} ${e.message}");
       return GenericResponse.withError(e.response?.data['message']);
     }
   }
@@ -1229,7 +1234,8 @@ class ApiProvider {
       }
     } on DioError catch (e) {
       debugPrint("updateProfile  error: ${e.error} ${e.message}");
-      return ProfileResponse.withError(e.response?.data['message']??e.message);
+      return ProfileResponse.withError(
+          e.response?.data['message'] ?? e.message);
     }
   }
 
@@ -1537,4 +1543,63 @@ class ApiProvider {
       return EpisodeListResponse.withError(e.message);
     }
   }
+
+  Future<VideoResolutionModel> download2(String url) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          // 'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    try {
+      Response? response = await dio?.get(
+        url,
+        onReceiveProgress: showDownloadProgress,
+        //Received data with List<int>
+        options: Options(
+            responseType: ResponseType.bytes,
+            followRedirects: false,
+            validateStatus: (status) {
+              return (status ?? 0) < 500;
+            }),
+      );
+      debugPrint("E123 ${response?.headers.toString()}");
+      // File file = File(savePath);
+      // var raf = file.openSync(mode: FileMode.write);
+      // // response.data is List<int> type
+      File file = File.fromRawPath(response?.data);
+      // final ext = await file.readAsString();
+      debugPrint("E123 ${file.path}");
+      return VideoResolutionModel(true, extractURLandResolution(file.path));
+    } catch (e) {
+      print("E123$e");
+      return VideoResolutionModel(false, []);
+    }
+  }
+
+  List<VideoResolution> extractURLandResolution(String inputText) {
+    RegExp regex = RegExp(
+        r'RESOLUTION=([0-9]+x[0-9]+),.*\n([^#]+\.m3u8\?useMezzanine=true)');
+
+    Iterable<Match> matches = regex.allMatches(inputText);
+    List<VideoResolution> list = [];
+    for (Match match in matches) {
+      String resolution = match.group(1)!;
+      String url = match.group(2)!;
+      list.add(VideoResolution(
+          resolution, url, int.parse(resolution.split("x")[1])));
+      // print('Resolution: $resolution\nURL: $url\n');
+    }
+    // print("MYE!@# \n");
+    list.sort((a, b) => a.resolution.compareTo(b.resolution));
+    print("E123A $list");
+    return list;
+  }
+
+  void showDownloadProgress(int count, int total) {}
 }

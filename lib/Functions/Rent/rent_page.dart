@@ -54,6 +54,7 @@ final ScrollController _scrollController = ScrollController();
         width: 100.w,
         padding: EdgeInsets.symmetric(
           vertical: 0.5.h,
+          horizontal: 2.w,
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -110,10 +111,10 @@ final ScrollController _scrollController = ScrollController();
                     controller: _scrollController,
                     itemCount: data.specificVideos.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 2.w,
-                      mainAxisSpacing: 0.5.h,
-                      childAspectRatio:8.5 / 11,
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 1.5.w,
+                      mainAxisSpacing: 1.h,
+                      childAspectRatio:6.5/8.5,
                     ),
                     itemBuilder: (BuildContext context, int index) {
                       var item = data.specificVideos[index];

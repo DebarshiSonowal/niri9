@@ -84,7 +84,7 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
                   ),
                   // color: Colors.red,
                   width: double.infinity,
-                  height: 14.h,
+                  height: 24.h,
                   child: ListView.separated(
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
