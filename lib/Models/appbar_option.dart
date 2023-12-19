@@ -1,7 +1,7 @@
 class AppBarOption{
-  String? name;
+  String? name,slug;
   String? image;
   int? sequence;
   bool? has_festival;
-  AppBarOption({this.name, this.image,this.sequence, this.has_festival});
+  AppBarOption({this.name,this.slug, this.image,this.sequence, this.has_festival});
 }

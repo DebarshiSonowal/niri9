@@ -87,81 +87,8 @@ class CustomAppbar extends StatelessWidget {
           ),
           Consumer<Repository>(
             builder: (context, data, _) {
-              return Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 2.w,
-                ),
-                width: double.infinity,
-                height: 6.h,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: 76.w,
-                      child: ListView.separated(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          var item = data.appbarOptions[index];
-                          return CustomAppbarItem(
-                            item: item,
-                            index: index,
-                            onTap: () {
-                              if (item.name?.toLowerCase() == "film festival" &&
-                                  (item.has_festival ?? false)) {
-                                Navigation.instance
-                                    .navigate(Routes.filmFestivalScreen);
-                              } else {
-                                Navigation.instance.navigate(
-                                    Routes.selectedCategoryScreen,
-                                    args: "${item.name}");
-                              }
-                            },
-                          );
-                        },
-                        separatorBuilder: (context, index) {
-                          return SizedBox(
-                            width: 4.w,
-                          );
-                        },
-                        itemCount: (data.appbarOptions.length > 4
-                            ? 4
-                            : data.appbarOptions.length),
-                      ),
-                    ),
-                    data.appbarOptions.length <= 4
-                        ? Container()
-                        : SizedBox(
-                            width: 10.w,
-                            child: GestureDetector(
-                              onTap: () {
-                                updateState();
-                              },
-                              child: SizedBox(
-                                width: 15.w,
-                                child: SingleChildScrollView(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Image.asset(
-                                        !isExpanded
-                                            ? Assets.lessImage
-                                            : Assets.moreImage,
-                                        height: 12.sp,
-                                        width: 12.sp,
-                                        // color: Colors.white,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                  ],
-                ),
-              );
+              return FirstLineAppbar(
+                  updateState: updateState, isExpanded: isExpanded, data: data);
             },
           ),
           !isExpanded
@@ -244,6 +171,120 @@ class CustomAppbar extends StatelessWidget {
                   ],
                 )
               : Container(),
+        ],
+      ),
+    );
+  }
+}
+
+class FirstLineAppbar extends StatelessWidget {
+  const FirstLineAppbar({
+    super.key,
+    required this.updateState,
+    required this.isExpanded,
+    required this.data,
+  });
+
+  final Repository data;
+  final Function updateState;
+  final bool isExpanded;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: 2.w,
+      ),
+      width: double.infinity,
+      height: 6.h,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            width: 76.w,
+            child: ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                if (index != 0) {
+                  var item = data.appbarOptions[index];
+                  return CustomAppbarItem(
+                    item: item,
+                    index: index - 1,
+                    onTap: () {
+                      if (item.name?.toLowerCase() == "film festival" &&
+                          (item.has_festival ?? false)) {
+                        Navigation.instance.navigate(Routes.filmFestivalScreen);
+                      } else {
+                        Navigation.instance.navigate(
+                            Routes.selectedCategoryScreen,
+                            args: "${item.slug}");
+                      }
+                    },
+                  );
+                } else {
+                  var item = AppBarOption(
+                    name: data.categoryAll?.title ?? "",
+                    slug: data.categoryAll?.slug ?? "",
+                    image: data.categoryAll?.img ??
+                        "https://picsum.photos/200/300",
+                    sequence: 0,
+                    has_festival: false,
+                  );
+                  return CustomAppbarItem(
+                    item: item,
+                    index: index - 1,
+                    onTap: () {
+                      if (item.name?.toLowerCase() == "film festival" &&
+                          (item.has_festival ?? false)) {
+                        Navigation.instance.navigate(Routes.filmFestivalScreen);
+                      } else {
+                        Navigation.instance.navigate(
+                            Routes.selectedCategoryScreen,
+                            args: "${item.name}");
+                      }
+                    },
+                  );
+                }
+              },
+              separatorBuilder: (context, index) {
+                return SizedBox(
+                  width: 4.w,
+                );
+              },
+              itemCount: (data.appbarOptions.length + 1 > 4
+                  ? 4
+                  : data.appbarOptions.length + 1),
+            ),
+          ),
+          data.appbarOptions.length <= 4
+              ? Container()
+              : SizedBox(
+                  width: 10.w,
+                  child: GestureDetector(
+                    onTap: () {
+                      updateState();
+                    },
+                    child: SizedBox(
+                      width: 15.w,
+                      child: SingleChildScrollView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Image.asset(
+                              !isExpanded ? Assets.lessImage : Assets.moreImage,
+                              height: 12.sp,
+                              width: 12.sp,
+                              // color: Colors.white,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
         ],
       ),
     );

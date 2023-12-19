@@ -71,8 +71,12 @@ class _AccountPageState extends State<AccountPage> {
                     width: 2.w,
                   ),
                   GestureDetector(
-                    onTap: (){
-                      Navigation.instance.navigate(Routes.profileUpdateScreen);
+                    onTap: () {
+                      if (Storage.instance.isLoggedIn) {
+                        Navigation.instance.navigate(Routes.profileUpdateScreen);
+                      } else {
+                        Navigation.instance.navigate(Routes.loginScreen);
+                      }
                     },
                     child: Text(
                       "Manage Profiles",
@@ -137,7 +141,11 @@ class _AccountPageState extends State<AccountPage> {
   void onTap(int index, AccountItem item) {
     switch (index) {
       case 0:
-        Navigation.instance.navigate(Routes.profile);
+        if (Storage.instance.isLoggedIn) {
+          Navigation.instance.navigate(Routes.profile);
+        } else {
+          Navigation.instance.navigate(Routes.loginScreen);
+        }
         break;
       case 1:
         Navigation.instance.navigate(Routes.subscriptionScreen);
@@ -150,6 +158,7 @@ class _AccountPageState extends State<AccountPage> {
       case 4:
         break;
       case 5:
+        Navigation.instance.navigate(Routes.activateTV);
         break;
       case 6:
         // _launchUrl(Uri.parse("https://niri9.com/terms-condition.php"));
@@ -169,6 +178,7 @@ class _AccountPageState extends State<AccountPage> {
         Navigation.instance.navigate(Routes.aboutScreen);
         break;
       case 11:
+        _launchUrl(Uri.parse("whatsapp://send?phone=+917002413212"));
         break;
       default:
         Navigation.instance.navigate(Routes.loginScreen);
@@ -177,7 +187,9 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   Future<void> _launchUrl(Uri _url) async {
-    if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
+    if (!await launchUrl(
+      _url,
+    )) {
       throw Exception('Could not launch $_url');
     }
   }

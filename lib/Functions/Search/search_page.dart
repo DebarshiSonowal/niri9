@@ -47,7 +47,10 @@ class _SearchPageState extends State<SearchPage> {
             .categories
             .firstWhere((element) => element.name == widget.filters);
         search("");
+      }else{
+        search("");
       }
+
     });
   }
 

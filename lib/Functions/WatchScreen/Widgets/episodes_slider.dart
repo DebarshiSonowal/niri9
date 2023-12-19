@@ -93,6 +93,7 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
                       return GestureDetector(
                         onTap: () {
                           widget.setVideo(item);
+                          debugPrint("Video Clicked${item.videoPlayer}");
                         },
                         child: Container(
                           decoration: BoxDecoration(

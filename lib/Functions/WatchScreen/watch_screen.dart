@@ -41,8 +41,8 @@ class WatchScreen extends StatefulWidget {
 class _WatchScreenState extends State<WatchScreen> {
   Timer? uploadTimer;
   int? lastPlayed;
-  late VideoPlayerController videoPlayerController;
-  late CustomVideoPlayerController _customVideoPlayerController;
+  VideoPlayerController? videoPlayerController;
+  CustomVideoPlayerController? _customVideoPlayerController;
   var list = [
     "Season 1",
     "Season 2",
@@ -79,9 +79,9 @@ class _WatchScreenState extends State<WatchScreen> {
 
   @override
   void dispose() {
-    videoPlayerController.pause();
-    videoPlayerController.dispose();
-    _customVideoPlayerController.dispose();
+    videoPlayerController?.pause();
+    videoPlayerController?.dispose();
+    _customVideoPlayerController?.dispose();
     super.dispose();
   }
 
@@ -96,10 +96,13 @@ class _WatchScreenState extends State<WatchScreen> {
           child: FutureBuilder(
             future: _future,
             builder: (context, _) {
-              return _.hasData
+              return (_.hasData &&
+                      _customVideoPlayerController != null &&
+                      videoPlayerController != null)
                   ? WatchPrimaryScreen(
-                      customVideoPlayerController: _customVideoPlayerController,
-                      videoPlayerController: videoPlayerController,
+                      customVideoPlayerController:
+                          _customVideoPlayerController!,
+                      videoPlayerController: videoPlayerController!,
                       showing: showing,
                       onClicked: () {
                         showing = true;
@@ -114,8 +117,9 @@ class _WatchScreenState extends State<WatchScreen> {
                           }
                         });
                       },
-                      setVideo: (VideoDetails item) {
-                        initializeVideoPlayer(context, item.videoPlayer);
+                      setVideo: (VideoDetails item) async {
+                        debugPrint("Showing ${item.videoPlayer}");
+                        await initializeVideoPlayer(context, item.videoPlayer);
                         Provider.of<Repository>(context, listen: false)
                             .setVideo(item.id ?? 0);
                         selectedVideoListId = item.id ?? 0;
@@ -212,21 +216,21 @@ class _WatchScreenState extends State<WatchScreen> {
       videoPlayerController =
           VideoPlayerController.networkUrl(Uri.parse(url ?? Assets.videoUrl))
             ..initialize().then((value) async {
-              videoPlayerController.addListener(videoControllerListener);
+              videoPlayerController?.addListener(videoControllerListener);
               _customVideoPlayerController = CustomVideoPlayerController(
                 context: context,
-                videoPlayerController: videoPlayerController,
+                videoPlayerController: videoPlayerController!,
                 customVideoPlayerSettings: const CustomVideoPlayerSettings(
-                  playOnlyOnce: true,
+                  playOnlyOnce: false,
 
                   // customVideoPlayerPopupSettings: ,
                 ),
                 additionalVideoSources: additionalVideoSources,
               );
-              videoPlayerController.play();
+              videoPlayerController?.play();
             });
       additionalVideoSources?.addAll({
-        "Default": videoPlayerController,
+        "Auto": videoPlayerController!,
       });
     } catch (e) {
       print(e);
@@ -351,7 +355,7 @@ class _WatchScreenState extends State<WatchScreen> {
   }
 
   void setVideoPlayer(BuildContext context, VideoPlayerController value) async {
-    videoPlayerController.pause();
+    videoPlayerController?.pause();
     // videoPlayerController.dispose();
     _customVideoPlayerController;
     final response = await ApiProvider.instance.download2(value.dataSource);
@@ -376,12 +380,12 @@ class _WatchScreenState extends State<WatchScreen> {
     try {
       videoPlayerController = value;
       additionalVideoSources?.addAll({
-        "Default": videoPlayerController,
+        "Auto": videoPlayerController!,
       });
-      videoPlayerController.addListener(() {
+      videoPlayerController?.addListener(() {
         debugPrint("listener is triggered video player");
         int currentDuration =
-            videoPlayerController.value.position.inMilliseconds;
+            videoPlayerController!.value.position.inMilliseconds;
 
         if (currentDuration >=
                 (int.parse(Provider.of<Repository>(context, listen: false)
@@ -399,10 +403,10 @@ class _WatchScreenState extends State<WatchScreen> {
                               .videoSetting
                               ?.forwardTime ??
                           "10")), () {
-            if (videoPlayerController.value.isPlaying) {
+            if (videoPlayerController?.value.isPlaying??false) {
               // Call updateUploadStatus when the video is playing
               updateUploadStatus(
-                _customVideoPlayerController,
+                _customVideoPlayerController!,
                 Provider.of<Repository>(context, listen: false).videoDetails!,
                 "auto",
                 currentDuration,
@@ -414,11 +418,11 @@ class _WatchScreenState extends State<WatchScreen> {
         }
 
         // Check if the video is currently playing
-        if (videoPlayerController.value.isPlaying) {
+        if (videoPlayerController?.value.isPlaying??false) {
           if (!isPlaying) {
             // Call updateUploadStatus when video starts playing
             updateUploadStatus(
-              _customVideoPlayerController,
+              _customVideoPlayerController!,
               Provider.of<Repository>(context, listen: false).videoDetails!,
               "play",
               currentDuration,
@@ -431,18 +435,18 @@ class _WatchScreenState extends State<WatchScreen> {
 
         setState(() {});
       });
-      await videoPlayerController.initialize();
+      await videoPlayerController?.initialize();
       _customVideoPlayerController = CustomVideoPlayerController(
         context: context,
-        videoPlayerController: videoPlayerController,
+        videoPlayerController: videoPlayerController!,
         customVideoPlayerSettings: const CustomVideoPlayerSettings(
-          playOnlyOnce: true,
+          playOnlyOnce: false,
 
           // customVideoPlayerPopupSettings: ,
         ),
         additionalVideoSources: additionalVideoSources,
       );
-      videoPlayerController.play();
+      videoPlayerController?.play();
     } catch (e) {
       print("Value is ${value.dataSource} ${e}");
     }
@@ -450,7 +454,7 @@ class _WatchScreenState extends State<WatchScreen> {
 
   void videoControllerListener() {
     debugPrint("listener is triggered video player");
-    int currentDuration = videoPlayerController.value.position.inMilliseconds;
+    int currentDuration = videoPlayerController!.value.position.inMilliseconds;
 
     if (currentDuration >=
             (int.parse(Provider.of<Repository>(context, listen: false)
@@ -467,10 +471,10 @@ class _WatchScreenState extends State<WatchScreen> {
                       .videoSetting
                       ?.forwardTime ??
                   "10")), () {
-        if (videoPlayerController.value.isPlaying) {
+        if (videoPlayerController?.value.isPlaying??false) {
           // Call updateUploadStatus when the video is playing
           updateUploadStatus(
-            _customVideoPlayerController,
+            _customVideoPlayerController!,
             Provider.of<Repository>(context, listen: false).videoDetails!,
             "auto",
             currentDuration,
@@ -482,11 +486,11 @@ class _WatchScreenState extends State<WatchScreen> {
     }
 
     // Check if the video is currently playing
-    if (videoPlayerController.value.isPlaying) {
+    if (videoPlayerController?.value.isPlaying??false) {
       if (!isPlaying) {
         // Call updateUploadStatus when video starts playing
         updateUploadStatus(
-          _customVideoPlayerController,
+          _customVideoPlayerController!,
           Provider.of<Repository>(context, listen: false).videoDetails!,
           "play",
           currentDuration,

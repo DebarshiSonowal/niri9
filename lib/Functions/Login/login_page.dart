@@ -2,6 +2,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_social_button/flutter_social_button.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Constants/assets.dart';
@@ -25,7 +26,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final mobileController = TextEditingController();
   final passwordController = TextEditingController();
-  bool visible = true;
+  bool visible = true, agree = false;
   CountryCode selectedCountryCode = CountryCode(name: 'IN', dialCode: "+91");
 
   @override
@@ -134,7 +135,61 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               SizedBox(
-                height: 4.h,
+                height: 2.5.h,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 2.w,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 2.h,
+                      child: Checkbox(
+                        checkColor: Colors.blue,
+                        fillColor: MaterialStateProperty.all(Colors.white10),
+                        value: agree,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            agree = !agree;
+                          });
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: 2.h,
+                      width: 80.w,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text.rich(
+                            TextSpan(
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 8.5.sp,
+                              ),
+                              text: 'By proceeding you are agreeing to our ',
+                              children: <InlineSpan>[
+                                TextSpan(
+                                  text: 'Terms & Conditions',
+                                  style: TextStyle(
+                                    fontSize: 9.sp,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 2.h,
               ),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 4.5.w),
@@ -155,15 +210,28 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   onPressed: () {
                     // loginByOTP(mobileController.text);
-                    if (mobileController.text.isNotEmpty &&
-                        mobileController.text.length >= 10) {
-                      debugPrint(
-                          "nybe ${selectedCountryCode.dialCode} ${mobileController.text}");
-                      Navigation.instance.navigate(
-                        Routes.otpScreen,
-                        args:
-                            "${selectedCountryCode.dialCode}${mobileController.text.toString()}",
-                      );
+                    if (agree) {
+                      if (mobileController.text.isNotEmpty &&
+                          mobileController.text.length >= 10) {
+                        debugPrint(
+                            "nybe ${selectedCountryCode.dialCode} ${mobileController.text}");
+                        if (selectedCountryCode.dialCode == "+91") {
+                          Navigation.instance.navigate(
+                            Routes.otpScreen,
+                            args:
+                                "${selectedCountryCode.dialCode}${mobileController.text.toString()}",
+                          );
+                        } else {
+                          loginByFirebase(selectedCountryCode.dialCode,
+                              mobileController.text.toString());
+                        }
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: "Enter a valid mobile number");
+                      }
+                    } else {
+                      Fluttertoast.showToast(
+                          msg: "Please agree to our terms & conditions");
                     }
                   },
                   child: Text(
@@ -259,27 +327,24 @@ class _LoginPageState extends State<LoginPage> {
     return await FirebaseAuth.instance
         .signInWithCredential(credential)
         .then((UserCredential value) {
-      loginByGoogle(value);
       return value;
     });
   }
 
-  void loginByGoogle(UserCredential value) async {
+  void loginByFirebase(dialcode, number) async {
     Navigation.instance.navigate(Routes.loadingScreen);
     final response = await ApiProvider.instance.login(
-      "google",
+      "firebase",
       // selectedCountryCode.dialCode.toString(),
+      dialcode,
+      number,
       "",
       "",
-      (value.additionalUserInfo?.username ?? "").split(" ")[0],
-      (value.additionalUserInfo?.username ?? "").split(" ").length > 1
-          ? ((value.additionalUserInfo?.username ?? "").split(" ")[1])
-          : "",
-      value.user?.email ?? "",
-      value.user?.photoURL ?? "",
-      value.user?.uid ?? "",
       "",
       "",
+      "",
+      "",
+      Provider.of<Repository>(context, listen: false).firebase_otp_key,
     );
     if (response.success ?? false) {
       Navigation.instance.goBack();
@@ -291,8 +356,6 @@ class _LoginPageState extends State<LoginPage> {
       showError(response.message ?? "Something Went Wrong");
     }
   }
-
-
 
   void showError(String msg) {
     AlertX.instance.showAlert(

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:niri9/API/api_provider.dart';
+import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:niri9/Repository/repository.dart';
 import 'package:niri9/Router/routes.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Constants/assets.dart';
@@ -28,22 +30,26 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              Assets.logoTransparent,
-              height: 15.h,
-              width: 40.w,
-              fit: BoxFit.cover,
-            ),
-            SizedBox(
-              height: 1.h,
-            ),
-            SizedBox(
-              height: 3.5.h,
-              width: 7.w,
-              child: const CircularProgressIndicator(
-                color: Colors.white,
+            Shimmer.fromColors(
+              baseColor: Colors.white,
+              highlightColor: Colors.red,
+              child: Image.asset(
+                Assets.logoTransparent,
+                height: 15.h,
+                width: 40.w,
+                fit: BoxFit.cover,
               ),
             ),
+            // SizedBox(
+            //   height: 1.h,
+            // ),
+            // SizedBox(
+            //   height: 3.5.h,
+            //   width: 7.w,
+            //   child: const CircularProgressIndicator(
+            //     color: Colors.white,
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -60,44 +66,44 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> fetchData() async {
     await fetchCategories();
-    await fetchBanner();
+    // await fetchBanner();
     await fetchGenres();
-    await fetchSections();
-    await fetchPrivacy();
-    await fetchRefund();
-    await fetchFaq();
-    await fetchHelp();
-    await fetchTerms();
+    // await fetchSections();
+    // await fetchPrivacy();
+    // await fetchRefund();
+    // await fetchFaq();
+    // await fetchHelp();
+    // await fetchTerms();
     await fetchSettings();
     Navigation.instance.navigateAndRemoveUntil(Routes.homeScreen);
   }
 
-  Future<void> fetchBanner() async {
-    final response = await ApiProvider.instance.getBannerResponse("home");
-    if (response.success ?? false) {
-      // if (!context.mounted) return;
-      Provider.of<Repository>(context, listen: false)
-          .addHomeBanner(response.result??[]);
-      // await fetchVideos(response.sections[0]);
-    }
-  }
+  // Future<void> fetchBanner() async {
+  //   final response = await ApiProvider.instance.getBannerResponse("home");
+  //   if (response.success ?? false) {
+  //     // if (!context.mounted) return;
+  //     Provider.of<Repository>(context, listen: false)
+  //         .addHomeBanner(response.result??[]);
+  //     // await fetchVideos(response.sections[0]);
+  //   }
+  // }
 
-  Future<void> fetchSections() async {
-    final response = await ApiProvider.instance.getSections("home",'1');
-    if (response.status ?? false) {
-      // if (!context.mounted) return;
-      Provider.of<Repository>(context, listen: false)
-          .addHomeSections(response.sections);
-      // await fetchVideos(response.sections[0]);
-    }
-    final response1 = await ApiProvider.instance.getSections("trending",'1');
-    if (response1.status ?? false) {
-      // if (!context.mounted) return;
-      Provider.of<Repository>(context, listen: false)
-          .addTrendingSections(response1.sections);
-      // await fetchVideos(response.sections[0]);
-    }
-  }
+  // Future<void> fetchSections() async {
+  //   final response = await ApiProvider.instance.getSections("home",'1');
+  //   if (response.status ?? false) {
+  //     // if (!context.mounted) return;
+  //     Provider.of<Repository>(context, listen: false)
+  //         .addHomeSections(response.sections);
+  //     // await fetchVideos(response.sections[0]);
+  //   }
+  //   final response1 = await ApiProvider.instance.getSections("trending",'1');
+  //   if (response1.status ?? false) {
+  //     // if (!context.mounted) return;
+  //     Provider.of<Repository>(context, listen: false)
+  //         .addTrendingSections(response1.sections);
+  //     // await fetchVideos(response.sections[0]);
+  //   }
+  // }
 
   Future<void> fetchCategories() async {
     final response = await ApiProvider.instance.getCategories();
@@ -122,20 +128,20 @@ class _SplashScreenState extends State<SplashScreen> {
     // }
   }
 
-  Future<void> fetchPrivacy() async {
-    final response = await ApiProvider.instance.getPrivacyPolicy();
-    if (response.success ?? false) {
-      Provider.of<Repository>(context, listen: false)
-          .setPrivacy(response.result ?? "");
-    }
-  }
-  Future<void> fetchRefund() async {
-    final response = await ApiProvider.instance.getRefundPolicy();
-    if (response.success ?? false) {
-      Provider.of<Repository>(context, listen: false)
-          .setRefund(response.result ?? "");
-    }
-  }
+  // Future<void> fetchPrivacy() async {
+  //   final response = await ApiProvider.instance.getPrivacyPolicy();
+  //   if (response.success ?? false) {
+  //     Provider.of<Repository>(context, listen: false)
+  //         .setPrivacy(response.result ?? "");
+  //   }
+  // }
+  // Future<void> fetchRefund() async {
+  //   final response = await ApiProvider.instance.getRefundPolicy();
+  //   if (response.success ?? false) {
+  //     Provider.of<Repository>(context, listen: false)
+  //         .setRefund(response.result ?? "");
+  //   }
+  // }
   Future<void> fetchHelp() async {
     final response = await ApiProvider.instance.getHelpCenter();
     if (response.success ?? false) {
@@ -143,20 +149,20 @@ class _SplashScreenState extends State<SplashScreen> {
           .setHelp(response.result ?? "");
     }
   }
-  Future<void> fetchFaq() async {
-    final response = await ApiProvider.instance.getFAQ();
-    if (response.success ?? false) {
-      Provider.of<Repository>(context, listen: false)
-          .setFaq(response.result ?? "");
-    }
-  }
-  Future<void> fetchTerms() async {
-    final response = await ApiProvider.instance.getTermsPolicy();
-    if (response.success ?? false) {
-      Provider.of<Repository>(context, listen: false)
-          .setTermsConditions(response.result ?? "");
-    }
-  }
+  // Future<void> fetchFaq() async {
+  //   final response = await ApiProvider.instance.getFAQ();
+  //   if (response.success ?? false) {
+  //     Provider.of<Repository>(context, listen: false)
+  //         .setFaq(response.result ?? "");
+  //   }
+  // }
+  // Future<void> fetchTerms() async {
+  //   final response = await ApiProvider.instance.getTermsPolicy();
+  //   if (response.success ?? false) {
+  //     Provider.of<Repository>(context, listen: false)
+  //         .setTermsConditions(response.result ?? "");
+  //   }
+  // }
 
   Future<void> fetchSettings() async {
     final response = await ApiProvider.instance.getSettings();
@@ -165,6 +171,8 @@ class _SplashScreenState extends State<SplashScreen> {
           .setVideoPercent(response.videoPercent);
       Provider.of<Repository>(context, listen: false)
           .setVideoSettings(response.videoSetting);
+      Provider.of<Repository>(context, listen: false)
+          .addCategoryAll(response.categoryAll);
     }
   }
 }

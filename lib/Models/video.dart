@@ -41,7 +41,7 @@ class Video {
   Meta? meta, meta_org;
   List<Genres> genres = [];
   List<Rent> rent = [];
-  List<Language> related_language = [];
+  List<RelatedLanguage> related_language = [];
   List<Season> season_list = [];
   List<VideoDetails> videos = [
 
@@ -98,7 +98,7 @@ class Video {
     //         .toList();
     related_language = json['related_language'] == null
         ? []
-        : (json['related_language'] as List).map((e) => Language.fromJson(e)).toList();
+        : (json['related_language'] as List).map((e) => RelatedLanguage.fromJson(e)).toList();
     season_list = json['season_list'] == null
         ? []
         : (json['season_list'] as List).map((e) => Season.fromJson(e)).toList();

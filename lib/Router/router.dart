@@ -8,6 +8,7 @@ import 'package:niri9/Functions/Login/login_page.dart';
 import 'package:niri9/Functions/More/more_page.dart';
 import 'package:niri9/Functions/Orders/orders_page.dart';
 import 'package:niri9/Functions/Otp/otp_screen.dart';
+
 // import 'package:niri9/Functions/Premium/trending_page.dart';
 import 'package:niri9/Functions/Privacy/privacy_policy.dart';
 import 'package:niri9/Functions/ProfilePage/profile_page.dart';
@@ -19,6 +20,7 @@ import 'package:niri9/Functions/TermsConditions/terms_conditions.dart';
 import 'package:niri9/Router/routes.dart';
 
 import '../Functions/AboutPage/about_page.dart';
+import '../Functions/ActivateTV/activate_tc.dart';
 import '../Functions/CategorySpecific/category_specific_screen.dart';
 import '../Functions/Cupon/apply_cupons.dart';
 import '../Functions/SplashScreen/splash_screen.dart';
@@ -63,7 +65,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           page: LanguageSelectedPage(language: settings.arguments as String));
     case Routes.selectedCategoryScreen:
       return FadeTransitionPageRouteBuilder(
-          page: CategorySpecificScreen(searchTerm: settings.arguments as String));
+          page:
+              CategorySpecificScreen(searchTerm: settings.arguments as String));
     case Routes.filmFestivalScreen:
       return FadeTransitionPageRouteBuilder(page: const FilmFestivalPage());
     case Routes.watchScreen:
@@ -87,6 +90,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return FadeTransitionPageRouteBuilder(page: const HelpFaqPage());
     case Routes.aboutScreen:
       return FadeTransitionPageRouteBuilder(page: const AboutPage());
+    case Routes.activateTV:
+      return FadeTransitionPageRouteBuilder(page: const ActivateTvScreen());
     case Routes.termsConditionsScreen:
       return FadeTransitionPageRouteBuilder(
           page: const TermsConditionsScreen());

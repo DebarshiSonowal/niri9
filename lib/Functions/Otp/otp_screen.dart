@@ -305,7 +305,7 @@ class _OtpPageState extends State<OtpPage> {
   void loginByOTP(String mobile, String otp) async {
     Navigation.instance.navigate(Routes.loadingScreen);
     final response = await ApiProvider.instance.login(
-      "mobile",
+      "otp",
       // selectedCountryCode.dialCode.toString(),
       mobile.toString().substring(0, 3),
       mobile.toString().substring(3),

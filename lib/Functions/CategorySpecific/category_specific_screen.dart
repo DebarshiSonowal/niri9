@@ -148,26 +148,7 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
                     ),
                   );
                 }
-                return GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 1.5.w,
-                    mainAxisSpacing: 1.h,
-                    childAspectRatio: 6.5 / 8.5,
-                  ),
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return Shimmer.fromColors(
-                      baseColor: Colors.white,
-                      highlightColor: Colors.white70,
-                      child: Container(
-                        height: 20.h,
-                        width: 20.w,
-                        color: Colors.white30,
-                      ),
-                    );
-                  },
-                );
+                return const GridViewShimmering();
               }),
         ),
       ),
@@ -190,6 +171,36 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
       return List<Video>.empty();
       // showError(response.message ?? "Something went wrong");
     }
+  }
+}
+
+class GridViewShimmering extends StatelessWidget {
+  const GridViewShimmering({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 1.5.w,
+        mainAxisSpacing: 1.h,
+        childAspectRatio: 6.5 / 8.5,
+      ),
+      itemCount: 10,
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: Colors.white,
+          highlightColor: Colors.white70,
+          child: Container(
+            height: 20.h,
+            width: 20.w,
+            color: Colors.white30,
+          ),
+        );
+      },
+    );
   }
 }
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:niri9/Navigation/Navigate.dart';
 import 'package:niri9/Repository/repository.dart';
+import 'package:niri9/Router/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:read_more_text/read_more_text.dart';
 import 'package:sizer/sizer.dart';
@@ -36,16 +38,21 @@ class DescriptionSection extends StatelessWidget {
                 SizedBox(
                   width: 4.w,
                 ),
-                Text(
-                  "${data.videoDetails?.language_name}",
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Constants.thirdColor,
-                        fontSize: 9.sp,
-                      ),
+                GestureDetector(
+                  onTap: () {
+                    showLanguages(context, data);
+                  },
+                  child: Text(
+                    "${data.videoDetails?.language_name}",
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Constants.thirdColor,
+                          fontSize: 9.sp,
+                        ),
+                  ),
                 ),
                 const Spacer(),
                 Text(
-                  "Available in ${data.videoDetails?.related_language.length} language",
+                  "Available in ${(data.videoDetails?.related_language.length ?? 0) + 1} language",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Colors.white30,
                         fontSize: 9.sp,
@@ -88,5 +95,45 @@ class DescriptionSection extends StatelessWidget {
         ),
       );
     });
+  }
+
+  void showLanguages(context, Repository data) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
+              "Select Audio Language From Below\n",
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.white,
+                    fontSize: 12.sp,
+                  ),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (var i in data.videoDetails!.related_language)
+                    ListTile(
+                      onTap: () {
+                        Navigation.instance.navigateAndReplace(
+                            Routes.watchScreen,
+                            args: i.video_id);
+                      },
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 0.2.h,
+                      ),
+                      title: Text(
+                        i.language_name ?? "",
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.white,
+                            ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }

@@ -35,6 +35,8 @@ class Assets {
 
   // static String videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
   static String videoUrl = "https://customer-edsfz57k0gqg8bse.cloudflarestream.com/eb471d0611714d8133bc092c14ecc979/manifest/stream_tb067f647f3ee9200161205d1160c8490_r543241465.m3u8";
+
+  static const smartTV = "assets/images/smart.png";
   // static String videoUrl = "https://customer-edsfz57k0gqg8bse.cloudflarestream.com/586d3a3a3600c6df1ce400b0abde47c6/manifest/video.m3u8";
 
 // static const banner_image = "assets/images/";

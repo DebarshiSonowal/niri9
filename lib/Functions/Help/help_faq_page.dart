@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:niri9/Repository/repository.dart';
+import 'package:niri9/Router/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../API/api_provider.dart';
 import '../../Constants/assets.dart';
 import '../../Constants/constants.dart';
 
@@ -57,40 +59,56 @@ class HelpFaqPage extends StatelessWidget {
         padding: EdgeInsets.symmetric(
           horizontal: 5.w,
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Help & FAQ's",
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  color: Colors.white,
-                ),
+        child: FutureBuilder(
+          builder: (context, _) {
+            return SingleChildScrollView(
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Help & FAQ's",
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                          color: Colors.white,
+                        ),
+                  ),
+                  SizedBox(
+                    height: 4.h,
+                  ),
+                  Consumer<Repository>(builder: (context, data, _) {
+                    return Html(
+                      data: data.faq ?? "",
+                      // style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      //   color: Colors.white70,
+                      // ),
+                    );
+                  }),
+                  // const Spacer(),
+                  // Image.asset(
+                  //   Assets.logoTransparent,
+                  //   height: 15.h,
+                  //   width: 30.w,
+                  //   fit: BoxFit.cover,
+                  // ),
+                ],
               ),
-              SizedBox(
-                height: 4.h,
-              ),
-              Consumer<Repository>(
-                builder: (context,data,_) {
-                  return Html(
-                    data:data.faq?? "",
-                    // style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    //   color: Colors.white70,
-                    // ),
-                  );
-                }
-              ),
-              // const Spacer(),
-              // Image.asset(
-              //   Assets.logoTransparent,
-              //   height: 15.h,
-              //   width: 30.w,
-              //   fit: BoxFit.cover,
-              // ),
-            ],
-          ),
+            );
+          },
+          future: fetchFaq(context),
         ),
       ),
     );
+  }
+
+  Future<void> fetchFaq(context) async {
+    await Future.delayed(Duration.zero, () {});
+    Navigation.instance.navigate(Routes.loadingScreen);
+    final response = await ApiProvider.instance.getFAQ();
+    if (response.success ?? false) {
+      Provider.of<Repository>(context, listen: false)
+          .setFaq(response.result ?? "");
+      Navigation.instance.goBack();
+    } else {
+      Navigation.instance.goBack();
+    }
   }
 }

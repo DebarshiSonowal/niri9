@@ -32,49 +32,75 @@ class VideoSection extends StatelessWidget {
           Align(
             alignment: Alignment.center,
             child: SizedBox(
-              height: 5.h,
+              height: 20.h,
               // color: Colors.grey,
-              child: showing?Row(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  IconButton(
-                    onPressed: () {
+                  // IconButton(
+                  //   onPressed: () {
+                  //     _customVideoPlayerController.videoPlayerController.seekTo(_customVideoPlayerController.videoPlayerController.value.position-const Duration(seconds: 10));
+                  //   },
+                  //   icon: const Icon(
+                  //     FontAwesomeIcons.backward,
+                  //     color: Colors.white,
+                  //   ),
+                  // ),
+                  // IconButton(
+                  //   splashColor: Colors.grey.shade300,
+                  //   onPressed: () {
+                  //     isPlaying?_customVideoPlayerController.videoPlayerController.pause():_customVideoPlayerController.videoPlayerController.play();
+                  //   },
+                  //   icon:  Icon(
+                  //     isPlaying?FontAwesomeIcons.pause:FontAwesomeIcons.play,
+                  //     color: Colors.white,
+                  //   ),
+                  // ),
+                  // IconButton(
+                  //   onPressed: () {
+                  //     _customVideoPlayerController.videoPlayerController.seekTo(_customVideoPlayerController.videoPlayerController.value.position+const Duration(seconds: 10));
+                  //   },
+                  //   icon: const Icon(
+                  //     FontAwesomeIcons.fastForward,
+                  //     color: Colors.white,
+                  //   ),
+                  // ),
+                  GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onDoubleTap: (){
                       _customVideoPlayerController.videoPlayerController.seekTo(_customVideoPlayerController.videoPlayerController.value.position-const Duration(seconds: 10));
-                    },
-                    icon: const Icon(
-                      FontAwesomeIcons.backward,
-                      color: Colors.white,
+                      debugPrint("Forward");
+                      },
+                    child: Container(
+                      color: Colors.transparent,
+                      width: 40.w,
+                      height: 50.h,
                     ),
                   ),
-                  IconButton(
-                    splashColor: Colors.grey.shade300,
-                    onPressed: () {
-                      isPlaying?_customVideoPlayerController.videoPlayerController.pause():_customVideoPlayerController.videoPlayerController.play();
-                    },
-                    icon:  Icon(
-                      isPlaying?FontAwesomeIcons.pause:FontAwesomeIcons.play,
-                      color: Colors.white,
-                    ),
+                  SizedBox(
+                    width: 2.w,
                   ),
-                  IconButton(
-                    onPressed: () {
+                  GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onDoubleTap: (){
                       _customVideoPlayerController.videoPlayerController.seekTo(_customVideoPlayerController.videoPlayerController.value.position+const Duration(seconds: 10));
                     },
-                    icon: const Icon(
-                      FontAwesomeIcons.fastForward,
-                      color: Colors.white,
+                    child:Container(
+                      color: Colors.transparent,
+                      width: 40.w,
+                      height: 50.h,
                     ),
                   ),
-
                 ],
-              ):GestureDetector(
-                onTap: ()=>onClicked(),
-                child: Container(
-                  width: 50.w,
-                  color: Colors.transparent,
-                ),
               ),
+              //       :GestureDetector(
+              //   onTap: ()=>onClicked(),
+              //   child: Container(
+              //     width: 50.w,
+              //     color: Colors.transparent,
+              //   ),
+              // ),
             ),
           ),
           // Align(

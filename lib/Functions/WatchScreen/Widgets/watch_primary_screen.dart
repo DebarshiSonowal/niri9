@@ -44,7 +44,7 @@ class WatchPrimaryScreen extends StatelessWidget {
           children: [
             Container(
               color: Colors.black,
-              padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.2.h),
+              // padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.2.h),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -142,42 +142,5 @@ class WatchPrimaryScreen extends StatelessWidget {
     );
   }
 
-  void showQuality(context) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              "Select Quality From Below\n",
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white,
-                    fontSize: 12.sp,
-                  ),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (var i in _customVideoPlayerController
-                      .additionalVideoSources!.entries)
-                    ListTile(
-                      onTap: () {
-                        setVideoSource(i);
-                      },
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 0.2.h,
-                      ),
-                      title: Text(
-                        i.key,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.white,
-                            ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
+
 }

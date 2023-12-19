@@ -27,4 +27,5 @@ class Routes {
   static const profile = "/profile";
   static const orderHistory = "/orderHistory";
   static const cuponApply = "/cupon_apply";
+  static const activateTV = "/activate_tv";
 }

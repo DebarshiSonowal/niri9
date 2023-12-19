@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:niri9/Constants/assets.dart';
@@ -38,11 +37,10 @@ class LanguageItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
               fit: BoxFit.fill,
-              image:CachedNetworkImageProvider(
-                 item.profile_pic??"",
-
+              image: CachedNetworkImageProvider(
+                item.profile_pic ?? "",
               ),
-            )
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

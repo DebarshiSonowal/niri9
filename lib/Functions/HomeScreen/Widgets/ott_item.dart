@@ -1,7 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:niri9/Models/movies.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../Constants/assets.dart';
 import '../../../Models/ott.dart';
 import '../../../Models/video.dart';
 
@@ -32,12 +35,17 @@ class OttItem extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
-            child: Image.network(
-              item.profile_pic!,
+            child: CachedNetworkImage(
+              imageUrl: item.profile_pic!,
               // // width: 22.w,
               // width: 20.w,
               // height: 16.h,
               fit: BoxFit.fill,
+              placeholder: (context, index) {
+                return Image.asset(
+                  Assets.logoTransparent,
+                ).animate();
+              },
             ),
           ),
         ),

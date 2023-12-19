@@ -14,6 +14,7 @@ import 'package:niri9/Models/video_details.dart';
 import '../Models/account_item.dart';
 import '../Models/appbar_option.dart';
 import '../Models/available_language.dart';
+import '../Models/category_all.dart';
 import '../Models/genres.dart';
 import '../Models/languages.dart';
 import '../Models/ott.dart';
@@ -41,6 +42,10 @@ class Repository extends ChangeNotifier {
       _termsConditions = "";
   VideoPercent? videoPercent;
   VideoSetting? videoSetting;
+  String? firebase_otp_key;
+  CategoryAll? categoryAll;
+  int currentHomeBannerIndex = 0;
+
   List<AppBarOption> get appbarOptions => _appbarOptions;
 
   List<List<VideoDetails>> currentSeasons = [];
@@ -66,69 +71,6 @@ class Repository extends ChangeNotifier {
       assets: Assets.bhojpuriImage,
     ),
   ];
-  List<DynamicListItemModel> dynamicList = [
-    DynamicListItemModel(
-      title: "Recently Added | Rent Now",
-      list: [
-        OTT(id: 0, image: Assets.itemImage),
-        OTT(id: 1, image: Assets.item2Image),
-        OTT(id: 2, image: Assets.item3Image),
-        OTT(id: 3, image: Assets.itemImage),
-        OTT(id: 4, image: Assets.item2Image),
-        OTT(id: 5, image: Assets.item3Image),
-      ],
-    ),
-    DynamicListItemModel(
-      title: "TOP 10 WEB SERIES",
-      list: [
-        OTT(id: 0, image: Assets.itemImage),
-        OTT(id: 1, image: Assets.item2Image),
-        OTT(id: 2, image: Assets.item3Image),
-        OTT(id: 3, image: Assets.itemImage),
-        OTT(id: 4, image: Assets.item2Image),
-        OTT(id: 5, image: Assets.item3Image),
-      ],
-    ),
-  ];
-
-  List<DynamicListItemModel> premiumList = [
-    DynamicListItemModel(
-      title: "Top 10 in India",
-      list: [
-        OTT(id: 0, image: Assets.itemImage),
-        OTT(id: 1, image: Assets.item2Image),
-        OTT(id: 2, image: Assets.item3Image),
-        OTT(id: 3, image: Assets.itemImage),
-        OTT(id: 4, image: Assets.item2Image),
-        OTT(id: 5, image: Assets.item3Image),
-      ],
-    ),
-  ];
-  List<DynamicListItemModel> premiumOthersList = [
-    DynamicListItemModel(
-      title: "Movies that are top rated",
-      list: [
-        OTT(id: 0, image: Assets.itemImage),
-        OTT(id: 1, image: Assets.item2Image),
-        OTT(id: 2, image: Assets.item3Image),
-        OTT(id: 3, image: Assets.itemImage),
-        OTT(id: 4, image: Assets.item2Image),
-        OTT(id: 5, image: Assets.item3Image),
-      ],
-    ),
-    DynamicListItemModel(
-      title: "Fresh Arrival",
-      list: [
-        OTT(id: 0, image: Assets.itemImage),
-        OTT(id: 1, image: Assets.item2Image),
-        OTT(id: 2, image: Assets.item3Image),
-        OTT(id: 3, image: Assets.itemImage),
-        OTT(id: 4, image: Assets.item2Image),
-        OTT(id: 5, image: Assets.item3Image),
-      ],
-    ),
-  ];
-
   List<OTT> selectedCategory = [
     OTT(id: 0, image: Assets.itemImage),
     OTT(id: 1, image: Assets.item2Image),
@@ -293,10 +235,12 @@ class Repository extends ChangeNotifier {
   void setCategories(List<Category> list) {
     _appbarOptions = list
         .map((e) => AppBarOption(
-            name: e.name ?? "",
-            image: e.profile_icon ?? "",
-            has_festival: e.has_festival,
-            sequence: e.sequence))
+              name: e.name ?? "",
+              slug: e.slug ?? "",
+              image: e.profile_icon ?? "",
+              has_festival: e.has_festival,
+              sequence: e.sequence,
+            ))
         .toList();
     _categories = list;
     notifyListeners();
@@ -314,6 +258,11 @@ class Repository extends ChangeNotifier {
 
   void updateIndex(int val) {
     _currentIndex = val;
+    notifyListeners();
+  }
+
+  void updateHomeBannerIndex(int val) {
+    currentHomeBannerIndex = val;
     notifyListeners();
   }
 
@@ -390,11 +339,17 @@ class Repository extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addCategoryAll(CategoryAll? data) {
+    categoryAll = data;
+    notifyListeners();
+  }
+
   // VideoSetting? videoSetting
   void setVideoSettings(VideoSetting? val) {
     videoSetting = val;
     notifyListeners();
   }
+
   void setVideoPercent(VideoPercent? val) {
     videoPercent = val;
     notifyListeners();
@@ -419,6 +374,7 @@ class Repository extends ChangeNotifier {
   List<Sections> get homeSections => _homeSections;
 
   List<Sections> get trendingSections => _trendingSections;
+
   List<Sections> get languageSections => _languageSections;
 
   List<List<Video>> get videos => _videos;

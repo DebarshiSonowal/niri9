@@ -3,13 +3,16 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:niri9/Functions/Trending/Widgets/trending_slider_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../API/api_provider.dart';
+import '../../../Models/banner.dart';
+import '../../../Models/sections.dart';
 import '../../../Repository/repository.dart';
 import '../../HomeScreen/Widgets/my_list_button.dart';
 import '../../HomeScreen/Widgets/share_indicator.dart';
 import '../../HomeScreen/Widgets/slider_indicator.dart';
-
 
 class TrendingBanner extends StatefulWidget {
   const TrendingBanner({Key? key}) : super(key: key);
@@ -23,126 +26,159 @@ class _TrendingBannerState extends State<TrendingBanner> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<Repository>(builder: (context, data, _) {
-      return SizedBox(
-        width: double.infinity,
-        height: 40.h,
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            data.trendingBanner.isNotEmpty?SizedBox(
-              height:40.h,
-              width: double.infinity,
-              child: CarouselSlider.builder(
-                // itemCount: data.bannerList.length,
-                itemCount: data.trendingBanner.length,
-                itemBuilder: (BuildContext context, int index, int realIndex) {
-                  var item = data.trendingBanner[index];
-                  return SizedBox(
-                    height:40.h,
-                    width: double.infinity,
-                    child: Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        CachedNetworkImage(
-                          imageUrl: item.posterPic ?? "",
-                          fit: BoxFit.fill,
-                          height: 40.h,
-                          width: double.infinity,
-                        ),
-                        Container(
-                          height: 7.h,
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.2),
-                          ),
-                          // color: Colors.grey,
-                          width: double.infinity,
+    return FutureBuilder(
+      builder: (context, _) {
+        if (_.hasData&&(_.data!=null)) {
+          return Consumer<Repository>(builder: (context, data, _) {
+                    return SizedBox(
+                      width: double.infinity,
+                      height: 40.h,
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          data.trendingBanner.isNotEmpty
+                              ? SizedBox(
+                                  height: 40.h,
+                                  width: double.infinity,
+                                  child: CarouselSlider.builder(
+                                    // itemCount: data.bannerList.length,
+                                    itemCount: data.trendingBanner.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index, int realIndex) {
+                                      var item = data.trendingBanner[index];
+                                      return SizedBox(
+                                        height: 40.h,
+                                        width: double.infinity,
+                                        child: Stack(
+                                          alignment: Alignment.bottomCenter,
+                                          children: [
+                                            CachedNetworkImage(
+                                              imageUrl: item.posterPic ?? "",
+                                              fit: BoxFit.fill,
+                                              height: 40.h,
+                                              width: double.infinity,
+                                            ),
+                                            Container(
+                                              height: 7.h,
+                                              decoration: BoxDecoration(
+                                                color: Colors.black.withOpacity(0.2),
+                                              ),
+                                              // color: Colors.grey,
+                                              width: double.infinity,
 
-                          padding: EdgeInsets.only(
-                            bottom: 0.7.h,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 30.w,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 4.w,
-                                  vertical: 1.h,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "Play Now",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
+                                              padding: EdgeInsets.only(
+                                                bottom: 0.7.h,
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Container(
+                                                    width: 30.w,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(10),
+                                                    ),
+                                                    padding: EdgeInsets.symmetric(
+                                                      horizontal: 4.w,
+                                                      vertical: 1.h,
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(
+                                                        "Play Now",
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.copyWith(
+                                                              color: Colors.black,
+                                                              fontWeight: FontWeight.bold,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                    options: CarouselOptions(
+                                      autoPlay: true,
+                                      enableInfiniteScroll: true,
+                                      // enlargeCenterPage: true,
+                                      aspectRatio: 10.5 / 9,
+                                      viewportFraction: 1,
+                                      onPageChanged: (index, reason) {
+                                        setState(() {
+                                          _current = index;
+                                        });
+                                      },
                                     ),
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                options: CarouselOptions(
-                  autoPlay: true,
-                  enableInfiniteScroll: true,
-                  // enlargeCenterPage: true,
-                  aspectRatio: 10.5 / 9,
-                  viewportFraction: 1,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      _current = index;
-                    });
-                  },
-                ),
-              ),
-            ):Container(),
-            data.trendingBanner.isNotEmpty?Container(
-              margin: EdgeInsets.only(
-                bottom: 1.h,
-              ),
-              width: double.infinity,
-              height: 5.h,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  MyListButton(
-                    onTap: () {},
-                  ),
-                  SizedBox(
-                    width: 3.w,
-                  ),
-                  TrendingSliderIndicator(current: _current),
-                  SizedBox(
-                    width: 3.w,
-                  ),
-                  ShareIndicator(
-                    onTap: () {},
-                  ),
-                ],
-              ),
-            ):Container(),
-          ],
-        ),
-      );
-    });
+                                )
+                              : Container(),
+                          data.trendingBanner.isNotEmpty
+                              ? Container(
+                                  margin: EdgeInsets.only(
+                                    bottom: 1.h,
+                                  ),
+                                  width: double.infinity,
+                                  height: 5.h,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      MyListButton(
+                                        onTap: () {},
+                                      ),
+                                      SizedBox(
+                                        width: 3.w,
+                                      ),
+                                      TrendingSliderIndicator(current: _current),
+                                      SizedBox(
+                                        width: 3.w,
+                                      ),
+                                      ShareIndicator(
+                                        onTap: () {},
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : Container(),
+                        ],
+                      ),
+                    );
+                  });
+        }
+        if(_.hasData&&(_.data==null)){
+          return Container();
+        }
+        return Shimmer.fromColors(
+          baseColor: Colors.white,
+          highlightColor: Colors.white70,
+          child: Container(
+            width: double.infinity,
+            height: 40.h,
+            color: Colors.white30,
+          ),
+        );
+      },
+      future: getData(context),
+    );
+  }
+
+  Future<List<BannerResult>> getData(context) async {
+    final response = await ApiProvider.instance.getBannerResponse("home");
+    if (response.success ?? false) {
+      // if (!context.mounted) return;
+      Provider.of<Repository>(context, listen: false)
+          .addTrendingBanner(response.result??[]);
+      // await fetchVideos(response.sections[0]);
+      return response.result ?? [];
+    } else {
+      return List<BannerResult>.empty();
+    }
   }
 }
-
-
-
-
-
-

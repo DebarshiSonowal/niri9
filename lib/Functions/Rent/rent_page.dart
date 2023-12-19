@@ -4,12 +4,15 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Constants/constants.dart';
+import '../../Models/video.dart';
 import '../../Navigation/Navigate.dart';
 import '../../Repository/repository.dart';
 import '../../Router/routes.dart';
 import '../../Widgets/alert.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
+import '../CategorySpecific/category_specific_screen.dart';
 import '../HomeScreen/Widgets/home_banner.dart';
+
 // import '../Premium/Widgets/dynamic_premium_list_item.dart';
 // import '../Premium/Widgets/dynamic_premium_other_list_item.dart';
 import '../HomeScreen/Widgets/ott_item.dart';
@@ -24,9 +27,8 @@ class RentPage extends StatefulWidget {
 }
 
 class _RentPageState extends State<RentPage> {
-final ScrollController _scrollController = ScrollController();
-
-
+  final ScrollController _scrollController = ScrollController();
+   int page=1;
   @override
   Widget build(BuildContext context) {
     // return Scaffold(
@@ -106,25 +108,40 @@ final ScrollController _scrollController = ScrollController();
               // }),
               SizedBox(
                 height: 100.h,
-                child: Consumer<Repository>(builder: (context, data, _) {
-                  return GridView.builder(
-                    controller: _scrollController,
-                    itemCount: data.specificVideos.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 1.5.w,
-                      mainAxisSpacing: 1.h,
-                      childAspectRatio:6.5/8.5,
-                    ),
-                    itemBuilder: (BuildContext context, int index) {
-                      var item = data.specificVideos[index];
-                      return OttItem(item: item, onTap: () {
-                        Navigation.instance
-                            .navigate(Routes.watchScreen, args: item.id);
-                      });
+                child: FutureBuilder(
+                    builder: (context, _) {
+                      if (_.hasData && (_.data != [])) {
+                        return Consumer<Repository>(
+                            builder: (context, data, _) {
+                          return GridView.builder(
+                            controller: _scrollController,
+                            itemCount: data.specificVideos.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 1.5.w,
+                              mainAxisSpacing: 1.h,
+                              childAspectRatio: 6.5 / 8.5,
+                            ),
+                            itemBuilder: (BuildContext context, int index) {
+                              var item = data.specificVideos[index];
+                              return OttItem(
+                                  item: item,
+                                  onTap: () {
+                                    Navigation.instance.navigate(
+                                        Routes.watchScreen,
+                                        args: item.id);
+                                  });
+                            },
+                          );
+                        });
+                      }
+                      if (_.hasData && (_.data == [])) {
+                        return Container();
+                      }
+                      return const GridViewShimmering();
                     },
-                  );
-                }),
+                    future: fetchDetails(page, "", null, null, null)),
               ),
             ],
           ),
@@ -160,29 +177,43 @@ final ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero,()=>fetchDetails(1,"",null,null,null));
+    Future.delayed(Duration.zero, () => fetchDetails(1, "", null, null, null));
     _scrollController.addListener(() {
-      if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
+      debugPrint("reach the top1");
+      if (_scrollController.offset >=
+              _scrollController.position.maxScrollExtent &&
           !_scrollController.position.outOfRange) {
         setState(() {
           debugPrint("reach the top");
+
         });
       }
-      if (_scrollController.offset <= _scrollController.position.minScrollExtent &&
+      if (_scrollController.offset <=
+              _scrollController.position.minScrollExtent &&
           !_scrollController.position.outOfRange) {
         setState(() {
-          debugPrint("reach the top");
+          debugPrint("reach the bottom");
         });
       }
     });
   }
-  void fetchDetails(int page_no, String sections, String? category,
-      String? genres, String? term) async {
-    final response = await ApiProvider.instance
-        .getVideos(page_no, sections, category, genres, term, "rent",);
+
+  Future<List<Video>> fetchDetails(int page_no, String sections,
+      String? category, String? genres, String? term) async {
+    final response = await ApiProvider.instance.getVideos(
+      page_no,
+      sections,
+      category,
+      genres,
+      term,
+      "rent",
+    );
     if (response.success ?? false) {
       Provider.of<Repository>(context, listen: false)
           .setSearchVideos(response.videos);
+      return response.videos;
+    } else {
+      return List<Video>.empty();
     }
   }
 }

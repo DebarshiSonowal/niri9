@@ -3,6 +3,8 @@
 // "owner": "Niri9",
 import 'package:niri9/Models/os_info.dart';
 
+import 'category_all.dart';
+
 class Settings {
   String? name, email, contact, logo;
   OsInfo? android, ios;
@@ -19,10 +21,11 @@ class Settings {
 
 class SettingsResponse {
   bool? success;
-  String? message, site_name, site_url, owner;
+  String? message, site_name, site_url, owner,firebase_otp_key;
   Settings? settings;
   VideoPercent? videoPercent;
   VideoSetting? videoSetting;
+  CategoryAll? categoryAll;
 
   SettingsResponse.fromJson(json) {
     success = json["success"] ?? false;
@@ -30,6 +33,7 @@ class SettingsResponse {
     site_name = json["result"]["site_name"] ?? "";
     site_url = json["result"]["site_url"] ?? "";
     owner = json["result"]["owner"] ?? "";
+    firebase_otp_key = json["result"]["firebase_otp_key"] ?? "";
     settings = json["result"]['app_setting'] == null
         ? null
         : Settings.fromJson(json["result"]['app_setting']);
@@ -39,8 +43,9 @@ class SettingsResponse {
     videoSetting = json['result']['video_setting'] == null
         ? null
         : VideoSetting.fromJson(json['result']['video_setting']);
-
-
+    categoryAll = json['result']['category_all'] == null
+        ? null
+        : CategoryAll.fromJson(json['result']['category_all']);
   }
 
   SettingsResponse.withError(msg) {
