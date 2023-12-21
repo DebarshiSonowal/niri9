@@ -79,7 +79,7 @@ class VideoSection extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    width: 2.w,
+                    width: 4.w,
                   ),
                   GestureDetector(
                     behavior: HitTestBehavior.translucent,

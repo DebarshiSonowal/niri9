@@ -34,7 +34,7 @@ class _OtpPageState extends State<OtpPage> {
 
   // final SmsAutoFill _autoFill = SmsAutoFill();
   String currentText = '';
-  String time = '30';
+  int time = 59;
   bool resend = false;
 
   @override
@@ -142,6 +142,26 @@ class _OtpPageState extends State<OtpPage> {
               ),
               SizedBox(
                 height: 5.h,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        if(time==0){
+                          if (isIndianNumber(widget.mobile)) {
+                            sendOTP(widget.mobile.substring(3));
+                          } else {
+                            phoneSignIn(phoneNumber: widget.mobile.toString().substring(3));
+                          }
+                        }
+                      },
+                      child: Text(
+                        time != 0 ? "Resend OTP after 0:$time" : "Resend OTP",
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 10.w),
@@ -195,7 +215,7 @@ class _OtpPageState extends State<OtpPage> {
       Navigation.instance.goBack();
     }).then((value) {
       setState(() {
-        time = '30';
+        time = 59;
         // setTimer();
       });
     });
@@ -271,7 +291,7 @@ class _OtpPageState extends State<OtpPage> {
 
   void setTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (timer.tick == 30) {
+      if (timer.tick == 59) {
         try {
           if (mounted) {
             setState(() {
@@ -288,15 +308,15 @@ class _OtpPageState extends State<OtpPage> {
         debugPrint(timer.tick.toString());
         try {
           setState(() {
-            time = (30 - timer.tick).toString();
+            time = (59- timer.tick);
           });
         } catch (e) {
           debugPrint(e.toString());
-          time = (30 - timer.tick).toString();
+          time = (59 - timer.tick);
         }
       } else {
         debugPrint(timer.tick.toString());
-        time = (30 - timer.tick).toString();
+        time = (59 - timer.tick);
       }
       // print("Dekhi 5 sec por por kisu hy ni :/");
     });
@@ -358,15 +378,16 @@ class _OtpPageState extends State<OtpPage> {
     return phoneNumber.startsWith('91');
   }
 
-  void sendOTP(String mobile) async{
+  void sendOTP(String mobile) async {
     Navigation.instance.navigate(Routes.loadingScreen);
     final response = await ApiProvider.instance.generateOTP(mobile);
-    if(response.success??false){
+    if (response.success ?? false) {
       Navigation.instance.goBack();
       Fluttertoast.showToast(msg: "OTP sent successfully");
-    }else{
+      setTimer();
+    } else {
       Navigation.instance.goBack();
-      showError(response.message??"Something Went Wrong");
+      showError(response.message ?? "Something Went Wrong");
     }
   }
 }

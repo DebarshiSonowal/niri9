@@ -40,4 +40,10 @@ class Assets {
   // static String videoUrl = "https://customer-edsfz57k0gqg8bse.cloudflarestream.com/586d3a3a3600c6df1ce400b0abde47c6/manifest/video.m3u8";
 
 // static const banner_image = "assets/images/";
+
+//Animations
+  static const successAnimation = "assets/animations/success.json";
+  static const failedAnimation = "assets/animations/failed_anim.json";
+
+
 }

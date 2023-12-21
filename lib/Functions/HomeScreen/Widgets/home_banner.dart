@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:niri9/Constants/assets.dart';
 import 'package:niri9/Models/banner.dart';
 import 'package:provider/provider.dart';
@@ -147,6 +148,7 @@ class _BannerSectionState extends State<BannerSection> {
                     ),
                     ShareIndicator(
                       onTap: () {
+                        // showSuccessDialog(context: context);
                         Share.share(
                             'check out NIRI9 from https://play.google.com/store/apps/details?id=com.niri.niri9');
                       },
@@ -197,7 +199,7 @@ class BannerImageItem extends StatelessWidget {
               },
             ),
             Container(
-              height: 7.h,
+              height: 8.h,
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.2),
               ),
@@ -207,33 +209,61 @@ class BannerImageItem extends StatelessWidget {
               padding: EdgeInsets.only(
                 bottom: 0.7.h,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 30.w,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 4.w,
-                      vertical: 1.h,
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Play Now",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
+                  SizedBox(
+                    width: 15.w,
+                  ),
+                  PlayNowButton(),
+                  SizedBox(
+                    width: 15.w,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 2.w),
+                      child: (item.hasRent??false)?const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Icon(Icons.shop,color: Colors.yellow,)
+                        ],
+                      ):Container(),
                     ),
                   ),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class PlayNowButton extends StatelessWidget {
+  const PlayNowButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 30.w,
+      height: 4.h,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: 4.w,
+        vertical: 1.h,
+      ),
+      child: Center(
+        child: Text(
+          "Play Now",
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ),
     );

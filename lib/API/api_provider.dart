@@ -158,17 +158,17 @@ class ApiProvider {
         data: jsonEncode(data),
       );
       debugPrint(
-          "getLanguages response: ${response?.data} ${response?.headers}");
+          "getOTP response: ${response?.data} ${response?.headers}");
       if (response?.statusCode == 200 || response?.statusCode == 201) {
         return GenericOTPResponse.fromJson(response?.data);
       } else {
-        debugPrint("getLanguages error response: ${response?.data}");
+        debugPrint("getOTP error response: ${response?.data}");
         return GenericOTPResponse.withError(response?.data['error']
             ? response?.data['message']['success']
             : response?.data['message']['error']);
       }
     } on DioError catch (e) {
-      debugPrint("getLanguages  error: ${e.error} ${e.message}");
+      debugPrint("getOTP error: ${e.error} ${e.message}");
       return GenericOTPResponse.withError(e.message);
     }
   }

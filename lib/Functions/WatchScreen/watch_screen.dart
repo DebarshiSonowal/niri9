@@ -10,24 +10,13 @@ import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Models/video.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 // import 'package:read_more_text/read_more_text.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../Constants/assets.dart';
 import '../../Models/video_details.dart';
-import '../../Navigation/Navigate.dart';
 import '../../Repository/repository.dart';
-import '../../Router/routes.dart';
-import '../HomeScreen/Widgets/dynamic_list_item.dart';
-import 'Widgets/description_section.dart';
-import 'Widgets/episodes_slider.dart';
-import 'Widgets/icon_text_button.dart';
-import 'Widgets/info_bar.dart';
-import 'Widgets/options_bar.dart';
 import 'Widgets/shimmering_screen_loader.dart';
-import 'Widgets/video_section.dart';
 import 'Widgets/watch_primary_screen.dart';
 
 class WatchScreen extends StatefulWidget {
@@ -38,27 +27,11 @@ class WatchScreen extends StatefulWidget {
   State<WatchScreen> createState() => _WatchScreenState();
 }
 
-class _WatchScreenState extends State<WatchScreen> {
+class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
   Timer? uploadTimer;
   int? lastPlayed;
   VideoPlayerController? videoPlayerController;
   CustomVideoPlayerController? _customVideoPlayerController;
-  var list = [
-    "Season 1",
-    "Season 2",
-  ];
-  var season1 = [
-    Assets.episodeImage,
-    Assets.episodeImage2,
-    Assets.episodeImage,
-    Assets.episodeImage2,
-  ];
-  var season2 = [
-    Assets.episodeImage2,
-    Assets.episodeImage,
-    Assets.episodeImage2,
-    Assets.episodeImage,
-  ];
   bool isPlaying = true, showing = false;
   int selected = 0;
   Future<bool>? _future;
@@ -68,9 +41,29 @@ class _WatchScreenState extends State<WatchScreen> {
   Map<String, VideoPlayerController>? additionalVideoSources;
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    debugPrint("didChangeAppLifecycleState ${state.name}");
+    switch (state) {
+      case (AppLifecycleState.resumed):
+
+        break;
+      case (AppLifecycleState.paused):
+        // updateUploadStatus(
+        //   _customVideoPlayerController!,
+        //   Provider.of<Repository>(context, listen: false).videoDetails!,
+        //   "pause",
+        //   currentDuration,
+        // );
+        break;
+      default:
+        break;
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
-
+    WidgetsBinding.instance.addObserver(this);
     Future.delayed(const Duration(seconds: 0), () {
       // initiateVideoPlayer(context);
       fetchDetails(widget.index);
@@ -82,6 +75,7 @@ class _WatchScreenState extends State<WatchScreen> {
     videoPlayerController?.pause();
     videoPlayerController?.dispose();
     _customVideoPlayerController?.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -403,7 +397,7 @@ class _WatchScreenState extends State<WatchScreen> {
                               .videoSetting
                               ?.forwardTime ??
                           "10")), () {
-            if (videoPlayerController?.value.isPlaying??false) {
+            if (videoPlayerController?.value.isPlaying ?? false) {
               // Call updateUploadStatus when the video is playing
               updateUploadStatus(
                 _customVideoPlayerController!,
@@ -418,7 +412,7 @@ class _WatchScreenState extends State<WatchScreen> {
         }
 
         // Check if the video is currently playing
-        if (videoPlayerController?.value.isPlaying??false) {
+        if (videoPlayerController?.value.isPlaying ?? false) {
           if (!isPlaying) {
             // Call updateUploadStatus when video starts playing
             updateUploadStatus(
@@ -453,7 +447,7 @@ class _WatchScreenState extends State<WatchScreen> {
   }
 
   void videoControllerListener() {
-    debugPrint("listener is triggered video player");
+
     int currentDuration = videoPlayerController!.value.position.inMilliseconds;
 
     if (currentDuration >=
@@ -471,7 +465,7 @@ class _WatchScreenState extends State<WatchScreen> {
                       .videoSetting
                       ?.forwardTime ??
                   "10")), () {
-        if (videoPlayerController?.value.isPlaying??false) {
+        if (videoPlayerController?.value.isPlaying ?? false) {
           // Call updateUploadStatus when the video is playing
           updateUploadStatus(
             _customVideoPlayerController!,
@@ -486,7 +480,7 @@ class _WatchScreenState extends State<WatchScreen> {
     }
 
     // Check if the video is currently playing
-    if (videoPlayerController?.value.isPlaying??false) {
+    if (videoPlayerController?.value.isPlaying ?? false) {
       if (!isPlaying) {
         // Call updateUploadStatus when video starts playing
         updateUploadStatus(
@@ -498,9 +492,16 @@ class _WatchScreenState extends State<WatchScreen> {
         isPlaying = true;
       }
     } else {
-      isPlaying = false;
+      if(isPlaying){
+        updateUploadStatus(
+          _customVideoPlayerController!,
+          Provider.of<Repository>(context, listen: false).videoDetails!,
+          "pause",
+          currentDuration,
+        );
+        isPlaying = false;
+      }
     }
-
     setState(() {});
   }
 }
