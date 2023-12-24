@@ -47,12 +47,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(100),
-                  child: CachedNetworkImage(
-                    imageUrl:
-                        "https://plus.unsplash.com/premium_photo-1664540415069-bc45ce3e711e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-                    height: 20.h,
-                    width: 20.h,
-                    fit: BoxFit.fill,
+                  child: Image.asset(
+                    Assets.profileImage,
                   ),
                 ),
                 SizedBox(
@@ -89,7 +85,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         data.user?.email ?? "N/A",
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                               color: Colors.white,
-                          fontSize: 8.sp,
+                              fontSize: 8.sp,
                             ),
                       ),
                     ),
@@ -119,7 +115,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         "${data.user?.mobile ?? "N/A"}",
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                               color: Colors.white,
-                          fontSize: 8.sp,
+                              fontSize: 8.sp,
                             ),
                       ),
                     ),

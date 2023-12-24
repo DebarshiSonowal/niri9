@@ -7,9 +7,13 @@ import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../API/api_provider.dart';
+import '../../../Constants/common_functions.dart';
+import '../../../Helper/storage.dart';
 import '../../../Models/banner.dart';
 import '../../../Models/sections.dart';
+import '../../../Navigation/Navigate.dart';
 import '../../../Repository/repository.dart';
+import '../../../Router/routes.dart';
 import '../../HomeScreen/Widgets/my_list_button.dart';
 import '../../HomeScreen/Widgets/share_indicator.dart';
 import '../../HomeScreen/Widgets/slider_indicator.dart';
@@ -28,131 +32,10 @@ class _TrendingBannerState extends State<TrendingBanner> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       builder: (context, _) {
-        if (_.hasData&&(_.data!=null)) {
-          return Consumer<Repository>(builder: (context, data, _) {
-                    return SizedBox(
-                      width: double.infinity,
-                      height: 40.h,
-                      child: Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          data.trendingBanner.isNotEmpty
-                              ? SizedBox(
-                                  height: 40.h,
-                                  width: double.infinity,
-                                  child: CarouselSlider.builder(
-                                    // itemCount: data.bannerList.length,
-                                    itemCount: data.trendingBanner.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index, int realIndex) {
-                                      var item = data.trendingBanner[index];
-                                      return SizedBox(
-                                        height: 40.h,
-                                        width: double.infinity,
-                                        child: Stack(
-                                          alignment: Alignment.bottomCenter,
-                                          children: [
-                                            CachedNetworkImage(
-                                              imageUrl: item.posterPic ?? "",
-                                              fit: BoxFit.fill,
-                                              height: 40.h,
-                                              width: double.infinity,
-                                            ),
-                                            Container(
-                                              height: 7.h,
-                                              decoration: BoxDecoration(
-                                                color: Colors.black.withOpacity(0.2),
-                                              ),
-                                              // color: Colors.grey,
-                                              width: double.infinity,
-
-                                              padding: EdgeInsets.only(
-                                                bottom: 0.7.h,
-                                              ),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Container(
-                                                    width: 30.w,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(10),
-                                                    ),
-                                                    padding: EdgeInsets.symmetric(
-                                                      horizontal: 4.w,
-                                                      vertical: 1.h,
-                                                    ),
-                                                    child: Center(
-                                                      child: Text(
-                                                        "Play Now",
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyMedium
-                                                            ?.copyWith(
-                                                              color: Colors.black,
-                                                              fontWeight: FontWeight.bold,
-                                                            ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                    options: CarouselOptions(
-                                      autoPlay: true,
-                                      enableInfiniteScroll: true,
-                                      // enlargeCenterPage: true,
-                                      aspectRatio: 10.5 / 9,
-                                      viewportFraction: 1,
-                                      onPageChanged: (index, reason) {
-                                        setState(() {
-                                          _current = index;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                )
-                              : Container(),
-                          data.trendingBanner.isNotEmpty
-                              ? Container(
-                                  margin: EdgeInsets.only(
-                                    bottom: 1.h,
-                                  ),
-                                  width: double.infinity,
-                                  height: 5.h,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      MyListButton(
-                                        onTap: () {},
-                                      ),
-                                      SizedBox(
-                                        width: 3.w,
-                                      ),
-                                      TrendingSliderIndicator(current: _current),
-                                      SizedBox(
-                                        width: 3.w,
-                                      ),
-                                      ShareIndicator(
-                                        onTap: () {},
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              : Container(),
-                        ],
-                      ),
-                    );
-                  });
+        if (_.hasData && (_.data != null)) {
+          return const TrendingBannerSection();
         }
-        if(_.hasData&&(_.data==null)){
+        if (_.hasData && (_.data == null)) {
           return Container();
         }
         return Shimmer.fromColors(
@@ -174,11 +57,178 @@ class _TrendingBannerState extends State<TrendingBanner> {
     if (response.success ?? false) {
       // if (!context.mounted) return;
       Provider.of<Repository>(context, listen: false)
-          .addTrendingBanner(response.result??[]);
+          .addTrendingBanner(response.result ?? []);
       // await fetchVideos(response.sections[0]);
       return response.result ?? [];
     } else {
       return List<BannerResult>.empty();
     }
+  }
+}
+
+class TrendingBannerSection extends StatefulWidget {
+  const TrendingBannerSection({super.key});
+
+  @override
+  State<TrendingBannerSection> createState() => _TrendingBannerSectionState();
+}
+
+class _TrendingBannerSectionState extends State<TrendingBannerSection> {
+  int _current = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<Repository>(builder: (context, data, _) {
+      return SizedBox(
+        width: double.infinity,
+        height: 40.h,
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            data.trendingBanner.isNotEmpty
+                ? SizedBox(
+                    height: 40.h,
+                    width: double.infinity,
+                    child: CarouselSlider.builder(
+                      // itemCount: data.bannerList.length,
+                      itemCount: data.trendingBanner.length,
+                      itemBuilder:
+                          (BuildContext context, int index, int realIndex) {
+                        var item = data.trendingBanner[index];
+                        return TrendingBannerItem(item: item);
+                      },
+                      options: CarouselOptions(
+                        autoPlay: true,
+                        enableInfiniteScroll: true,
+                        // enlargeCenterPage: true,
+                        aspectRatio: 10.5 / 9,
+                        viewportFraction: 1,
+                        onPageChanged: (index, reason) {
+                          setState(() {
+                            _current = index;
+                          });
+                        },
+                      ),
+                    ),
+                  )
+                : Container(),
+            data.trendingBanner.isNotEmpty
+                ? Container(
+                    margin: EdgeInsets.only(
+                      bottom: 1.h,
+                    ),
+                    width: double.infinity,
+                    height: 5.h,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        MyListButton(
+                          onTap: () {},
+                        ),
+                        SizedBox(
+                          width: 3.w,
+                        ),
+                        TrendingSliderIndicator(current: _current),
+                        SizedBox(
+                          width: 3.w,
+                        ),
+                        ShareIndicator(
+                          onTap: () {},
+                        ),
+                      ],
+                    ),
+                  )
+                : Container(),
+          ],
+        ),
+      );
+    });
+  }
+}
+
+class TrendingBannerItem extends StatelessWidget {
+  const TrendingBannerItem({
+    super.key,
+    required this.item,
+  });
+
+  final BannerResult item;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 40.h,
+      width: double.infinity,
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          CachedNetworkImage(
+            imageUrl: item.posterPic ?? "",
+            fit: BoxFit.fill,
+            height: 40.h,
+            width: double.infinity,
+          ),
+          Container(
+            height: 7.h,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.2),
+            ),
+            // color: Colors.grey,
+            width: double.infinity,
+
+            padding: EdgeInsets.only(
+              bottom: 0.7.h,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap:(){
+                    if (Storage.instance.isLoggedIn) {
+                      Navigation.instance
+                          .navigate(Routes.watchScreen, args: item.id);
+                    } else {
+                      CommonFunctions().showLoginDialog(context);
+                    }
+                  },
+                  child: const PlayNowButton(),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PlayNowButton extends StatelessWidget {
+  const PlayNowButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 30.w,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: 4.w,
+        vertical: 1.h,
+      ),
+      child: Center(
+        child: Text(
+          "Play Now",
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+      ),
+    );
   }
 }

@@ -3,7 +3,9 @@ import 'package:niri9/API/api_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../Constants/common_functions.dart';
 import '../../Constants/constants.dart';
+import '../../Helper/storage.dart';
 import '../../Models/video.dart';
 import '../../Navigation/Navigate.dart';
 import '../../Repository/repository.dart';
@@ -128,9 +130,12 @@ class _RentPageState extends State<RentPage> {
                               return OttItem(
                                   item: item,
                                   onTap: () {
-                                    Navigation.instance.navigate(
-                                        Routes.watchScreen,
-                                        args: item.id);
+                                    if (Storage.instance.isLoggedIn) {
+                                      Navigation.instance
+                                          .navigate(Routes.watchScreen, args: item.id);
+                                    } else {
+                                      CommonFunctions().showLoginDialog(context);
+                                    }
                                   });
                             },
                           );
@@ -177,6 +182,10 @@ class _RentPageState extends State<RentPage> {
   @override
   void initState() {
     super.initState();
+    Future.delayed(Duration.zero, () {
+      // fetchData(context);
+      Provider.of<Repository>(context,listen: false).updateIndex(3);
+    });
     Future.delayed(Duration.zero, () => fetchDetails(1, "", null, null, null));
     _scrollController.addListener(() {
       debugPrint("reach the top1");

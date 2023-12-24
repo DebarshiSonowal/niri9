@@ -63,16 +63,17 @@ class _HomeBannerState extends State<HomeBanner> {
     }
   }
 }
+
 class BannerSection extends StatefulWidget {
   const BannerSection({super.key});
+
   @override
   State<BannerSection> createState() => _BannerSectionState();
 }
 
 class _BannerSectionState extends State<BannerSection> {
-  int _current=0;
+  int _current = 0;
   final CarouselController controller = CarouselController();
-
 
   @override
   void initState() {
@@ -84,88 +85,83 @@ class _BannerSectionState extends State<BannerSection> {
     return SizedBox(
       width: double.infinity,
       height: 40.h,
-      child: Consumer<Repository>(
-        builder: (context,data,_) {
-          return Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              data.homeBanner.isNotEmpty
-                  ? SizedBox(
-                height: 40.h,
-                width: double.infinity,
-                child: CarouselSlider.builder(
-                  carouselController: controller,
-                  // itemCount: data.bannerList.length,
-                  itemCount: data.homeBanner.length,
-                  itemBuilder: (BuildContext context, int index,
-                      int realIndex) {
-                    var item = data.homeBanner[index];
-                    return BannerImageItem(
-                      item: item,
-                      onTap: (int? val) {
-                        Navigation.instance.navigate(
-                            Routes.watchScreen,
-                            args: val);
+      child: Consumer<Repository>(builder: (context, data, _) {
+        return Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            data.homeBanner.isNotEmpty
+                ? SizedBox(
+                    height: 40.h,
+                    width: double.infinity,
+                    child: CarouselSlider.builder(
+                      carouselController: controller,
+                      // itemCount: data.bannerList.length,
+                      itemCount: data.homeBanner.length,
+                      itemBuilder:
+                          (BuildContext context, int index, int realIndex) {
+                        var item = data.homeBanner[index];
+                        return BannerImageItem(
+                          item: item,
+                          onTap: (int? val) {
+                            Navigation.instance
+                                .navigate(Routes.watchScreen, args: val);
+                          },
+                        );
                       },
-                    );
-                  },
-                  options: CarouselOptions(
-                    autoPlay: true,
-                    enableInfiniteScroll: true,
-                    // enlargeCenterPage: true,
-                    aspectRatio: 10 / 9,
-                    viewportFraction: 1,
-                    onPageChanged: (index, reason) {
-                      debugPrint("onPageChanged $index");
-                      setState(() {
-                        _current = index;
-                      });
-                    },
-                  ),
-                ),
-              )
-                  : Container(),
-              data.homeBanner.isNotEmpty
-                  ? Container(
-                margin: EdgeInsets.only(
-                  bottom: 1.h,
-                ),
-                width: double.infinity,
-                height: 5.h,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    MyListButton(
-                      onTap: () {},
+                      options: CarouselOptions(
+                        autoPlay: true,
+                        enableInfiniteScroll: true,
+                        // enlargeCenterPage: true,
+                        aspectRatio: 10 / 9,
+                        viewportFraction: 1,
+                        onPageChanged: (index, reason) {
+                          debugPrint("onPageChanged $index");
+                          setState(() {
+                            _current = index;
+                          });
+                        },
+                      ),
                     ),
-                    SizedBox(
-                      width: 3.w,
+                  )
+                : Container(),
+            data.homeBanner.isNotEmpty
+                ? Container(
+                    margin: EdgeInsets.only(
+                      bottom: 1.h,
                     ),
-                    SliderIndicator(current: _current),
-                    SizedBox(
-                      width: 3.w,
+                    width: double.infinity,
+                    height: 5.h,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        MyListButton(
+                          onTap: () {},
+                        ),
+                        SizedBox(
+                          width: 3.w,
+                        ),
+                        SliderIndicator(current: _current),
+                        SizedBox(
+                          width: 3.w,
+                        ),
+                        ShareIndicator(
+                          onTap: () {
+                            // showSuccessDialog(context: context);
+                            Share.share(
+                                'check out NIRI9 from https://play.google.com/store/apps/details?id=com.niri.niri9');
+                          },
+                        ),
+                      ],
                     ),
-                    ShareIndicator(
-                      onTap: () {
-                        // showSuccessDialog(context: context);
-                        Share.share(
-                            'check out NIRI9 from https://play.google.com/store/apps/details?id=com.niri.niri9');
-                      },
-                    ),
-                  ],
-                ),
-              )
-                  : Container(),
-            ],
-          );
-        }
-      ),
+                  )
+                : Container(),
+          ],
+        );
+      }),
     );
   }
 }
-
-
 
 class BannerImageItem extends StatelessWidget {
   const BannerImageItem({
@@ -179,61 +175,66 @@ class BannerImageItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => onTap(item.id),
-      child: SizedBox(
-        height: 40.h,
-        width: double.infinity,
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            CachedNetworkImage(
-              imageUrl: item.posterPic ?? "",
-              fit: BoxFit.fill,
-              height: 40.h,
-              width: double.infinity,
-              placeholder: (context, index) {
-                return Image.asset(
-                  Assets.logoTransparent,
-                );
-              },
+    return SizedBox(
+      height: 40.h,
+      width: double.infinity,
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          CachedNetworkImage(
+            imageUrl: item.posterPic ?? "",
+            fit: BoxFit.fill,
+            height: 40.h,
+            width: double.infinity,
+            placeholder: (context, index) {
+              return Image.asset(
+                Assets.logoTransparent,
+              );
+            },
+          ),
+          Container(
+            height: 8.h,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.2),
             ),
-            Container(
-              height: 8.h,
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.2),
-              ),
-              // color: Colors.grey,
-              width: double.infinity,
+            // color: Colors.grey,
+            width: double.infinity,
 
-              padding: EdgeInsets.only(
-                bottom: 0.7.h,
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 15.w,
-                  ),
-                  PlayNowButton(),
-                  SizedBox(
-                    width: 15.w,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 2.w),
-                      child: (item.hasRent??false)?const Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Icon(Icons.shop,color: Colors.yellow,)
-                        ],
-                      ):Container(),
-                    ),
-                  ),
-                ],
-              ),
+            padding: EdgeInsets.only(
+              bottom: 0.7.h,
             ),
-          ],
-        ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 15.w,
+                ),
+                GestureDetector(
+                  onTap: () => onTap(item.id),
+                  child: PlayNowButton(),
+                ),
+                SizedBox(
+                  width: 15.w,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 2.w),
+                    child: (item.hasRent ?? false)
+                        ? const Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.shop,
+                                color: Colors.yellow,
+                              )
+                            ],
+                          )
+                        : Container(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

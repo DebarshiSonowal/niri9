@@ -8,6 +8,8 @@ import 'package:niri9/Router/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../Constants/common_functions.dart';
+import '../../Helper/storage.dart';
 import '../../Models/category.dart';
 import '../../Models/sections.dart';
 import '../../Repository/repository.dart';
@@ -36,6 +38,7 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
+      Provider.of<Repository>(context,listen: false).updateIndex(1);
       selectedGenre = Provider.of<Repository>(context, listen: false).genres[0];
       selectedCategory =
           Provider.of<Repository>(context, listen: false).categories[0];
@@ -161,8 +164,12 @@ class _SearchPageState extends State<SearchPage> {
                     return OttItem(
                       item: item,
                       onTap: () {
-                        Navigation.instance
-                            .navigate(Routes.watchScreen, args: item.id);
+                        if (Storage.instance.isLoggedIn) {
+                          Navigation.instance
+                              .navigate(Routes.watchScreen, args: item.id);
+                        } else {
+                          CommonFunctions().showLoginDialog(context);
+                        }
                       },
                     );
                   },

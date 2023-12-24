@@ -27,7 +27,7 @@ class Assets {
   static const assameseImage = "assets/images/assamese.png";
   static const hindiImage = "assets/images/hindi.png";
   static const bhojpuriImage = "assets/images/bhojpuri.png";
-
+  static const profileImage = "assets/images/user.png";
   static const advertiseBannerImage = "assets/images/launcing_banner.jpg";
   static const advertiseBannerImage2 = "assets/images/launcing_banner2.jpg";
   static const episodeImage = "assets/images/episode_image.jpg";
@@ -44,6 +44,7 @@ class Assets {
 //Animations
   static const successAnimation = "assets/animations/success.json";
   static const failedAnimation = "assets/animations/failed_anim.json";
+  static const notFoundAnimation = "assets/animations/not_found.json";
 
 
 }

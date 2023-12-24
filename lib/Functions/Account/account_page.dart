@@ -21,6 +21,8 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,7 +140,7 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  void onTap(int index, AccountItem item) {
+  Future<void> onTap(int index, AccountItem item) async {
     switch (index) {
       case 0:
         if (Storage.instance.isLoggedIn) {
@@ -181,7 +183,16 @@ class _AccountPageState extends State<AccountPage> {
         _launchUrl(Uri.parse("whatsapp://send?phone=+917002413212"));
         break;
       default:
-        Navigation.instance.navigate(Routes.loginScreen);
+        await Storage.instance.logout();
+        setState((){
+
+        });
+        final response = await Navigation.instance.navigate(Routes.loginScreen);
+        if(response==null){
+          setState((){
+
+          });
+        }
         break;
     }
   }
@@ -192,5 +203,14 @@ class _AccountPageState extends State<AccountPage> {
     )) {
       throw Exception('Could not launch $_url');
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      // fetchData(context);
+      Provider.of<Repository>(context,listen: false).updateIndex(4);
+    });
   }
 }

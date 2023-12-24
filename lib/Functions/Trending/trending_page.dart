@@ -56,26 +56,6 @@ class _TrendingPageState extends State<TrendingPage> {
                 height: 0.5.h,
               ),
               TrendingDynamicItems(page: page),
-              // Consumer<Repository>(builder: (context, data, _) {
-              //   return Flexible(
-              //     child: ListView.builder(
-              //       shrinkWrap: true,
-              //       physics: const NeverScrollableScrollPhysics(),
-              //       itemBuilder: (context, index) {
-              //         var item = data.premiumOthersList[index];
-              //         return DynamicPremiumOtherListItem(
-              //           text: item.title ?? "",
-              //           list: item.list ?? [],
-              //           onTap: () {
-              //             Navigation.instance
-              //                 .navigate(Routes.moreScreen, args: 0);
-              //           },
-              //         );
-              //       },
-              //       itemCount: data.premiumOthersList.length,
-              //     ),
-              //   );
-              // }),
             ],
           ),
         ),
@@ -90,16 +70,22 @@ class _TrendingPageState extends State<TrendingPage> {
     // Future.delayed(Duration.zero, () => {
     // fetchDetails()
     // });
+    Future.delayed(Duration.zero, () {
+      // fetchData(context);
+      Provider.of<Repository>(context,listen: false).updateIndex(2);
+    });
   }
 }
 
-class TrendingDynamicItems extends StatelessWidget {
-  const TrendingDynamicItems({
-    super.key,
-    required this.page,
-  });
-
+class TrendingDynamicItems extends StatefulWidget {
+  const TrendingDynamicItems({super.key, required this.page});
   final int page;
+  @override
+  State<TrendingDynamicItems> createState() => _TrendingDynamicItemsState();
+}
+
+class _TrendingDynamicItemsState extends State<TrendingDynamicItems> {
+
 
   @override
   Widget build(BuildContext context) {
@@ -134,13 +120,13 @@ class TrendingDynamicItems extends StatelessWidget {
             height: 50.h,
             child: const ShimmerLanguageScreen());
       },
-      future: fetchDetails(context, page),
+      future: fetchDetails(context, widget.page),
     );
   }
 
   Future<List<Sections>> fetchDetails(context, page) async {
     final response1 =
-        await ApiProvider.instance.getSections("trending", "$page");
+    await ApiProvider.instance.getSections("trending", "$page");
     if (response1.status ?? false) {
       Provider.of<Repository>(context, listen: false)
           .addTrendingSections(response1.sections ?? []);
@@ -150,3 +136,6 @@ class TrendingDynamicItems extends StatelessWidget {
     }
   }
 }
+
+
+

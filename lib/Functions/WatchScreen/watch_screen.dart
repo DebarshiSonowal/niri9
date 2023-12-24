@@ -5,11 +5,14 @@ import 'dart:io';
 import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Models/video.dart';
+import 'package:niri9/Navigation/Navigate.dart';
 import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
 
 // import 'package:read_more_text/read_more_text.dart';
 
@@ -45,7 +48,6 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
     debugPrint("didChangeAppLifecycleState ${state.name}");
     switch (state) {
       case (AppLifecycleState.resumed):
-
         break;
       case (AppLifecycleState.paused):
         // updateUploadStatus(
@@ -72,9 +74,13 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    videoPlayerController?.pause();
-    videoPlayerController?.dispose();
-    _customVideoPlayerController?.dispose();
+    try {
+      videoPlayerController?.pause();
+      videoPlayerController?.dispose();
+      _customVideoPlayerController?.dispose();
+    } catch (e) {
+      debugPrint("$e");
+    }
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -90,43 +96,68 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
           child: FutureBuilder(
             future: _future,
             builder: (context, _) {
-              return (_.hasData &&
-                      _customVideoPlayerController != null &&
-                      videoPlayerController != null)
-                  ? WatchPrimaryScreen(
-                      customVideoPlayerController:
-                          _customVideoPlayerController!,
-                      videoPlayerController: videoPlayerController!,
-                      showing: showing,
-                      onClicked: () {
-                        showing = true;
-                        if (mounted) {
-                          setState(() {});
-                        }
-                        if (_timer?.isActive ?? false) _timer?.cancel();
-                        _timer = Timer(const Duration(seconds: 3), () {
-                          showing = false;
-                          if (mounted) {
-                            setState(() {});
-                          }
-                        });
+              if (_.hasData &&
+                  _customVideoPlayerController != null &&
+                  videoPlayerController != null) {
+                return WatchPrimaryScreen(
+                  customVideoPlayerController: _customVideoPlayerController!,
+                  videoPlayerController: videoPlayerController!,
+                  showing: showing,
+                  onClicked: () {
+                    showing = true;
+                    if (mounted) {
+                      setState(() {});
+                    }
+                    if (_timer?.isActive ?? false) _timer?.cancel();
+                    _timer = Timer(const Duration(seconds: 3), () {
+                      showing = false;
+                      if (mounted) {
+                        setState(() {});
+                      }
+                    });
+                  },
+                  setVideo: (VideoDetails item) async {
+                    debugPrint("Showing ${item.videoPlayer}");
+                    await initializeVideoPlayer(context, item.videoPlayer);
+                    Provider.of<Repository>(context, listen: false)
+                        .setVideo(item.id ?? 0);
+                    selectedVideoListId = item.id ?? 0;
+                    if (mounted) {
+                      setState(() {});
+                    }
+                  },
+                  setVideoSource:
+                      (MapEntry<String, VideoPlayerController> item) {
+                    setVideoPlayer(context, item.value);
+                  },
+                );
+              }
+              if (_.hasError || (_.hasData && _.data == false)) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Lottie.asset(Assets.notFoundAnimation),
+                    const Text("This Movie/WebSeries is not available"),
+                    SizedBox(
+                      height: 2.h,
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                      ),
+                      onPressed: () {
+                        Navigation.instance.goBack();
                       },
-                      setVideo: (VideoDetails item) async {
-                        debugPrint("Showing ${item.videoPlayer}");
-                        await initializeVideoPlayer(context, item.videoPlayer);
-                        Provider.of<Repository>(context, listen: false)
-                            .setVideo(item.id ?? 0);
-                        selectedVideoListId = item.id ?? 0;
-                        if (mounted) {
-                          setState(() {});
-                        }
-                      },
-                      setVideoSource:
-                          (MapEntry<String, VideoPlayerController> item) {
-                        setVideoPlayer(context, item.value);
-                      },
-                    )
-                  : const ShimmeringWatchScreenLoader();
+                      child: Text(
+                        "Go Back",style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                      ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return const ShimmeringWatchScreenLoader();
             },
           ),
         ),
@@ -205,6 +236,9 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
       setState(() {
         debugPrint("E123B $additionalVideoSources");
       });
+    } else {
+      debugPrint("E123C ");
+      return false;
     }
     try {
       videoPlayerController =
@@ -227,7 +261,7 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
         "Auto": videoPlayerController!,
       });
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return false;
     }
     return true;
@@ -237,11 +271,13 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
     final response = await ApiProvider.instance.getEpisodes(id);
     if (response.success ?? false) {
       debugPrint("MyEpisodes ${response.result}");
-      for (var i in response.result!) {
+      for (var i in response.result) {
         debugPrint("Episodes Adding ${i.video_list.length}");
         Provider.of<Repository>(context, listen: false)
             .addSeasons(i.video_list ?? []);
       }
+      debugPrint(
+          "Watchloading: \n${response.result[0].id}\n${response.result[0].video_list.first.id}");
       Provider.of<Repository>(context, listen: false)
           .setVideo(response.result[0].id ?? 0);
       setState(() {
@@ -447,7 +483,6 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
   }
 
   void videoControllerListener() {
-
     int currentDuration = videoPlayerController!.value.position.inMilliseconds;
 
     if (currentDuration >=
@@ -492,7 +527,7 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
         isPlaying = true;
       }
     } else {
-      if(isPlaying){
+      if (isPlaying) {
         updateUploadStatus(
           _customVideoPlayerController!,
           Provider.of<Repository>(context, listen: false).videoDetails!,

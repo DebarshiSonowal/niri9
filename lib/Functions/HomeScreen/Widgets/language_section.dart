@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:niri9/Models/available_language.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:provider/provider.dart';
@@ -14,11 +15,11 @@ import 'language_item.dart';
 class LanguageSection extends StatelessWidget {
   const LanguageSection({
     super.key,
-    required this.scrollController,
+    required this.scrollController, required this.onScroll,
   });
 
   final ScrollController scrollController;
-
+  final Function(UserScrollNotification notification) onScroll;
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -29,27 +30,33 @@ class LanguageSection extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 2.w),
               width: double.infinity,
               height: 11.h,
-              child: ListView.separated(
-                controller: scrollController,
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  var item = data.languages[index];
-                  return LanguageItem(
-                    item: item,
-                    onTap: () {
-                      Navigation.instance.navigate(
-                          Routes.selectedLanguageScreen,
-                          args: item.slug);
-                    },
-                  );
+              child: NotificationListener<UserScrollNotification>(
+                onNotification: (notification) {
+                  onScroll(notification);
+                  return true;
                 },
-                separatorBuilder: (context, index) {
-                  return SizedBox(
-                    width: 2.w,
-                  );
-                },
-                itemCount: data.languageList.length,
+                child: ListView.separated(
+                  controller: scrollController,
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    var item = data.languages[index];
+                    return LanguageItem(
+                      item: item,
+                      onTap: () {
+                        Navigation.instance.navigate(
+                            Routes.selectedLanguageScreen,
+                            args: item.slug);
+                      },
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return SizedBox(
+                      width: 2.w,
+                    );
+                  },
+                  itemCount: data.languageList.length,
+                ),
               ),
             );
           });

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:niri9/Helper/storage.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../Constants/common_functions.dart';
 import '../../../Models/ott.dart';
 import '../../../Models/video.dart';
 import '../../../Navigation/Navigate.dart';
@@ -25,24 +28,23 @@ class _DynamicPremiumListItemState extends State<DynamicPremiumListItem> {
   bool isEnd = false;
   final ScrollController _scrollController = ScrollController();
 
-
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(() {
-      if (_scrollController.offset <= _scrollController.position.minScrollExtent&&isEnd!=false) {
-        setState(() {
-          debugPrint("reach the top");
-          isEnd = false;
-        });
-      }
-      if (_scrollController.offset >= _scrollController.position.maxScrollExtent&&isEnd==false) {
-        setState(() {
-          debugPrint("reach the bottom");
-          isEnd = true;
-        });
-      }
-    });
+    // _scrollController.addListener(() {
+    //   if (_scrollController.offset <= _scrollController.position.minScrollExtent&&isEnd!=false) {
+    //     setState(() {
+    //       debugPrint("reach the top");
+    //       isEnd = false;
+    //     });
+    //   }
+    //   if (_scrollController.offset >= _scrollController.position.maxScrollExtent&&isEnd==false) {
+    //     setState(() {
+    //       debugPrint("reach the bottom");
+    //       isEnd = true;
+    //     });
+    //   }
+    // });
   }
 
   @override
@@ -66,27 +68,54 @@ class _DynamicPremiumListItemState extends State<DynamicPremiumListItem> {
             ),
             height: 24.h,
             width: double.infinity,
-            child: ListView.separated(
-              controller: _scrollController,
-              scrollDirection: Axis.horizontal,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                var item = widget.list[index];
-                return OttItem(
-                  // index: index,
-                  item: item,
-                  onTap: () {
-                    Navigation.instance
-                        .navigate(Routes.watchScreen, args: item.id);
-                  },
-                );
+            child: NotificationListener<UserScrollNotification>(
+              onNotification: (notification) {
+                final ScrollDirection direction = notification.direction;
+                final ScrollMetrics metrics = notification.metrics;
+
+                if (direction == ScrollDirection.forward &&
+                    metrics.pixels > 0) {
+                  // Slight swipe to the right
+                  setState(() {
+                    isEnd = false;
+                  });
+                } else if (direction == ScrollDirection.reverse &&
+                    metrics.pixels < metrics.maxScrollExtent) {
+                  // Slight swipe to the left
+
+                  setState(() {
+                    isEnd = true;
+                  });
+                }
+
+                return true;
               },
-              separatorBuilder: (context, index) {
-                return SizedBox(
-                  width: 4.w,
-                );
-              },
-              itemCount: widget.list.length,
+              child: ListView.separated(
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  var item = widget.list[index];
+                  return OttItem(
+                    // index: index,
+                    item: item,
+                    onTap: () {
+                      if (Storage.instance.isLoggedIn) {
+                        Navigation.instance
+                            .navigate(Routes.watchScreen, args: item.id);
+                      } else {
+                        CommonFunctions().showLoginDialog(context);
+                      }
+                    },
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return SizedBox(
+                    width: 4.w,
+                  );
+                },
+                itemCount: widget.list.length,
+              ),
             ),
           ),
         ],

@@ -18,7 +18,7 @@ class ShimmeringWatchScreenLoader extends StatelessWidget {
             baseColor: Colors.black,
             highlightColor: Colors.grey.shade800,
             child: Container(
-              height: 20.h,
+              height: 30.h,
               color: Colors.black,
             ),
           ),

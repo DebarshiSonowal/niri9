@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Navigation/Navigate.dart';
@@ -12,6 +13,7 @@ import '../../Widgets/title_box.dart';
 import '../LanguageSelectedPage/language_selected_page.dart';
 import 'Widgets/custom_app_bar.dart';
 import 'Widgets/dynamic_list_item.dart';
+import 'Widgets/dynamic_list_section.dart';
 import 'Widgets/home_banner.dart';
 import 'Widgets/language_section.dart';
 import 'Widgets/ott_item.dart';
@@ -32,25 +34,26 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
     super.initState();
     Future.delayed(Duration.zero, () {
       // fetchData(context);
+      Provider.of<Repository>(context,listen: false).updateIndex(0);
     });
-    _scrollController.addListener(() {
-      if (_scrollController.offset <=
-              _scrollController.position.minScrollExtent &&
-          isEnd != false) {
-        setState(() {
-          debugPrint("reach the top");
-          isEnd = false;
-        });
-      }
-      if (_scrollController.offset >=
-              _scrollController.position.maxScrollExtent &&
-          isEnd == false) {
-        setState(() {
-          debugPrint("reach the bottom");
-          isEnd = true;
-        });
-      }
-    });
+    // _scrollController.addListener(() {
+    //   if (_scrollController.offset <=
+    //           _scrollController.position.minScrollExtent &&
+    //       isEnd != false) {
+    //     setState(() {
+    //       debugPrint("reach the top");
+    //       isEnd = false;
+    //     });
+    //   }
+    //   if (_scrollController.offset >=
+    //           _scrollController.position.maxScrollExtent &&
+    //       isEnd == false) {
+    //     setState(() {
+    //       debugPrint("reach the bottom");
+    //       isEnd = true;
+    //     });
+    //   }
+    // });
     // Provider.of<Repository>(context, listen: false).set
   }
 
@@ -90,6 +93,23 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
                 ),
                 LanguageSection(
                   scrollController: _scrollController,
+                  onScroll: (UserScrollNotification notification)  {
+                    final ScrollDirection direction = notification.direction;
+                    final ScrollMetrics metrics = notification.metrics;
+
+                    if (direction == ScrollDirection.forward && metrics.pixels > 0) {
+                      // Slight swipe to the right
+                      setState(() {
+                        isEnd = false;
+                      });
+                    } else if (direction == ScrollDirection.reverse && metrics.pixels < metrics.maxScrollExtent) {
+                      // Slight swipe to the left
+
+                      setState(() {
+                        isEnd = true;
+                      });
+                    }
+                  },
                 ),
                 const DynamicListSectionHome(),
               ],
@@ -111,8 +131,6 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
     // Navigation.instance.goBack();
   }
 
-
-
   Future<void> fetchTypes(BuildContext context) async {
     final response = await ApiProvider.instance.getTypes();
     if (response.success ?? false) {
@@ -121,92 +139,30 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
     } else {}
   }
 
-  // Future<void> fetchPrivacy(BuildContext context) async {
-  //   final response = await ApiProvider.instance.getPrivacyPolicy();
-  //   if (response.success ?? false) {
-  //     // if (!context.mounted) return;
-  //     Provider.of<Repository>(context, listen: false)
-  //         .updatePrivacy(response.result!);
-  //   } else {}
-  // }
+// Future<void> fetchPrivacy(BuildContext context) async {
+//   final response = await ApiProvider.instance.getPrivacyPolicy();
+//   if (response.success ?? false) {
+//     // if (!context.mounted) return;
+//     Provider.of<Repository>(context, listen: false)
+//         .updatePrivacy(response.result!);
+//   } else {}
+// }
 
-  // Future<void> fetchRefund(BuildContext context) async {
-  //   final response = await ApiProvider.instance.getRefundPolicy();
-  //   if (response.success ?? false) {
-  //     // if (!context.mounted) return;
-  //     Provider.of<Repository>(context, listen: false)
-  //         .updateRefund(response.result!);
-  //   } else {}
-  // }
+// Future<void> fetchRefund(BuildContext context) async {
+//   final response = await ApiProvider.instance.getRefundPolicy();
+//   if (response.success ?? false) {
+//     // if (!context.mounted) return;
+//     Provider.of<Repository>(context, listen: false)
+//         .updateRefund(response.result!);
+//   } else {}
+// }
 
-  // Future<void> fetchTerms(BuildContext context) async {
-  //   final response = await ApiProvider.instance.getRefundPolicy();
-  //   if (response.success ?? false) {
-  //     // if (!context.mounted) return;
-  //     Provider.of<Repository>(context, listen: false)
-  //         .updateRefund(response.result!);
-  //   } else {}
-  // }
-}
-
-class DynamicListSectionHome extends StatelessWidget {
-  const DynamicListSectionHome({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      builder: (context, _) {
-        if (_.hasData && (_.data != null)) {
-          return Consumer<Repository>(builder: (context, data, _) {
-            return Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  var item = data.homeSections[index];
-                  return item.videos.isNotEmpty
-                      ? DynamicListItem(
-                          text: item.title ?? "",
-                          list: item.videos ?? [],
-                          onTap: () {
-                            Navigation.instance.navigate(Routes.moreScreen,
-                                args: item.slug ?? "");
-                          },
-                        )
-                      : Container();
-                },
-                itemCount: data.homeSections.length,
-              ),
-            );
-          });
-        }
-        if(_.hasData && (_.data == null)){
-          return Container();
-        }
-        if(_.hasError){
-          return Container();
-        }
-        return SizedBox(
-            width: double.infinity,
-            height: 50.h,
-            child: const ShimmerLanguageScreen());
-      },
-      future: fetchSections(context),
-    );
-  }
-
-  Future<List<Sections>> fetchSections(context) async {
-    final response = await ApiProvider.instance.getSections("home", '1');
-    if (response.status ?? false) {
-      // if (!context.mounted) return;
-      Provider.of<Repository>(context, listen: false)
-          .addHomeSections(response.sections);
-      // await fetchVideos(response.sections[0]);
-      return response.sections ?? List<Sections>.empty();
-    } else {
-      return List<Sections>.empty();
-    }
-  }
+// Future<void> fetchTerms(BuildContext context) async {
+//   final response = await ApiProvider.instance.getRefundPolicy();
+//   if (response.success ?? false) {
+//     // if (!context.mounted) return;
+//     Provider.of<Repository>(context, listen: false)
+//         .updateRefund(response.result!);
+//   } else {}
+// }
 }

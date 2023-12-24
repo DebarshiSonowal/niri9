@@ -128,8 +128,8 @@ class ApiProvider {
             : response?.data['message']['error']);
       }
     } on DioError catch (e) {
-      debugPrint("login error: ${e.error} ${e.message}");
-      return LoginResponse.withError(e.message);
+      debugPrint("login error: ${e.error} ${e.response} ${e.message}");
+      return LoginResponse.withError(e.response?.data['message']);
     }
   }
 

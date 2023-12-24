@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/cli_commands.dart';
+import 'package:niri9/Helper/storage.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../API/api_provider.dart';
+import '../../Constants/common_functions.dart';
 import '../../Constants/constants.dart';
 import '../../Models/video.dart';
 import '../../Navigation/Navigate.dart';
@@ -131,7 +133,14 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
                           ),
                           itemBuilder: (BuildContext context, int index) {
                             var item = data.specificVideos[index];
-                            return OttItem(item: item, onTap: () {});
+                            return OttItem(item: item, onTap: () {
+                              if(Storage.instance.isLoggedIn){
+                                Navigation.instance.navigate(Routes.watchScreen,args: item.id);
+                              }else{
+                                CommonFunctions().showLoginDialog(context);
+                                // Navigation.instance.navigate(Routes.watchScreen,args: item.id);
+                              }
+                            });
                           },
                         ),
                       );
