@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:niri9/Functions/Trending/Widgets/trending_slider_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -17,6 +18,7 @@ import '../../../Router/routes.dart';
 import '../../HomeScreen/Widgets/my_list_button.dart';
 import '../../HomeScreen/Widgets/share_indicator.dart';
 import '../../HomeScreen/Widgets/slider_indicator.dart';
+import 'trending_banner_item.dart';
 
 class TrendingBanner extends StatefulWidget {
   const TrendingBanner({Key? key}) : super(key: key);
@@ -124,7 +126,11 @@ class _TrendingBannerSectionState extends State<TrendingBannerSection> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         MyListButton(
-                          onTap: () {},
+                          hasMyList:
+                              data.homeBanner[_current].hasMyList ?? false,
+                          onTap: () {
+                            addToMyList(data.homeBanner[_current].id);
+                          },
                         ),
                         SizedBox(
                           width: 3.w,
@@ -145,61 +151,14 @@ class _TrendingBannerSectionState extends State<TrendingBannerSection> {
       );
     });
   }
-}
 
-class TrendingBannerItem extends StatelessWidget {
-  const TrendingBannerItem({
-    super.key,
-    required this.item,
-  });
-
-  final BannerResult item;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 40.h,
-      width: double.infinity,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          CachedNetworkImage(
-            imageUrl: item.posterPic ?? "",
-            fit: BoxFit.fill,
-            height: 40.h,
-            width: double.infinity,
-          ),
-          Container(
-            height: 7.h,
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.2),
-            ),
-            // color: Colors.grey,
-            width: double.infinity,
-
-            padding: EdgeInsets.only(
-              bottom: 0.7.h,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap:(){
-                    if (Storage.instance.isLoggedIn) {
-                      Navigation.instance
-                          .navigate(Routes.watchScreen, args: item.id);
-                    } else {
-                      CommonFunctions().showLoginDialog(context);
-                    }
-                  },
-                  child: const PlayNowButton(),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+  Future<void> addToMyList(int? id) async {
+    final response = await ApiProvider.instance.addMyVideos(id);
+    if (response.success ?? false) {
+      Fluttertoast.showToast(msg: response.message ?? "Added To My List");
+    } else {
+      Fluttertoast.showToast(msg: response.message ?? "Something went wrong");
+    }
   }
 }
 
@@ -212,6 +171,7 @@ class PlayNowButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 30.w,
+      height: 4.h,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),

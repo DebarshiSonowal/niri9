@@ -74,6 +74,7 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
                                       setState(() {
                                         selected = index;
                                       });
+                                      debugPrint("${data.currentSeasons[selected][0].title}");
                                     },
                                   );
                                 },
@@ -105,7 +106,7 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
                                 if (Storage.instance.isLoggedIn!) {
                                   widget.setVideo(item);
                                   debugPrint(
-                                      "Video Clicked${item.videoPlayer}");
+                                      "Video Clicked${item.title}");
                                 } else {
                                   showLoginPrompt(context);
                                 }
@@ -131,23 +132,7 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
     });
   }
 
-  void showRenting(context) {
-    showModalBottomSheet<void>(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      // context and builder are
-      // required properties in this widget
-      context: context,
-      builder: (BuildContext context) {
-        // we set up a container inside which
-        // we create center column and display text
 
-        // Returning SizedBox instead of a Container
-        return const RentBottomSheet();
-      },
-    );
-  }
 
   void showLoginPrompt(BuildContext context) {
     showDialog(

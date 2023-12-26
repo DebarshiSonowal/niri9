@@ -21,7 +21,7 @@ class Routes {
   static const privacyPolicyScreen = "/privacy_policy_screen";
   static const refundPolicyScreen = "/refund_policy_screen";
   static const helpFaqScreen = "/help_faq_screen";
-
+  static const watchlistScreen = "/watch_list_screen";
   static const loadingScreen = "/loading_dialog";
   static const otpScreen = "/otp_screen";
   static const profile = "/profile";

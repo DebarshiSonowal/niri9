@@ -22,12 +22,13 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Repository/repository.dart';
+import '../../Widgets/failed_dialogue_content.dart';
 import 'Widgets/benifits_widget.dart';
 import 'Widgets/plan_column.dart';
 import 'Widgets/plans_section.dart';
 import 'Widgets/premium_card.dart';
 import 'Widgets/subscription_appbar.dart';
-import 'Widgets/successful_content_widget.dart';
+import '../../Widgets/successful_content_widget.dart';
 import 'Widgets/type_column.dart';
 
 class SubscriptionPage extends StatefulWidget {
@@ -469,34 +470,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                     fontSize: 12.sp,
                   ),
             ),
-            content: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 2.w,
-                vertical: 1.h,
-              ),
-              width: 60.w,
-              height: 36.h,
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: 50.w,
-                    height: 25.h,
-                    child:
-                        Lottie.asset(Assets.failedAnimation, fit: BoxFit.fill),
-                  ),
-                  SizedBox(
-                    height: 2.h,
-                  ),
-                  Text(
-                    message ?? "Some Messages",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.white,
-                          fontSize: 12.sp,
-                        ),
-                  ),
-                ],
-              ),
-            ),
+            content: FailedDialogContent(message: message,),
             actions: [
               TextButton(
                 onPressed: () {
@@ -516,3 +490,5 @@ class _SubscriptionPageState extends State<SubscriptionPage>
         });
   }
 }
+
+

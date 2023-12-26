@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
 import 'package:niri9/Constants/assets.dart';
 import 'package:niri9/Models/banner.dart';
@@ -13,6 +14,7 @@ import '../../../API/api_provider.dart';
 import '../../../Navigation/Navigate.dart';
 import '../../../Repository/repository.dart';
 import '../../../Router/routes.dart';
+import '../../Trending/Widgets/trending_banner.dart';
 import 'my_list_button.dart';
 import 'share_indicator.dart';
 import 'slider_indicator.dart';
@@ -25,15 +27,19 @@ class HomeBanner extends StatefulWidget {
 }
 
 class _HomeBannerState extends State<HomeBanner> {
-  int _current = 0;
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: fetchBanner(context),
         builder: (context, _) {
           if (_.hasData && (_.data ?? false) == true) {
-            return const BannerSection();
+            return BannerSection(
+              fetchData: () {
+                setState(() {
+                  fetchBanner(context);
+                });
+              },
+            );
           }
           if (_.hasData && (_.data ?? false) == false) {
             return Container();
@@ -65,7 +71,9 @@ class _HomeBannerState extends State<HomeBanner> {
 }
 
 class BannerSection extends StatefulWidget {
-  const BannerSection({super.key});
+  const BannerSection({super.key, required this.fetchData});
+
+  final Function fetchData;
 
   @override
   State<BannerSection> createState() => _BannerSectionState();
@@ -115,7 +123,8 @@ class _BannerSectionState extends State<BannerSection> {
                         aspectRatio: 10 / 9,
                         viewportFraction: 1,
                         onPageChanged: (index, reason) {
-                          debugPrint("onPageChanged $index");
+                          debugPrint(
+                              "onPageChanged $index ${data.homeBanner[_current].hasMyList}");
                           setState(() {
                             _current = index;
                           });
@@ -136,7 +145,11 @@ class _BannerSectionState extends State<BannerSection> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         MyListButton(
-                          onTap: () {},
+                          hasMyList:
+                              data.homeBanner[_current].hasMyList ?? false,
+                          onTap: () {
+                            addToMyList(data.homeBanner[_current].id);
+                          },
                         ),
                         SizedBox(
                           width: 3.w,
@@ -160,6 +173,16 @@ class _BannerSectionState extends State<BannerSection> {
         );
       }),
     );
+  }
+
+  Future<void> addToMyList(int? id) async {
+    final response = await ApiProvider.instance.addMyVideos(id);
+    if (response.success ?? false) {
+      Fluttertoast.showToast(msg: response.message ?? "Added To My List");
+      widget.fetchData();
+    } else {
+      Fluttertoast.showToast(msg: response.message ?? "Something went wrong");
+    }
   }
 }
 
@@ -212,7 +235,7 @@ class BannerImageItem extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () => onTap(item.id),
-                  child: PlayNowButton(),
+                  child: const PlayNowButton(),
                 ),
                 SizedBox(
                   width: 15.w,
@@ -235,37 +258,6 @@ class BannerImageItem extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class PlayNowButton extends StatelessWidget {
-  const PlayNowButton({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 30.w,
-      height: 4.h,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: EdgeInsets.symmetric(
-        horizontal: 4.w,
-        vertical: 1.h,
-      ),
-      child: Center(
-        child: Text(
-          "Play Now",
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-        ),
       ),
     );
   }

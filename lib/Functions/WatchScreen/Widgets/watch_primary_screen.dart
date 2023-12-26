@@ -43,6 +43,9 @@ class WatchPrimaryScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 2.w,
+              ),
               color: Colors.black,
               // padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.2.h),
               child: Row(
@@ -55,7 +58,7 @@ class WatchPrimaryScreen extends StatelessWidget {
                     child: Icon(
                       Icons.arrow_back,
                       color: Colors.white,
-                      size: 13.sp,
+                      size: 15.sp,
                     ),
                   ),
                   // GestureDetector(

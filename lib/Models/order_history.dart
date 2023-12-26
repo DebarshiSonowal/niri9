@@ -57,6 +57,7 @@ class OrderHistoryItem {
   String? invoiceAmount;
   String? customerEmail;
   String? customerMobile;
+  String? order_for;
 
   OrderHistoryItem(
       {this.id,
@@ -105,6 +106,7 @@ class OrderHistoryItem {
     invoiceAmount = json['invoice_amount'];
     customerEmail = json['customer_email'];
     customerMobile = json['customer_mobile'];
+    order_for = json['order_for'];
   }
 
   Map<String, dynamic> toJson() {

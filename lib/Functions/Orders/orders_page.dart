@@ -84,12 +84,9 @@ class _OrderPageScreenState extends State<OrderPageScreen>
         height: double.infinity,
         child: TabBarView(
           controller: _tabController,
-          children: [
-            const OrderItemsList(),
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-            ),
+          children: const [
+            OrderItemsList(),
+            RentItemsList(),
           ],
         ),
       ),
@@ -116,16 +113,52 @@ class OrderItemsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: double.infinity,
       child: Consumer<Repository>(builder: (context, data, _) {
         return ListView.separated(
           itemBuilder: (context, index) {
-            var item = data.orders[index];
+            var item = data.orders
+                .where((element) => element.order_for == "subscription")
+                .toList()[index];
             return OrderItemWidget(item: item);
           },
-          itemCount: data.orders.length,
+          itemCount: data.orders
+              .where((element) => element.order_for == "subscription")
+              .toList().length,
+          separatorBuilder: (BuildContext context, int index) {
+            return SizedBox(
+              height: 2.h,
+            );
+          },
+        );
+      }),
+    );
+  }
+}
+
+class RentItemsList extends StatelessWidget {
+  const RentItemsList({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: double.infinity,
+      child: Consumer<Repository>(builder: (context, data, _) {
+        return ListView.separated(
+          itemBuilder: (context, index) {
+            var item = data.orders
+                .where((element) => element.order_for != "subscription")
+                .toList()[index];
+            return OrderItemWidget(item: item);
+          },
+          itemCount: data.orders
+              .where((element) => element.order_for != "subscription")
+              .toList().length,
           separatorBuilder: (BuildContext context, int index) {
             return SizedBox(
               height: 2.h,
@@ -166,10 +199,7 @@ class OrderItemWidget extends StatelessWidget {
             children: [
               Text(
                 "Order Id: ",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white70,
                       fontSize: 8.sp,
                     ),
@@ -177,10 +207,7 @@ class OrderItemWidget extends StatelessWidget {
               SizedBox(
                 child: Text(
                   "${item.id}",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.white,
                         fontSize: 10.sp,
                       ),
@@ -189,10 +216,7 @@ class OrderItemWidget extends StatelessWidget {
               const Spacer(),
               Text(
                 "Date: ",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white70,
                       fontSize: 8.sp,
                     ),
@@ -200,10 +224,7 @@ class OrderItemWidget extends StatelessWidget {
               SizedBox(
                 child: Text(
                   "${item.orderDate?.split(" ").first}",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.white,
                         fontSize: 10.sp,
                       ),
@@ -219,10 +240,7 @@ class OrderItemWidget extends StatelessWidget {
             children: [
               Text(
                 item.productName ?? "N/A",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white,
                       fontSize: 18.sp,
                     ),
@@ -238,60 +256,42 @@ class OrderItemWidget extends StatelessWidget {
             children: [
               Text(
                 "Total: ",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white70,
                       fontSize: 8.sp,
                     ),
               ),
               Text(
                 "₹${item.total}",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white,
                       fontSize: 14.sp,
                     ),
               ),
               Text(
                 "Tax: ",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white70,
                       fontSize: 8.sp,
                     ),
               ),
               Text(
                 "₹${item.taxAmt}",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white,
                       fontSize: 14.sp,
                     ),
               ),
               Text(
                 "Grand Total: ",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white70,
                       fontSize: 8.sp,
                     ),
               ),
               Text(
                 "₹${item.grandTotal}",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white,
                       fontSize: 14.sp,
                     ),

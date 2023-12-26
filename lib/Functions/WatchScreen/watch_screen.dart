@@ -149,9 +149,10 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
                         Navigation.instance.goBack();
                       },
                       child: Text(
-                        "Go Back",style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white,
-                      ),
+                        "Go Back",
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.white,
+                            ),
                       ),
                     ),
                   ],
@@ -165,8 +166,18 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
     );
   }
 
-  void fetchDetails(int index) async {
-    await fetchVideo(index);
+  void fetchDetails(int id) async {
+    await fetchVideo(id);
+    await fetchRentDetails(id);
+  }
+
+  Future<void> fetchRentDetails(int id) async {
+    final response = await ApiProvider.instance.getRentPlans(id);
+    if (response.success ?? false) {
+      Provider.of<Repository>(context, listen: false)
+          .setRentPlanDetails(response.result);
+    } else {
+    }
   }
 
   Future<bool> fetchVideo(int index) async {

@@ -1,6 +1,8 @@
 import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lists/flutter_lists.dart';
+import 'package:niri9/Functions/WatchScreen/Widgets/rent_bottom_sheet.dart';
+import 'package:niri9/Models/video.dart';
 import 'package:niri9/Repository/repository.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -63,7 +65,7 @@ class OptionsBar extends StatelessWidget {
                       width: 5.w,
                     ),
                     IconTextButton(
-                      name: "Watchlist",
+                      name: "My List",
                       icon: Icons.playlist_add,
                       onTap: () {},
                     ),
@@ -75,7 +77,7 @@ class OptionsBar extends StatelessWidget {
                       icon: Icons.money,
                       onTap: () {
                         if (data.videoDetails?.has_rent ?? false) {
-                          showRentalBottomSheet(context);
+                          showRenting(context,data.videoDetails);
                         }
                       },
                     ),
@@ -130,14 +132,21 @@ class OptionsBar extends StatelessWidget {
     }
   }
 
-  void showRentalBottomSheet(BuildContext context) {
-    showBottomSheet(
-      context: context,
+  void showRenting(context, Video? videoDetails) {
+    showModalBottomSheet<void>(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
-      builder: (context) {
-        return const RentalBodyWidget();
+      // context and builder are
+      // required properties in this widget
+      isDismissible:true,
+      context: context,
+      builder: (BuildContext context) {
+        // we set up a container inside which
+        // we create center column and display text
+
+        // Returning SizedBox instead of a Container
+        return RentBottomSheet(videoDetails:videoDetails);
       },
     );
   }

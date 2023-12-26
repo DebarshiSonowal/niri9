@@ -12,16 +12,18 @@ class OttItem extends StatelessWidget {
   const OttItem({
     super.key,
     required this.item,
-    required this.onTap,
+    required this.onTap,this.onLongPressed,
   });
 
   final Video item;
   final Function onTap;
+  final Function? onLongPressed;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => onTap(),
+      onLongPress: ()=>onLongPressed!(),
       child: Card(
         elevation: 4,
         shape: RoundedRectangleBorder(

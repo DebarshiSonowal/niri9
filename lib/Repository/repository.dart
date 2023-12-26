@@ -6,6 +6,7 @@ import 'package:niri9/Models/banner.dart';
 import 'package:niri9/Models/category.dart';
 import 'package:niri9/Models/dynamic_list_item_model.dart';
 import 'package:niri9/Models/order_history.dart';
+import 'package:niri9/Models/rent_plan_details_response.dart';
 import 'package:niri9/Models/subscription.dart';
 import 'package:niri9/Models/subscription_model.dart';
 import 'package:niri9/Models/video.dart';
@@ -28,7 +29,7 @@ import '../Models/user.dart';
 class Repository extends ChangeNotifier {
   int _currentIndex = 0;
   List<Category> _categories = [];
-  List<Video> _specificVideos = [], _rental = [];
+  List<Video> _specificVideos = [], _rental = [], _wishList = [];
   List<AppBarOption> _appbarOptions = [];
   List<BannerResult> homeBanner = [], trendingBanner = [];
   List<OrderHistoryItem> orders = [];
@@ -88,30 +89,14 @@ class Repository extends ChangeNotifier {
     OTT(id: 9, image: Assets.itemImage),
     OTT(id: 9, image: Assets.item2Image),
   ];
-
-  // List<SubscriptionModel> subscriptions = [
-  //   SubscriptionModel(
-  //     "Status",
-  //     "Active",
-  //   ),
-  //   SubscriptionModel(
-  //     "Pack Country",
-  //     "India",
-  //   ),
-  //   SubscriptionModel(
-  //     "Payment Mode",
-  //     "crm",
-  //   ),
-  //   SubscriptionModel(
-  //     "Expiry Date",
-  //     "04 Jun 2023",
-  //   ),
-  // ];
-
   List<AccountItem> items = [
     AccountItem(
       name: "My Account",
       icon: Icons.person,
+    ),
+    AccountItem(
+      name: "Watch List",
+      icon: Icons.video_collection_sharp,
     ),
     AccountItem(
       name: "Subscription",
@@ -162,7 +147,7 @@ class Repository extends ChangeNotifier {
       icon: FontAwesomeIcons.signOut,
     ),
   ];
-
+  RentPlanDetails? rentPlanDetails;
   List<PlanPricing> plans = [
     PlanPricing(true, false, false, 1, "HD 720P", "299", "Mobile"),
     PlanPricing(true, true, false, 2, "HD 1080P", "499", "Gold"),
@@ -213,6 +198,11 @@ class Repository extends ChangeNotifier {
 
   void setPrivacy(String val) {
     _privacyPolicy = val;
+    notifyListeners();
+  }
+
+  void setRentPlanDetails(RentPlanDetails? val) {
+    rentPlanDetails = val;
     notifyListeners();
   }
 
@@ -338,6 +328,13 @@ class Repository extends ChangeNotifier {
     _rental = videos;
     notifyListeners();
   }
+
+  void setWishList(List<Video> videos) {
+    _wishList = videos;
+    notifyListeners();
+  }
+
+  get wishList => _wishList;
 
   void addCategoryAll(CategoryAll? data) {
     categoryAll = data;

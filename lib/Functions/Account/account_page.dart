@@ -21,8 +21,6 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,7 +73,8 @@ class _AccountPageState extends State<AccountPage> {
                   GestureDetector(
                     onTap: () {
                       if (Storage.instance.isLoggedIn) {
-                        Navigation.instance.navigate(Routes.profileUpdateScreen);
+                        Navigation.instance
+                            .navigate(Routes.profileUpdateScreen);
                       } else {
                         Navigation.instance.navigate(Routes.loginScreen);
                       }
@@ -150,48 +149,47 @@ class _AccountPageState extends State<AccountPage> {
         }
         break;
       case 1:
-        Navigation.instance.navigate(Routes.subscriptionScreen);
+        Navigation.instance.navigate(Routes.watchlistScreen);
         break;
       case 2:
-        Navigation.instance.navigate(Routes.orderHistory);
+        Navigation.instance.navigate(Routes.subscriptionScreen);
         break;
       case 3:
+        Navigation.instance.navigate(Routes.orderHistory);
         break;
       case 4:
         break;
       case 5:
-        Navigation.instance.navigate(Routes.activateTV);
         break;
       case 6:
+        Navigation.instance.navigate(Routes.activateTV);
+        break;
+      case 7:
         // _launchUrl(Uri.parse("https://niri9.com/terms-condition.php"));
         Navigation.instance.navigate(Routes.termsConditionsScreen);
         break;
-      case 7:
+      case 8:
         // _launchUrl(Uri.parse("https://niri9.com/privacy_policy.php"));
         Navigation.instance.navigate(Routes.privacyPolicyScreen);
         break;
-      case 8:
+      case 9:
         Navigation.instance.navigate(Routes.refundScreen);
         break;
-      case 9:
+      case 10:
         Navigation.instance.navigate(Routes.helpFaqScreen);
         break;
-      case 10:
+      case 11:
         Navigation.instance.navigate(Routes.aboutScreen);
         break;
-      case 11:
+      case 12:
         _launchUrl(Uri.parse("whatsapp://send?phone=+917002413212"));
         break;
       default:
         await Storage.instance.logout();
-        setState((){
-
-        });
+        setState(() {});
         final response = await Navigation.instance.navigate(Routes.loginScreen);
-        if(response==null){
-          setState((){
-
-          });
+        if (response == null) {
+          setState(() {});
         }
         break;
     }
@@ -210,7 +208,7 @@ class _AccountPageState extends State<AccountPage> {
     super.initState();
     Future.delayed(Duration.zero, () {
       // fetchData(context);
-      Provider.of<Repository>(context,listen: false).updateIndex(4);
+      Provider.of<Repository>(context, listen: false).updateIndex(4);
     });
   }
 }

@@ -4,15 +4,15 @@ import 'package:sizer/sizer.dart';
 class MyListButton extends StatelessWidget {
   const MyListButton({
     super.key,
-    required this.onTap,
+    required this.onTap, required this.hasMyList,
   });
-
+  final bool hasMyList;
   final Function onTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap(),
+      onTap: ()=>onTap(),
       child: SizedBox(
         width: 15.w,
         height: 5.h,
@@ -20,7 +20,7 @@ class MyListButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Icon(
-              Icons.add,
+              !hasMyList?Icons.add:Icons.remove,
               size: 16.sp,
               color: Colors.white,
             ),

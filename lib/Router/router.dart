@@ -17,6 +17,7 @@ import 'package:niri9/Functions/RefundPolicy/refund_policy.dart';
 import 'package:niri9/Functions/Rent/rent_page.dart';
 import 'package:niri9/Functions/Search/search_page.dart';
 import 'package:niri9/Functions/TermsConditions/terms_conditions.dart';
+import 'package:niri9/Functions/WatchList/watch_list_screen.dart';
 import 'package:niri9/Router/routes.dart';
 
 import '../Functions/AboutPage/about_page.dart';
@@ -92,6 +93,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return FadeTransitionPageRouteBuilder(page: const AboutPage());
     case Routes.activateTV:
       return FadeTransitionPageRouteBuilder(page: const ActivateTvScreen());
+
+    case Routes.watchlistScreen:
+      return FadeTransitionPageRouteBuilder(page: const WatchListScreen());
     case Routes.termsConditionsScreen:
       return FadeTransitionPageRouteBuilder(
           page: const TermsConditionsScreen());

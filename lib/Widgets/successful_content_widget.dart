@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../Constants/assets.dart';
+import '../Constants/assets.dart';
 
 class SuccessfulContentWidget extends StatelessWidget {
   const SuccessfulContentWidget({

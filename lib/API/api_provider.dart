@@ -20,6 +20,7 @@ import '../Models/languages.dart';
 import '../Models/login.dart';
 import '../Models/order_history_details.dart';
 import '../Models/payment_gateway.dart';
+import '../Models/rent_plan_details_response.dart';
 import '../Models/sections.dart';
 import '../Models/series_episode_details.dart';
 import '../Models/settings.dart';
@@ -720,6 +721,48 @@ class ApiProvider {
       return VideoResponse.withError(e.message);
     }
   }
+  Future<GenericResponse> addMyVideos(id) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/videos/my-list/$id";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    // var data = {
+    //   'page_no': page_no,
+    //   'section': section,
+    //   'category': category,
+    //   'genre': genre,
+    // };
+    // debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.post(
+        url,
+        // data: jsonEncode(data),
+      );
+      debugPrint(
+          "addMyVideos response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return GenericResponse.fromJson(response?.data);
+      } else {
+        debugPrint("addMyVideos error response: ${response?.data}");
+        return GenericResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("addMyVideos  error: ${e.error} ${e.response?.data} ${e.message}");
+      return GenericResponse.withError(e.response?.data['message']);
+    }
+  }
 
   Future<VideoResponse> getRentVideos() async {
     BaseOptions option = BaseOptions(
@@ -761,6 +804,48 @@ class ApiProvider {
     } on DioError catch (e) {
       debugPrint("getMyVideos  error: ${e.error} ${e.message}");
       return VideoResponse.withError(e.message);
+    }
+  }
+  Future<RentPlanDetailsResponse> getRentPlans(int id) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/videos/rent/$id";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    // var data = {
+    //   'page_no': page_no,
+    //   'section': section,
+    //   'category': category,
+    //   'genre': genre,
+    // };
+    // debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.get(
+        url,
+        // data: jsonEncode(data),
+      );
+      debugPrint(
+          "getMyVideos response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return RentPlanDetailsResponse.fromJson(response?.data);
+      } else {
+        debugPrint("getMyVideos error response: ${response?.data}");
+        return RentPlanDetailsResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("getMyVideos  error: ${e.error} ${e.message}");
+      return RentPlanDetailsResponse.withError(e.message);
     }
   }
 
@@ -1436,13 +1521,14 @@ class ApiProvider {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          // 'Authorization': 'Bearer ${Storage.instance.token}'
+          'Authorization': 'Bearer ${Storage.instance.token}'
           // 'APP-KEY': ConstanceData.app_key
         });
     var url = "$baseUrl/$path/widgets/banner";
     // var url = "http://asamis.assam.gov.in/api/login";
     dio = Dio(option);
     debugPrint(url.toString());
+    debugPrint('Bearer ${Storage.instance.token}');
     var data = {
       'page': page,
     };
