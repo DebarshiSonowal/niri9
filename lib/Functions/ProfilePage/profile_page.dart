@@ -49,6 +49,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   borderRadius: BorderRadius.circular(100),
                   child: Image.asset(
                     Assets.profileImage,
+                    color: Colors.white,
+                    scale: 4,
                   ),
                 ),
                 SizedBox(
@@ -163,6 +165,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (response.success ?? false) {
       Navigation.instance.goBack();
       Provider.of<Repository>(context, listen: false).setUser(response.user!);
+    debugPrint("User: ${response.user?.last_sub}");
     } else {
       Navigation.instance.goBack();
       showError(response.message ?? "Something went wrong");

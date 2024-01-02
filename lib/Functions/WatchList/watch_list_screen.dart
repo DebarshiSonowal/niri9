@@ -81,7 +81,7 @@ class _WatchListScreenState extends State<WatchListScreen> {
                 }),
               );
             }
-            if (_.hasError || _.data == []) {
+            if ( _.hasError || _.data == []) {
               return Center(
                 child: Text(
                   "Not Available",
@@ -113,8 +113,10 @@ class _WatchListScreenState extends State<WatchListScreen> {
     if (response.success ?? false) {
       Provider.of<Repository>(context, listen: false)
           .setWishList(response.videos);
+      debugPrint("Fetched ${response.videos.length}");
       return response.videos;
     } else {
+      debugPrint("Fetched2 ${response.videos.length}");
       return List<Video>.empty();
     }
   }

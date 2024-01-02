@@ -158,6 +158,7 @@ class _AccountPageState extends State<AccountPage> {
         Navigation.instance.navigate(Routes.orderHistory);
         break;
       case 4:
+        Navigation.instance.navigate(Routes.notificationInbox);
         break;
       case 5:
         break;

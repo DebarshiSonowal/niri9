@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
@@ -7,9 +6,12 @@ import '../../../Navigation/Navigate.dart';
 
 class SearchAppbar extends StatelessWidget {
   const SearchAppbar({
-    super.key, required this.search,
+    super.key,
+    required this.search, required this.suggest,
   });
-  final Function(String) search;
+
+  final Function(String) search,suggest;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -41,10 +43,10 @@ class SearchAppbar extends StatelessWidget {
               Text(
                 "Search",
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: Colors.white,
-                  fontSize: 16.sp,
-                  // fontWeight: FontWeight.bold,
-                ),
+                      color: Colors.white,
+                      fontSize: 16.sp,
+                      // fontWeight: FontWeight.bold,
+                    ),
               ),
             ],
           ),
@@ -55,15 +57,20 @@ class SearchAppbar extends StatelessWidget {
             height: 37.sp,
             padding: EdgeInsets.symmetric(horizontal: 4.5.w),
             child: TextField(
-              onSubmitted: (val){
-                if (val!="") {
+              onChanged: (val) {
+                if (val != "") {
+                  suggest(val);
+                }
+              },
+              onSubmitted: (val) {
+                if (val != "") {
                   search(val);
                 }
               },
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Colors.black,
-                fontSize: 14.sp,
-              ),
+                    color: Colors.black,
+                    fontSize: 14.sp,
+                  ),
               decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),

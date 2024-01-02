@@ -3,7 +3,7 @@ class RecentViewedList {
   int? videoListId;
   int? totalDuration;
   int? viewedTime;
-  int? percentViewed;
+  String? percentViewed;
   String? videoPlayer;
 
   RecentViewedList(

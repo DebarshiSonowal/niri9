@@ -36,11 +36,9 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
   VideoPlayerController? videoPlayerController;
   CustomVideoPlayerController? _customVideoPlayerController;
   bool isPlaying = true, showing = false;
-  int selected = 0;
   Future<bool>? _future;
   Timer? _timer;
-  int lastUpdateDuration = 0;
-  int selectedVideoListId = 0;
+  int lastUpdateDuration = 0, selectedVideoListId = 0,lastUpdateTime = 0,selected = 0;
   Map<String, VideoPlayerController>? additionalVideoSources;
 
   @override
@@ -199,7 +197,7 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
     }
   }
 
-  Future<String?> _getId() async {
+  Future<String?> getId() async {
     var deviceInfo = DeviceInfoPlugin();
     if (Platform.isIOS) {
       // import 'dart:io'
@@ -209,6 +207,7 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
       var androidDeviceInfo = await deviceInfo.androidInfo;
       return androidDeviceInfo.id; // unique ID on Android
     }
+    return null;
   }
 
   void updateUploadStatus(
@@ -221,13 +220,15 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
         selectedVideoListId,
         currentDuration,
         // video.readable_time,
-        await _getId() ?? "",
+        await getId() ?? "",
         currentDuration,
         "phone",
         // "mobile",
         event_name);
     if (response.success ?? false) {
-    } else {}
+    } else {
+
+    }
   }
 
   Future<bool> initializeVideoPlayer(context, url) async {
@@ -301,218 +302,105 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
   }
 
   void startConditionChecking() {
-    if (Storage.instance.isLoggedIn &&
-        (Provider.of<Repository>(context, listen: false)
-                .videoDetails
-                ?.view_permission ??
-            false)) {
-      if (Provider.of<Repository>(context, listen: false)
-                  .videoDetails
-                  ?.recentViewedList !=
-              null &&
-          (Provider.of<Repository>(context, listen: false)
-                      .videoDetails
-                      ?.recentViewedList
-                      ?.videoListId ??
-                  0) !=
-              0) {
-        Provider.of<Repository>(context, listen: false).setVideo(
-            Provider.of<Repository>(context, listen: false)
-                    .videoDetails
-                    ?.recentViewedList
-                    ?.videoId ??
-                0);
-        final url = (Provider.of<Repository>(context, listen: false)
-                .videoDetails
-                ?.videos
-                .where((element) =>
-                    (Provider.of<Repository>(context, listen: false)
-                            .videoDetails
-                            ?.recentViewedList
-                            ?.videoListId ??
-                        0) ==
-                    element.id)
-                .first
-                .videoPlayer) ??
-            (Provider.of<Repository>(context, listen: false)
-                .videoDetails
-                ?.videos
-                .first
-                .videoPlayer);
+    final repo = Provider.of<Repository>(context, listen: false);
+    final videoDetails = repo.videoDetails;
+
+    if (videoDetails?.view_permission ?? false) {
+      final recentViewedList = videoDetails?.recentViewedList;
+      final videoListId = recentViewedList?.videoListId ?? 0;
+
+      if (recentViewedList != null && videoListId != 0) {
+        repo.setVideo(recentViewedList.videoId ?? 0);
+        final url = videoDetails?.videos
+            .where((element) => videoListId == element.id)
+            .first
+            .videoPlayer ?? videoDetails?.videos.first.videoPlayer;
+
         setState(() {
-          selectedVideoListId = Provider.of<Repository>(context, listen: false)
-                  .videoDetails
-                  ?.recentViewedList
-                  ?.videoListId ??
-              0;
-          for (var i = 0;
-              i <
-                  (Provider.of<Repository>(context, listen: false)
-                          .videoDetails
-                          ?.season_list
-                          .length ??
-                      0);
-              i++) {
-            if (Provider.of<Repository>(context, listen: false)
-                    .videoDetails
-                    ?.season_list[i]
-                    .id ==
-                Provider.of<Repository>(context, listen: false)
-                    .videoDetails
-                    ?.recentViewedList
-                    ?.videoListId) {
+          selectedVideoListId = recentViewedList.videoListId ?? 0;
+          for (var i = 0; i < (videoDetails?.season_list.length ?? 0); i++) {
+            if (videoDetails?.season_list[i].id == videoListId) {
               selected = i;
               break;
             }
           }
         });
+
         _future = initializeVideoPlayer(context, url);
-        // videoPlayerController.seekTo(Duration());
       } else {
         _future = initializeVideoPlayer(
-            context,
-            Provider.of<Repository>(context, listen: false)
-                .videoDetails
-                ?.videos
-                .first
-                .videoPlayer);
+            context, videoDetails?.videos.first.videoPlayer);
+
         setState(() {
-          selectedVideoListId = Provider.of<Repository>(context, listen: false)
-                  .videoDetails
-                  ?.videos
-                  .first
-                  .id ??
-              0;
+          selectedVideoListId = videoDetails?.videos.first.id ?? 0;
         });
       }
     } else {
       _future = initializeVideoPlayer(
-          context,
-          Provider.of<Repository>(context, listen: false)
-                  .videoDetails
-                  ?.trailer_player ??
-              Assets.videoUrl);
+          context, videoDetails?.trailer_player ?? Assets.videoUrl);
     }
   }
 
+
   void setVideoPlayer(BuildContext context, VideoPlayerController value) async {
     videoPlayerController?.pause();
-    // videoPlayerController.dispose();
+
     _customVideoPlayerController;
     final response = await ApiProvider.instance.download2(value.dataSource);
+
     if (response.success ?? false) {
       additionalVideoSources = {};
 
       for (var i in response.videoResolutions) {
-        if (value.dataSource != i.url &&
-            value.dataSource !=
-                "https://customer-edsfz57k0gqg8bse.cloudflarestream.com/eb471d0611714d8133bc092c14ecc979/manifest/${i.url}") {
+        final dataSource = "https://customer-edsfz57k0gqg8bse.cloudflarestream.com/eb471d0611714d8133bc092c14ecc979/manifest/${i.url.split("?")[0]}";
+
+        if (value.dataSource != i.url && value.dataSource != dataSource) {
           additionalVideoSources?.addAll({
-            "${i.resolution}": VideoPlayerController.networkUrl(Uri.parse(
-                "https://customer-edsfz57k0gqg8bse.cloudflarestream.com/eb471d0611714d8133bc092c14ecc979/manifest/${i.url.split("?")[0]}")),
+            "${i.resolution}": VideoPlayerController.networkUrl(Uri.parse(dataSource)),
           });
         }
       }
-      // additionalVideoSources?.addAll({
-      //   "2048": videoPlayerController,
-      // });
+
       setState(() {});
     }
+
     try {
       videoPlayerController = value;
-      additionalVideoSources?.addAll({
-        "Auto": videoPlayerController!,
-      });
-      videoPlayerController?.addListener(() {
-        debugPrint("listener is triggered video player");
-        int currentDuration =
-            videoPlayerController!.value.position.inMilliseconds;
+      additionalVideoSources?.addAll({"Auto": videoPlayerController!});
 
-        if (currentDuration >=
-                (int.parse(Provider.of<Repository>(context, listen: false)
-                            .videoSetting
-                            ?.forwardTime ??
-                        "10") *
-                    1000) &&
-            uploadTimer == null) {
-          debugPrint("upload timer $currentDuration");
-          // Start a Timer after 10 seconds to call updateUploadStatus once
-          uploadTimer = Timer(
-              Duration(
-                  seconds: int.parse(
-                      Provider.of<Repository>(context, listen: false)
-                              .videoSetting
-                              ?.forwardTime ??
-                          "10")), () {
-            if (videoPlayerController?.value.isPlaying ?? false) {
-              // Call updateUploadStatus when the video is playing
-              updateUploadStatus(
-                _customVideoPlayerController!,
-                Provider.of<Repository>(context, listen: false).videoDetails!,
-                "auto",
-                currentDuration,
-              );
-            }
-            uploadTimer?.cancel(); // Cancel the Timer
-            uploadTimer = null; // Reset the Timer
-          });
-        }
+      videoPlayerController?.addListener(videoControllerListener);
 
-        // Check if the video is currently playing
-        if (videoPlayerController?.value.isPlaying ?? false) {
-          if (!isPlaying) {
-            // Call updateUploadStatus when video starts playing
-            updateUploadStatus(
-              _customVideoPlayerController!,
-              Provider.of<Repository>(context, listen: false).videoDetails!,
-              "play",
-              currentDuration,
-            );
-            isPlaying = true;
-          }
-        } else {
-          isPlaying = false;
-        }
-
-        setState(() {});
-      });
       await videoPlayerController?.initialize();
+
       _customVideoPlayerController = CustomVideoPlayerController(
         context: context,
         videoPlayerController: videoPlayerController!,
         customVideoPlayerSettings: const CustomVideoPlayerSettings(
           playOnlyOnce: false,
-
-          // customVideoPlayerPopupSettings: ,
         ),
         additionalVideoSources: additionalVideoSources,
       );
+
       videoPlayerController?.play();
     } catch (e) {
-      print("Value is ${value.dataSource} ${e}");
+      debugPrint("Value is ${value.dataSource} ${e}");
     }
   }
 
   void videoControllerListener() {
     int currentDuration = videoPlayerController!.value.position.inMilliseconds;
 
-    if (currentDuration >=
-            (int.parse(Provider.of<Repository>(context, listen: false)
-                        .videoSetting
-                        ?.forwardTime ??
-                    "10") *
-                1000) &&
-        uploadTimer == null) {
+    final forwardTime =
+        int.parse(Provider.of<Repository>(context, listen: false)
+            .videoSetting
+            ?.forwardTime ??
+            "10") *
+            1000;
+
+    if (currentDuration >= forwardTime && uploadTimer == null) {
       debugPrint("upload timer $currentDuration");
-      // Start a Timer after 10 seconds to call updateUploadStatus once
-      uploadTimer = Timer(
-          Duration(
-              seconds: int.parse(Provider.of<Repository>(context, listen: false)
-                      .videoSetting
-                      ?.forwardTime ??
-                  "10")), () {
+      uploadTimer = Timer(Duration(seconds: forwardTime ~/ 1000), () {
         if (videoPlayerController?.value.isPlaying ?? false) {
-          // Call updateUploadStatus when the video is playing
           updateUploadStatus(
             _customVideoPlayerController!,
             Provider.of<Repository>(context, listen: false).videoDetails!,
@@ -520,15 +408,13 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
             currentDuration,
           );
         }
-        uploadTimer?.cancel(); // Cancel the Timer
-        uploadTimer = null; // Reset the Timer
+        uploadTimer?.cancel();
+        uploadTimer = null;
       });
     }
 
-    // Check if the video is currently playing
     if (videoPlayerController?.value.isPlaying ?? false) {
       if (!isPlaying) {
-        // Call updateUploadStatus when video starts playing
         updateUploadStatus(
           _customVideoPlayerController!,
           Provider.of<Repository>(context, listen: false).videoDetails!,
@@ -550,4 +436,5 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
     }
     setState(() {});
   }
+
 }

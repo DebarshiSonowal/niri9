@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:niri9/Models/genres.dart';
 import 'package:niri9/Models/recently_viewed_list.dart';
 import 'package:niri9/Models/rent.dart';
@@ -11,7 +12,6 @@ class Video {
   int? id,
       season_no,
       series_id,
-      imdb_rating,
       language_id,
       producer_id,
       type_id,
@@ -36,23 +36,23 @@ class Video {
       readable_time,
       type_web_url,
       category_web_url,
-      web_url;
+      web_url,
+      imdb_rating;
   bool? has_rent, has_my_list, view_permission;
-  Meta? meta, meta_org;
+
+  // Meta? meta, meta_org;
   List<Genres> genres = [];
   List<Rent> rent = [];
   List<RelatedLanguage> related_language = [];
   List<Season> season_list = [];
-  List<VideoDetails> videos = [
-
-  ];
+  List<VideoDetails> videos = [];
   RecentViewedList? recentViewedList;
 
   Video.fromJson(json) {
     id = json['id'] ?? 0;
     season_no = json['season_no'] ?? 0;
     series_id = json['series_id'] ?? 0;
-    imdb_rating = int.tryParse(json['imdb_rating'] ?? "0");
+    imdb_rating = json['imdb_rating'] ?? "0";
     language_id = json['language_id'] ?? 0;
     producer_id = json['producer_id'] ?? 0;
     type_id = json['type_id'] ?? 0;
@@ -84,9 +84,9 @@ class Video {
     has_my_list = json['has_my_list'] ?? false;
     view_permission = json['view_permission'] ?? false;
     //meta
-    meta = json['meta'] == null ? null : Meta.fromJson(json['meta']);
-    meta_org =
-        json['meta_org'] == null ? null : Meta.fromJson(json['meta_org']);
+    // meta = json['meta'] == null ? null : Meta.fromJson(json['meta']);
+    // meta_org =
+    //     json['meta_org'] == null ? null : Meta.fromJson(json['meta_org']);
     //list
     genres = json['genres'] == null
         ? []
@@ -98,14 +98,20 @@ class Video {
     //         .toList();
     related_language = json['related_language'] == null
         ? []
-        : (json['related_language'] as List).map((e) => RelatedLanguage.fromJson(e)).toList();
+        : (json['related_language'] as List)
+            .map((e) => RelatedLanguage.fromJson(e))
+            .toList();
     season_list = json['season_list'] == null
         ? []
         : (json['season_list'] as List).map((e) => Season.fromJson(e)).toList();
     videos = json['video_list'] == null
         ? []
-        : (json['video_list'] as List).map((e) => VideoDetails.fromJson(e)).toList();
-    recentViewedList = json['recent_viewed_list'] == null?null:RecentViewedList.fromJson(json['recent_viewed_list']);
+        : (json['video_list'] as List)
+            .map((e) => VideoDetails.fromJson(e))
+            .toList();
+    recentViewedList = json['recent_viewed_list'] == null
+        ? null
+        : RecentViewedList.fromJson(json['recent_viewed_list']);
   }
 }
 
@@ -120,16 +126,22 @@ class VideoResponse {
   int? current_page, last_page, per_page, total;
 
   VideoResponse.fromJson(json) {
+    debugPrint("VideoResponse.fromJson");
     success = json['success'] ?? false;
     message = json['message'] ?? "";
-    videos = json['result']['data'] == null
-        ? []
-        : (json['result']['data'] as List)
-            .map((e) => Video.fromJson(e))
-            .toList();
+    debugPrint("List: ${(json['result']['data'] as List).length}");
+    try {
+      videos = (json['result']['data'] as List)
+          .map((e) => Video.fromJson(e))
+          .toList();
+    } catch (e) {
+      print(e);
+    }
+    debugPrint("List: ${videos.length}");
     current_page = json['result']['current_page'] ?? 0;
     last_page = json['result']['last_page'] ?? 0;
     per_page = json['result']['per_page'] ?? 0;
+    debugPrint("List: ${(json['result']['data'] as List).length}");
   }
 
   VideoResponse.withError(msg) {
@@ -146,12 +158,11 @@ class VideoDetailsResponse {
   VideoDetailsResponse.fromJson(json) {
     success = json['success'] ?? false;
     message = json['message'] ?? "";
-    video = json['result']==null ? null : Video.fromJson(json['result']);
+    video = json['result'] == null ? null : Video.fromJson(json['result']);
   }
 
   VideoDetailsResponse.withError(msg) {
     success = false;
     message = msg;
   }
-
 }

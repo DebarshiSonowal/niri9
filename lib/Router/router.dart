@@ -6,6 +6,7 @@ import 'package:niri9/Functions/HomeScreen/home_screen.dart';
 import 'package:niri9/Functions/LanguageSelectedPage/language_selected_page.dart';
 import 'package:niri9/Functions/Login/login_page.dart';
 import 'package:niri9/Functions/More/more_page.dart';
+import 'package:niri9/Functions/NotificationInbox/notification_inbox_screen.dart';
 import 'package:niri9/Functions/Orders/orders_page.dart';
 import 'package:niri9/Functions/Otp/otp_screen.dart';
 
@@ -93,6 +94,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return FadeTransitionPageRouteBuilder(page: const AboutPage());
     case Routes.activateTV:
       return FadeTransitionPageRouteBuilder(page: const ActivateTvScreen());
+    case Routes.notificationInbox:
+      return FadeTransitionPageRouteBuilder(page: const NotificationInboxScreen());
 
     case Routes.watchlistScreen:
       return FadeTransitionPageRouteBuilder(page: const WatchListScreen());

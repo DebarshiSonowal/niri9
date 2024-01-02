@@ -707,7 +707,7 @@ class ApiProvider {
         // data: jsonEncode(data),
       );
       debugPrint(
-          "getMyVideos response: ${response?.data} ${response?.headers}");
+          "getMyVideos response: ${response?.data} \n${response?.statusCode}");
       if (response?.statusCode == 200 || response?.statusCode == 201) {
         return VideoResponse.fromJson(response?.data);
       } else {
@@ -784,7 +784,7 @@ class ApiProvider {
     //   'category': category,
     //   'genre': genre,
     // };
-    // debugPrint(jsonEncode(data));
+    debugPrint('Bearer ${Storage.instance.token}');
 
     try {
       Response? response = await dio?.get(
@@ -1599,7 +1599,7 @@ class ApiProvider {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          // 'Authorization': 'Bearer ${Storage.instance.token}'
+          'Authorization': 'Bearer ${Storage.instance.token}'
           // 'APP-KEY': ConstanceData.app_key
         });
     var url = "$baseUrl/$path/videos/episodes";

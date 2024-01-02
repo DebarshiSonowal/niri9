@@ -70,7 +70,9 @@ class _SearchPageState extends State<SearchPage> {
         child: SearchAppbar(
           search: (String val) {
             search(val);
-          },
+          }, suggest: (String val) {
+            suggest(val);
+        },
         ),
       ),
       body: Container(
@@ -192,6 +194,17 @@ class _SearchPageState extends State<SearchPage> {
           .setSearchVideos(response.videos);
     } else {
       Navigation.instance.goBack();
+    }
+  }
+  void suggest(String search) async {
+    // Navigation.instance.navigate(Routes.loadingScreen);
+    final response = await ApiProvider.instance.search(search);
+    if (response.success ?? false) {
+      // Navigation.instance.goBack();
+      Provider.of<Repository>(context, listen: false)
+          .setSearchVideos(response.videos);
+    } else {
+      // Navigation.instance.goBack();
     }
   }
 }

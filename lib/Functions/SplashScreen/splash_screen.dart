@@ -168,7 +168,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final response = await ApiProvider.instance.getSettings();
     if (response.success ?? false) {
       Provider.of<Repository>(context, listen: false)
-          .setVideoPercent(response.videoPercent);
+          .setVideoPercent(response.videoPercent??[]);
       Provider.of<Repository>(context, listen: false)
           .setVideoSettings(response.videoSetting);
       Provider.of<Repository>(context, listen: false)

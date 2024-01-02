@@ -41,7 +41,7 @@ class Repository extends ChangeNotifier {
       _privacyPolicy = "",
       _help_center = "",
       _termsConditions = "";
-  VideoPercent? videoPercent;
+  List<VideoPercent> videoPercent=[];
   VideoSetting? videoSetting;
   String? firebase_otp_key;
   CategoryAll? categoryAll;
@@ -95,7 +95,7 @@ class Repository extends ChangeNotifier {
       icon: Icons.person,
     ),
     AccountItem(
-      name: "Watch List",
+      name: "My List",
       icon: Icons.video_collection_sharp,
     ),
     AccountItem(
@@ -347,7 +347,7 @@ class Repository extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setVideoPercent(VideoPercent? val) {
+  void setVideoPercent(List<VideoPercent> val) {
     videoPercent = val;
     notifyListeners();
   }

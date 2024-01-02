@@ -52,7 +52,10 @@ class WatchPrimaryScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () {
+                    onTap: () async {
+                      await videoPlayerController.pause();
+                      await videoPlayerController.dispose();
+                      _customVideoPlayerController.dispose();
                       Navigation.instance.goBack();
                     },
                     child: Icon(

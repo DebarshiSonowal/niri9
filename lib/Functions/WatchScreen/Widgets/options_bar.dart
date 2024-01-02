@@ -1,6 +1,7 @@
 import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lists/flutter_lists.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:niri9/Functions/WatchScreen/Widgets/rent_bottom_sheet.dart';
 import 'package:niri9/Models/video.dart';
 import 'package:niri9/Repository/repository.dart';
@@ -9,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../API/api_provider.dart';
 import '../../../Constants/assets.dart';
 import '../../../Constants/constants.dart';
 import 'icon_text_button.dart';
@@ -67,12 +69,14 @@ class OptionsBar extends StatelessWidget {
                     IconTextButton(
                       name: "My List",
                       icon: Icons.playlist_add,
-                      onTap: () {},
+                      onTap: () {
+                        addToMyList(data.videoDetails?.id);
+                      },
                     ),
-                    SizedBox(
+                    (data.videoDetails?.has_rent ?? false)?SizedBox(
                       width: 5.w,
-                    ),
-                    IconTextButton(
+                    ):Container(),
+                    (data.videoDetails?.has_rent ?? false)?IconTextButton(
                       name: "Rent",
                       icon: Icons.money,
                       onTap: () {
@@ -80,7 +84,7 @@ class OptionsBar extends StatelessWidget {
                           showRenting(context,data.videoDetails);
                         }
                       },
-                    ),
+                    ):Container(),
                   ],
                 ),
               ),
@@ -123,6 +127,14 @@ class OptionsBar extends StatelessWidget {
         ),
       );
     });
+  }
+  Future<void> addToMyList(int? id) async {
+    final response = await ApiProvider.instance.addMyVideos(id);
+    if (response.success ?? false) {
+      Fluttertoast.showToast(msg: response.message ?? "Added To My List");
+    } else {
+      Fluttertoast.showToast(msg: response.message ?? "Something went wrong");
+    }
   }
 
   Future<void> _launchUrl(String _url) async {

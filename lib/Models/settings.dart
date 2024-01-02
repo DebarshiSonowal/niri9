@@ -21,9 +21,9 @@ class Settings {
 
 class SettingsResponse {
   bool? success;
-  String? message, site_name, site_url, owner,firebase_otp_key;
+  String? message, site_name, site_url, owner, firebase_otp_key;
   Settings? settings;
-  VideoPercent? videoPercent;
+  List<VideoPercent>? videoPercent;
   VideoSetting? videoSetting;
   CategoryAll? categoryAll;
 
@@ -38,8 +38,10 @@ class SettingsResponse {
         ? null
         : Settings.fromJson(json["result"]['app_setting']);
     videoPercent = json['result']['video_percent'] == null
-        ? null
-        : VideoPercent.fromJson(json['result']['video_percent']);
+        ? []
+        : (json['result']['video_percent'] as List)
+            .map((e) => VideoPercent.fromJson(e))
+            .toList();
     videoSetting = json['result']['video_setting'] == null
         ? null
         : VideoSetting.fromJson(json['result']['video_setting']);

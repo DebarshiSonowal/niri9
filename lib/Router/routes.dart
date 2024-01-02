@@ -26,6 +26,7 @@ class Routes {
   static const otpScreen = "/otp_screen";
   static const profile = "/profile";
   static const orderHistory = "/orderHistory";
+  static const notificationInbox = "/notification_inbox";
   static const cuponApply = "/cupon_apply";
   static const activateTV = "/activate_tv";
 }
