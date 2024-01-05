@@ -1,15 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/cli_commands.dart';
-import 'package:niri9/Helper/storage.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../API/api_provider.dart';
 import '../../Constants/common_functions.dart';
 import '../../Constants/constants.dart';
+import '../../Helper/storage.dart';
 import '../../Models/video.dart';
 import '../../Navigation/Navigate.dart';
 import '../../Repository/repository.dart';
@@ -18,16 +16,14 @@ import '../../Widgets/category_specific_appbar.dart';
 import '../../Widgets/grid_view_shimmering.dart';
 import '../HomeScreen/Widgets/ott_item.dart';
 
-class CategorySpecificScreen extends StatefulWidget {
-  const CategorySpecificScreen({super.key, required this.searchTerm});
-
-  final String searchTerm;
+class RecentlyViewedScreen extends StatefulWidget {
+  const RecentlyViewedScreen({super.key});
 
   @override
-  State<CategorySpecificScreen> createState() => _CategorySpecificScreenState();
+  State<RecentlyViewedScreen> createState() => _RecentlyViewedScreenState();
 }
 
-class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
+class _RecentlyViewedScreenState extends State<RecentlyViewedScreen> {
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: true);
@@ -54,7 +50,7 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
       page = 1;
     });
     // monitor network fetch
-    fetchVideos(context);
+    fetchRecentlyViewed(context, page);
     // if failed,use refreshFailed()
   }
 
@@ -70,7 +66,7 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
     setState(() {
       page++;
     });
-    fetchVideos(context);
+    fetchRecentlyViewed(context, page);
   }
 
   @override
@@ -78,7 +74,9 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
     return Scaffold(
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(7.h),
-          child: CategorySpecificAppbar(searchTerm: widget.searchTerm)),
+          child: const CategorySpecificAppbar(
+            searchTerm: "Recently Viewed",
+          )),
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -114,7 +112,7 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
           onRefresh: _onRefresh,
           onLoading: _onLoading,
           child: FutureBuilder<List<Video>>(
-              future: fetchVideos(context),
+              future: fetchRecentlyViewed(context, page),
               builder: (context, _) {
                 if (_.hasData) {
                   return SizedBox(
@@ -135,16 +133,24 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
                           ),
                           itemBuilder: (BuildContext context, int index) {
                             var item = data.specificVideos[index];
-                            return OttItem(item: item, onTap: () {
-                              debugPrint("Clicked ${Storage.instance.isLoggedIn}");
-                              if(Storage.instance.isLoggedIn){
-                                Navigation.instance.navigate(Routes.watchScreen,args: item.id);
-                              }else{
-
-                                CommonFunctions().showLoginDialog(Navigation.instance.navigatorKey.currentContext??context);
-                                // Navigation.instance.navigate(Routes.watchScreen,args: item.id);
-                              }
-                            });
+                            return OttItem(
+                                item: item,
+                                onTap: () {
+                                  debugPrint(
+                                      "Clicked ${Storage.instance.isLoggedIn}");
+                                  if (Storage.instance.isLoggedIn) {
+                                    Navigation.instance.navigate(
+                                        Routes.watchScreen,
+                                        args: item.id);
+                                  } else {
+                                    CommonFunctions().showLoginDialog(Navigation
+                                            .instance
+                                            .navigatorKey
+                                            .currentContext ??
+                                        context);
+                                    // Navigation.instance.navigate(Routes.watchScreen,args: item.id);
+                                  }
+                                });
                           },
                         ),
                       );
@@ -168,25 +174,17 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
     );
   }
 
-  Future<List<Video>> fetchVideos(context) async {
-    // Navigation.instance.navigate(Routes.loadingScreen);
-    final response = await ApiProvider.instance
-        .getVideos(page, null, widget.searchTerm, null, null, null);
+  Future<List<Video>> fetchRecentlyViewed(
+      BuildContext context, int page) async {
+    final response = await ApiProvider.instance.getRecentlyVideos(page);
     if (response.success ?? false) {
-      // Navigation.instance.goBack();
-      _refreshController.refreshCompleted();
       Provider.of<Repository>(context, listen: false)
-          .setSearchVideos(response.videos);
+          .setRecentlyViewedVideos(response.videos);
+      _refreshController.refreshCompleted();
       return response.videos ?? List<Video>.empty();
     } else {
-      // Navigation.instance.goBack();
-      _refreshController.refreshCompleted();
+      _refreshController.refreshFailed();
       return List<Video>.empty();
-      // showError(response.message ?? "Something went wrong");
     }
   }
 }
-
-
-
-

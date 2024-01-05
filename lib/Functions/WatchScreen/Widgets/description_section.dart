@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:niri9/Repository/repository.dart';
 import 'package:niri9/Router/routes.dart';
@@ -40,7 +41,12 @@ class DescriptionSection extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    showLanguages(context, data);
+                    if (data.videoDetails!.related_language.isNotEmpty) {
+                      showLanguages(context, data);
+                    } else {
+                      Fluttertoast.showToast(
+                          msg: "Only one language is available");
+                    }
                   },
                   child: Text(
                     "${data.videoDetails?.language_name}",

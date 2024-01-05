@@ -29,4 +29,5 @@ class Routes {
   static const notificationInbox = "/notification_inbox";
   static const cuponApply = "/cupon_apply";
   static const activateTV = "/activate_tv";
+  static const recentlyViewedScreen = "/recently_viewed_screen";
 }

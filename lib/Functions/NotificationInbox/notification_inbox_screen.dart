@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../Widgets/category_specific_appbar.dart';
 import '../CategorySpecific/category_specific_screen.dart';
 
 class NotificationInboxScreen extends StatefulWidget {

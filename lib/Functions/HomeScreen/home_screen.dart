@@ -17,6 +17,7 @@ import 'Widgets/dynamic_list_section.dart';
 import 'Widgets/home_banner.dart';
 import 'Widgets/language_section.dart';
 import 'Widgets/ott_item.dart';
+import 'Widgets/recently_viewed_section.dart';
 
 class HomeScreenPage extends StatefulWidget {
   const HomeScreenPage({Key? key}) : super(key: key);
@@ -34,27 +35,9 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
     super.initState();
     Future.delayed(Duration.zero, () {
       // fetchData(context);
-      Provider.of<Repository>(context,listen: false).updateIndex(0);
+      Provider.of<Repository>(context, listen: false).updateIndex(0);
+      fetchRecentlyViewed(context,1);
     });
-    // _scrollController.addListener(() {
-    //   if (_scrollController.offset <=
-    //           _scrollController.position.minScrollExtent &&
-    //       isEnd != false) {
-    //     setState(() {
-    //       debugPrint("reach the top");
-    //       isEnd = false;
-    //     });
-    //   }
-    //   if (_scrollController.offset >=
-    //           _scrollController.position.maxScrollExtent &&
-    //       isEnd == false) {
-    //     setState(() {
-    //       debugPrint("reach the bottom");
-    //       isEnd = true;
-    //     });
-    //   }
-    // });
-    // Provider.of<Repository>(context, listen: false).set
   }
 
   @override
@@ -89,28 +72,31 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
                 TitleBox(
                   text: "Explore in your language",
                   onTap: () {},
-                  isEnd: isEnd,
+                  isEnd: false,
                 ),
                 LanguageSection(
                   scrollController: _scrollController,
-                  onScroll: (UserScrollNotification notification)  {
-                    final ScrollDirection direction = notification.direction;
-                    final ScrollMetrics metrics = notification.metrics;
-
-                    if (direction == ScrollDirection.forward && metrics.pixels > 0) {
-                      // Slight swipe to the right
-                      setState(() {
-                        isEnd = false;
-                      });
-                    } else if (direction == ScrollDirection.reverse && metrics.pixels < metrics.maxScrollExtent) {
-                      // Slight swipe to the left
-
-                      setState(() {
-                        isEnd = true;
-                      });
-                    }
+                  onScroll: (UserScrollNotification notification) {
+                    // final ScrollDirection direction = notification.direction;
+                    // final ScrollMetrics metrics = notification.metrics;
+                    //
+                    // if (direction == ScrollDirection.forward &&
+                    //     metrics.pixels > 0) {
+                    //   // Slight swipe to the right
+                    //   setState(() {
+                    //     isEnd = false;
+                    //   });
+                    // } else if (direction == ScrollDirection.reverse &&
+                    //     metrics.pixels < metrics.maxScrollExtent) {
+                    //   // Slight swipe to the left
+                    //
+                    //   setState(() {
+                    //     isEnd = true;
+                    //   });
+                    // }
                   },
                 ),
+                const RecentlyViewedSection(),
                 const DynamicListSectionHome(),
               ],
             ),
@@ -126,15 +112,17 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
 
     if (!context.mounted) return;
     // await fetchLanguages(context);
-    if (!context.mounted) return;
+
     await fetchTypes(context);
+    if (!context.mounted) return;
+    await fetchRecentlyViewed(context,1);
     // Navigation.instance.goBack();
   }
 
   Future<void> fetchTypes(BuildContext context) async {
     final response = await ApiProvider.instance.getTypes();
     if (response.success ?? false) {
-      // if (!context.mounted) return;
+      if (!context.mounted) return;
       Provider.of<Repository>(context, listen: false).addTypes(response.types);
     } else {}
   }
@@ -165,4 +153,12 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
 //         .updateRefund(response.result!);
 //   } else {}
 // }
+  Future<void> fetchRecentlyViewed(BuildContext context,int page_no) async {
+    final response = await ApiProvider.instance.getRecentlyVideos(page_no);
+    if (response.success ?? false) {
+      if (!context.mounted) return;
+      Provider.of<Repository>(context, listen: false)
+          .setRecentlyViewedVideos(response.videos);
+    }
+  }
 }

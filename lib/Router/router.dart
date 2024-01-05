@@ -25,6 +25,7 @@ import '../Functions/AboutPage/about_page.dart';
 import '../Functions/ActivateTV/activate_tc.dart';
 import '../Functions/CategorySpecific/category_specific_screen.dart';
 import '../Functions/Cupon/apply_cupons.dart';
+import '../Functions/RecentlyViewed/recently_viewed_screen.dart';
 import '../Functions/SplashScreen/splash_screen.dart';
 import '../Functions/SubscriptionPage/subscription_page.dart';
 import '../Functions/Trending/trending_page.dart';
@@ -99,6 +100,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
 
     case Routes.watchlistScreen:
       return FadeTransitionPageRouteBuilder(page: const WatchListScreen());
+    case Routes.recentlyViewedScreen:
+      return FadeTransitionPageRouteBuilder(page: const RecentlyViewedScreen());
     case Routes.termsConditionsScreen:
       return FadeTransitionPageRouteBuilder(
           page: const TermsConditionsScreen());

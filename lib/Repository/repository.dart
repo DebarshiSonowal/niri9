@@ -29,7 +29,10 @@ import '../Models/user.dart';
 class Repository extends ChangeNotifier {
   int _currentIndex = 0;
   List<Category> _categories = [];
-  List<Video> _specificVideos = [], _rental = [], _wishList = [];
+  List<Video> _specificVideos = [],
+      _recently_viewed_list = [],
+      _rental = [],
+      _wishList = [];
   List<AppBarOption> _appbarOptions = [];
   List<BannerResult> homeBanner = [], trendingBanner = [];
   List<OrderHistoryItem> orders = [];
@@ -41,7 +44,7 @@ class Repository extends ChangeNotifier {
       _privacyPolicy = "",
       _help_center = "",
       _termsConditions = "";
-  List<VideoPercent> videoPercent=[];
+  List<VideoPercent> videoPercent = [];
   VideoSetting? videoSetting;
   String? firebase_otp_key;
   CategoryAll? categoryAll;
@@ -241,8 +244,18 @@ class Repository extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearSpecificVideos() {
+    _specificVideos.clear();
+    notifyListeners();
+  }
+
   void setSearchVideos(List<Video> list) {
     _specificVideos = list;
+    notifyListeners();
+  }
+
+  void setRecentlyViewedVideos(List<Video> list) {
+    _recently_viewed_list = list;
     notifyListeners();
   }
 
@@ -379,6 +392,8 @@ class Repository extends ChangeNotifier {
   List<Category> get categories => _categories;
 
   List<Video> get specificVideos => _specificVideos;
+
+  get recently_viewed_list => _recently_viewed_list;
 
   String get refundPolicy => _refundPolicy;
 

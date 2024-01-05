@@ -190,6 +190,7 @@ class _SearchPageState extends State<SearchPage> {
     final response = await ApiProvider.instance.search(search);
     if (response.success ?? false) {
       Navigation.instance.goBack();
+      debugPrint("Search ${response.videos.length}");
       Provider.of<Repository>(context, listen: false)
           .setSearchVideos(response.videos);
     } else {

@@ -529,6 +529,47 @@ class ApiProvider {
     }
   }
 
+  Future<VideoResponse> getRecentlyVideos(int page_no) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Storage.instance.token}'
+          // 'APP-KEY': ConstanceData.app_key
+        });
+    var url = "$baseUrl/$path/videos/recently-viewed-list";
+    // var url = "http://asamis.assam.gov.in/api/login";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    var data = {
+      'page_no':page_no,
+    };
+    debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.get(
+        url,
+        // queryParameters: data,
+        // data: jsonEncode(data),
+      );
+      debugPrint(
+          "recently-viewed-list response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return VideoResponse.fromJson(response?.data);
+      } else {
+        debugPrint("recently-viewed-list error response: ${response?.data}");
+        return VideoResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint("recently-viewed-list  error: ${e.error} ${e.message}");
+      return VideoResponse.withError(e.message);
+    }
+  }
+
   Future<VideoResponse> search(String search) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),

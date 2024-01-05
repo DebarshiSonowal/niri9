@@ -42,47 +42,7 @@ class CustomAppbar extends StatelessWidget {
               SizedBox(
                 width: 2.w,
               ),
-              SizedBox(
-                height: 3.h,
-                // margin: EdgeInsets.symmetric(
-                //   horizontal: 2.w,
-                //   vertical: 0.1.h,
-                // ),
-                child: Shimmer.fromColors(
-                  baseColor: const Color(0xffffed8c),
-                  highlightColor: const Color(0xffFFD700),
-                  child: GestureDetector(
-                    onTap: () {
-                      if (Storage.instance.isLoggedIn) {
-                        Navigation.instance.navigate(Routes.subscriptionScreen);
-                      } else {
-                        Navigation.instance.navigate(Routes.loginScreen);
-                      }
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 2.w,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: const Color(0xffffed8c),
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "Subscribe",
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: const Color(0xffffed8c),
-                                    fontSize: 8.sp,
-                                  ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              const SubscriptionAlert(),
             ],
           ),
           Consumer<Repository>(
@@ -132,7 +92,7 @@ class CustomAppbar extends StatelessWidget {
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
-                          var item = data.appbarOptions.sublist(4)[index];
+                          var item = data.appbarOptions.sublist(3)[index];
                           return CustomAppbarItem(
                             item: item,
                             index: index,
@@ -177,6 +137,60 @@ class CustomAppbar extends StatelessWidget {
   }
 }
 
+class SubscriptionAlert extends StatelessWidget {
+  const SubscriptionAlert({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 3.h,
+      // margin: EdgeInsets.symmetric(
+      //   horizontal: 2.w,
+      //   vertical: 0.1.h,
+      // ),
+      child: Consumer<Repository>(builder: (context, data, _) {
+        return (data.user?.has_subscription ?? false)
+            ? Shimmer.fromColors(
+                baseColor: const Color(0xffffed8c),
+                highlightColor: const Color(0xffFFD700),
+                child: GestureDetector(
+                  onTap: () {
+                    if (Storage.instance.isLoggedIn) {
+                      Navigation.instance.navigate(Routes.subscriptionScreen);
+                    } else {
+                      Navigation.instance.navigate(Routes.loginScreen);
+                    }
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 2.w,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color(0xffffed8c),
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Subscribe",
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: const Color(0xffffed8c),
+                              fontSize: 8.sp,
+                            ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Container();
+      }),
+    );
+  }
+}
+
 class FirstLineAppbar extends StatelessWidget {
   const FirstLineAppbar({
     super.key,
@@ -208,7 +222,7 @@ class FirstLineAppbar extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
                 if (index != 0) {
-                  var item = data.appbarOptions[index];
+                  var item = data.appbarOptions[index-1];
                   return CustomAppbarItem(
                     item: item,
                     index: index - 1,
@@ -234,7 +248,7 @@ class FirstLineAppbar extends StatelessWidget {
                   );
                   return CustomAppbarItem(
                     item: item,
-                    index: index - 1,
+                    index: index,
                     onTap: () {
                       if (item.name?.toLowerCase() == "film festival" &&
                           (item.has_festival ?? false)) {
@@ -253,7 +267,7 @@ class FirstLineAppbar extends StatelessWidget {
                   width: 4.w,
                 );
               },
-              itemCount: (data.appbarOptions.length + 1 > 4
+              itemCount: ((data.appbarOptions.length + 1) > 4
                   ? 4
                   : data.appbarOptions.length + 1),
             ),

@@ -8,6 +8,7 @@ import 'package:sizer/sizer.dart';
 import '../../Constants/assets.dart';
 import '../../Constants/constants.dart';
 import '../../Navigation/Navigate.dart';
+import '../../Widgets/category_specific_appbar.dart';
 import '../CategorySpecific/category_specific_screen.dart';
 
 class ActivateTvScreen extends StatefulWidget {
