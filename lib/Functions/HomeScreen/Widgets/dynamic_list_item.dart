@@ -105,7 +105,8 @@ class _DynamicListItemState extends State<DynamicListItem> {
                         Navigation.instance
                             .navigate(Routes.watchScreen, args: item.id);
                       } else {
-                        CommonFunctions().showLoginDialog(context);
+                        CommonFunctions().showLoginSheet(context);
+                        // CommonFunctions().showLoginDialog(context);
                       }
                     },
                   );

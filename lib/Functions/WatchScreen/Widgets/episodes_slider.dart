@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:niri9/Constants/common_functions.dart';
 import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Functions/WatchScreen/Widgets/seasons_itme.dart';
 import 'package:niri9/Helper/storage.dart';
@@ -59,29 +60,34 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
                             SizedBox(
                               width: 5.w,
                             ),
-                            SizedBox(
-                              height: 8.h,
-                              width: 65.w,
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) {
-                                  return SeasonsItem(
-                                    index: index,
-                                    selected: selected,
-                                    list: data.videoDetails?.season_list ?? [],
-                                    onTap: () {
-                                      setState(() {
-                                        selected = index;
-                                      });
-                                      debugPrint("${data.currentSeasons[selected][0].title}");
-                                    },
-                                  );
-                                },
-                                itemCount:
-                                    data.videoDetails?.season_list.length,
-                              ),
-                            ),
+                            (data.videoDetails?.season_list ?? []).isNotEmpty
+                                ? SizedBox(
+                                    height: 8.h,
+                                    width: 65.w,
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.horizontal,
+                                      itemBuilder: (context, index) {
+                                        return SeasonsItem(
+                                          index: index,
+                                          selected: selected,
+                                          list:
+                                              data.videoDetails?.season_list ??
+                                                  [],
+                                          onTap: () {
+                                            setState(() {
+                                              selected = index;
+                                            });
+                                            debugPrint(
+                                                "${data.currentSeasons[selected][0].title}");
+                                          },
+                                        );
+                                      },
+                                      itemCount:
+                                          data.videoDetails?.season_list.length,
+                                    ),
+                                  )
+                                : const SizedBox(),
                           ],
                         ),
                       )
@@ -101,12 +107,18 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
                             var item = data.currentSeasons[selected][index];
                             return GestureDetector(
                               onTap: () {
-                                debugPrint("Logged: ${Storage.instance.isLoggedIn}");
+                                debugPrint(
+                                    "Logged: ${Storage.instance.isLoggedIn}");
 
                                 if (Storage.instance.isLoggedIn!) {
-                                  widget.setVideo(item);
-                                  debugPrint(
-                                      "Video Clicked${item.title}");
+                                  if (data.videoDetails?.view_permission ??
+                                      false) {
+                                    widget.setVideo(item);
+                                    debugPrint("Video Clicked${item.title}");
+                                  } else {
+                                    CommonFunctions()
+                                        .showNotSubscribedDialog(context);
+                                  }
                                 } else {
                                   showLoginPrompt(context);
                                 }
@@ -125,14 +137,55 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
                           itemCount: data.currentSeasons[selected].length,
                         ),
                       )
-                    : Container(),
+                    : Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 4.w,
+                        ),
+                        // color: Colors.red,
+                        width: double.infinity,
+                        height: 24.h,
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            var item = data.videoDetails?.videos[index];
+                            return GestureDetector(
+                              onTap: () {
+                                debugPrint(
+                                    "Logged: ${Storage.instance.isLoggedIn}");
+
+                                if (Storage.instance.isLoggedIn!) {
+                                  if (data.videoDetails?.view_permission ??
+                                      false) {
+                                    widget.setVideo(item);
+                                    debugPrint("Video Clicked${item.title}");
+                                  } else {
+                                    CommonFunctions()
+                                        .showNotSubscribedDialog(context);
+                                  }
+                                } else {
+                                  showLoginPrompt(context);
+                                }
+                              },
+                              child: EpisodeItem(
+                                item: item!,
+                                currentVideoId: data.currentVideoId!,
+                              ),
+                            );
+                          },
+                          separatorBuilder: (context, index) {
+                            return SizedBox(
+                              width: 5.w,
+                            );
+                          },
+                          itemCount: data.videoDetails?.videos.length ?? 0,
+                        ),
+                      ),
               ],
             )
           : Container();
     });
   }
-
-
 
   void showLoginPrompt(BuildContext context) {
     showDialog(

@@ -306,10 +306,12 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
     final videoDetails = repo.videoDetails;
 
     if (videoDetails?.view_permission ?? false) {
+      debugPrint("KJKSZPJ1");
       final recentViewedList = videoDetails?.recentViewedList;
       final videoListId = recentViewedList?.videoListId ?? 0;
 
       if (recentViewedList != null && videoListId != 0) {
+        debugPrint("KJKSZPJ2");
         repo.setVideo(recentViewedList.videoId ?? 0);
         final url = videoDetails?.videos
             .where((element) => videoListId == element.id)
@@ -328,6 +330,7 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
 
         _future = initializeVideoPlayer(context, url);
       } else {
+        debugPrint("KJKSZPJ3");
         _future = initializeVideoPlayer(
             context, videoDetails?.videos.first.videoPlayer);
 
@@ -336,6 +339,7 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
         });
       }
     } else {
+      debugPrint("KJKSZPJ4");
       _future = initializeVideoPlayer(
           context, videoDetails?.trailer_player ?? Assets.videoUrl);
     }
@@ -388,7 +392,7 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
   }
 
   void videoControllerListener() {
-    int currentDuration = videoPlayerController!.value.position.inMilliseconds;
+    int currentDuration = videoPlayerController!.value.position.inSeconds;
 
     final forwardTime =
         int.parse(Provider.of<Repository>(context, listen: false)

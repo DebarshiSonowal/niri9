@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/otp_field_style.dart';
 import 'package:otp_text_field/style.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Constants/assets.dart';
-import '../../Constants/constants.dart';
-import '../../Navigation/Navigate.dart';
 import '../../Widgets/category_specific_appbar.dart';
-import '../CategorySpecific/category_specific_screen.dart';
 
 class ActivateTvScreen extends StatefulWidget {
   const ActivateTvScreen({super.key});
