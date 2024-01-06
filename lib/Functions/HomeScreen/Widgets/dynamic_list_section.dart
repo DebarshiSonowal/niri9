@@ -59,7 +59,7 @@ class DynamicListSectionHome extends StatelessWidget {
   }
 
   Future<List<Sections>> fetchSections(context) async {
-    final response = await ApiProvider.instance.getSections("home", '1');
+    final response = await ApiProvider.instance.getSections("home", '1','');
     if (response.status ?? false) {
       // if (!context.mounted) return;
       Provider.of<Repository>(context, listen: false)

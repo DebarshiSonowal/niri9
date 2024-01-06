@@ -46,7 +46,7 @@ class LanguageSection extends StatelessWidget {
                       onTap: () {
                         Navigation.instance.navigate(
                             Routes.selectedLanguageScreen,
-                            args: item.slug);
+                            args: "${item.id},${item.slug}");
                       },
                     );
                   },

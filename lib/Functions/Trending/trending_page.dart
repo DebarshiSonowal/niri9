@@ -126,7 +126,7 @@ class _TrendingDynamicItemsState extends State<TrendingDynamicItems> {
 
   Future<List<Sections>> fetchDetails(context, page) async {
     final response1 =
-    await ApiProvider.instance.getSections("trending", "$page");
+    await ApiProvider.instance.getSections("trending", "$page",'');
     if (response1.status ?? false) {
       Provider.of<Repository>(context, listen: false)
           .addTrendingSections(response1.sections ?? []);

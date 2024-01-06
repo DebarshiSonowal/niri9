@@ -158,8 +158,7 @@ class ApiProvider {
         url,
         data: jsonEncode(data),
       );
-      debugPrint(
-          "getOTP response: ${response?.data} ${response?.headers}");
+      debugPrint("getOTP response: ${response?.data} ${response?.headers}");
       if (response?.statusCode == 200 || response?.statusCode == 201) {
         return GenericOTPResponse.fromJson(response?.data);
       } else {
@@ -544,7 +543,7 @@ class ApiProvider {
     dio = Dio(option);
     debugPrint(url.toString());
     var data = {
-      'page_no':page_no,
+      'page_no': page_no,
     };
     debugPrint(jsonEncode(data));
 
@@ -762,6 +761,7 @@ class ApiProvider {
       return VideoResponse.withError(e.message);
     }
   }
+
   Future<GenericResponse> addMyVideos(id) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
@@ -800,7 +800,8 @@ class ApiProvider {
             : response?.data['message']['error']);
       }
     } on DioError catch (e) {
-      debugPrint("addMyVideos  error: ${e.error} ${e.response?.data} ${e.message}");
+      debugPrint(
+          "addMyVideos  error: ${e.error} ${e.response?.data} ${e.message}");
       return GenericResponse.withError(e.response?.data['message']);
     }
   }
@@ -847,6 +848,7 @@ class ApiProvider {
       return VideoResponse.withError(e.message);
     }
   }
+
   Future<RentPlanDetailsResponse> getRentPlans(int id) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
@@ -1511,7 +1513,52 @@ class ApiProvider {
     }
   }
 
-  Future<SectionsResponse> getSections(String page, String page_no) async {
+  // Future<SectionsResponse> getLanguageSections(String page, String page_no, language_id) async {
+  //   BaseOptions option = BaseOptions(
+  //       connectTimeout: const Duration(seconds: Constants.waitTime),
+  //       receiveTimeout: const Duration(seconds: Constants.waitTime),
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Accept': 'application/json',
+  //         // 'Authorization': 'Bearer ${Storage.instance.token}'
+  //         // 'APP-KEY': ConstanceData.app_key
+  //       });
+  //   var url = "$baseUrl/$path/widgets/sections";
+  //   // var url = "http://asamis.assam.gov.in/api/login";
+  //   dio = Dio(option);
+  //   debugPrint(url.toString());
+  //   var data = {
+  //     'page': page,
+  //   };
+  //   data.addAll({
+  //     'page_no': page_no ?? '1',
+  //   });
+  //   debugPrint(jsonEncode(data));
+  //   // debugPrint(jsonEncode(data));
+  //
+  //   try {
+  //     Response? response = await dio?.get(
+  //       url,
+  //       queryParameters: data,
+  //     );
+  //     debugPrint(
+  //         "getSections response: ${response?.data} ${response?.headers}");
+  //     if (response?.statusCode == 200 || response?.statusCode == 201) {
+  //       return SectionsResponse.fromJson(response?.data);
+  //     } else {
+  //       debugPrint("getSections error response: ${response?.data}");
+  //       return SectionsResponse.withError(response?.data['error']
+  //           ? response?.data['message']['success']
+  //           : response?.data['message']['error']);
+  //     }
+  //   } on DioError catch (e) {
+  //     debugPrint("getSections  error: ${e.error} ${e.message}");
+  //     return SectionsResponse.withError(e.message);
+  //   }
+  // }
+
+  Future<SectionsResponse> getSections(
+      String page, String page_no, language_id) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
         receiveTimeout: const Duration(seconds: Constants.waitTime),
@@ -1531,6 +1578,11 @@ class ApiProvider {
     data.addAll({
       'page_no': page_no ?? '1',
     });
+    if (language_id != "") {
+      data.addAll({
+        'language_id': language_id ?? '1',
+      });
+    }
     debugPrint(jsonEncode(data));
     // debugPrint(jsonEncode(data));
 

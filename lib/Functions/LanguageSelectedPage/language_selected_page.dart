@@ -75,7 +75,7 @@ class _LanguageSelectedPageState extends State<LanguageSelectedPage> {
     return Scaffold(
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(7.h),
-          child: CategorySpecificAppbar(searchTerm: widget.language)),
+          child: CategorySpecificAppbar(searchTerm: widget.language.split(",")[1])),
       body: FutureBuilder<List<Sections>>(
         builder: (context, _) {
           if (_.hasData) {
@@ -157,7 +157,7 @@ class _LanguageSelectedPageState extends State<LanguageSelectedPage> {
   Future<List<Sections>> fetchVideos(context) async {
     // Navigation.instance.navigate(Routes.loadingScreen);
     final response =
-        await ApiProvider.instance.getSections("language", "$page");
+        await ApiProvider.instance.getSections("language", "$page",widget.language.split(",")[0]);
     if (response.status ?? false) {
       // Navigation.instance.goBack();
       Provider.of<Repository>(context, listen: false)
