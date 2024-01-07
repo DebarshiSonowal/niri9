@@ -94,12 +94,10 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
           child: FutureBuilder(
             future: _future,
             builder: (context, _) {
-              if (_.hasData &&
-                  _customVideoPlayerController != null &&
-                  videoPlayerController != null) {
+              if (_.hasData) {
                 return WatchPrimaryScreen(
-                  customVideoPlayerController: _customVideoPlayerController!,
-                  videoPlayerController: videoPlayerController!,
+                  customVideoPlayerController: _customVideoPlayerController,
+                  videoPlayerController: videoPlayerController,
                   showing: showing,
                   onClicked: () {
                     showing = true;
