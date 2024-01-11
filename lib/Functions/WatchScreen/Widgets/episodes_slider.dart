@@ -32,7 +32,8 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
   @override
   Widget build(BuildContext context) {
     return Consumer<Repository>(builder: (context, data, _) {
-      return (data.currentSeasons ?? []).isNotEmpty
+      return (data.videoDetails?.video_type_id == 2 &&
+              (data.currentSeasons ?? []).isNotEmpty)
           ? Column(
               children: [
                 (data.videoDetails?.season_list ?? []).isNotEmpty

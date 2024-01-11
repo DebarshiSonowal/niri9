@@ -32,7 +32,7 @@ class Repository extends ChangeNotifier {
   List<Video> _specificVideos = [],
       _recently_viewed_list = [],
       _rental = [],
-      _wishList = [];
+      _wishList = [],_more_like_this_list = [];
   List<AppBarOption> _appbarOptions = [];
   List<BannerResult> homeBanner = [], trendingBanner = [];
   List<OrderHistoryItem> orders = [];
@@ -53,6 +53,7 @@ class Repository extends ChangeNotifier {
   List<AppBarOption> get appbarOptions => _appbarOptions;
 
   List<List<VideoDetails>> currentSeasons = [];
+  List<VideoDetails> episodes = [];
   Video? videoDetails;
   List<Subscription> subscriptions = [];
   List<AvailableLanguage> languageList = [
@@ -225,6 +226,12 @@ class Repository extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addVideos(List<VideoDetails> list) {
+    episodes = list;
+    debugPrint("List added ${list.length}");
+    notifyListeners();
+  }
+
   void setCategories(List<Category> list) {
     _appbarOptions = list
         .map((e) => AppBarOption(
@@ -341,6 +348,13 @@ class Repository extends ChangeNotifier {
     _rental = videos;
     notifyListeners();
   }
+
+  void setMoreLikeThisList(List<Video> videos) {
+    _more_like_this_list = videos;
+    notifyListeners();
+  }
+
+  get more_like_this_list => _more_like_this_list;
 
   void setWishList(List<Video> videos) {
     _wishList = videos;

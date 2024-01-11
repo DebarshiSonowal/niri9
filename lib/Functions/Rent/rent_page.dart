@@ -31,7 +31,8 @@ class RentPage extends StatefulWidget {
 
 class _RentPageState extends State<RentPage> {
   final ScrollController _scrollController = ScrollController();
-   int page=1;
+  int page = 1;
+
   @override
   Widget build(BuildContext context) {
     // return Scaffold(
@@ -132,10 +133,12 @@ class _RentPageState extends State<RentPage> {
                                   item: item,
                                   onTap: () {
                                     if (Storage.instance.isLoggedIn) {
-                                      Navigation.instance
-                                          .navigate(Routes.watchScreen, args: item.id);
+                                      Navigation.instance.navigate(
+                                          Routes.watchScreen,
+                                          args: item.id);
                                     } else {
-                                      CommonFunctions().showLoginDialog(context);
+                                      CommonFunctions()
+                                          .showLoginDialog(context);
                                     }
                                   });
                             },
@@ -185,7 +188,7 @@ class _RentPageState extends State<RentPage> {
     super.initState();
     Future.delayed(Duration.zero, () {
       // fetchData(context);
-      Provider.of<Repository>(context,listen: false).updateIndex(3);
+      Provider.of<Repository>(context, listen: false).updateIndex(3);
     });
     Future.delayed(Duration.zero, () => fetchDetails(1, "", null, null, null));
     _scrollController.addListener(() {
@@ -195,7 +198,6 @@ class _RentPageState extends State<RentPage> {
           !_scrollController.position.outOfRange) {
         setState(() {
           debugPrint("reach the top");
-
         });
       }
       if (_scrollController.offset <=
@@ -217,6 +219,7 @@ class _RentPageState extends State<RentPage> {
       genres,
       term,
       "rent",
+      null,
     );
     if (response.success ?? false) {
       Provider.of<Repository>(context, listen: false)

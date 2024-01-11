@@ -251,7 +251,6 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                       ),
                     ],
                   ),
-
                 ],
               ),
             ),
@@ -280,7 +279,8 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                     });
                   },
                   upgrade: () {
-                    initiateOrder(Provider.of<Repository>(context,listen: false));
+                    initiateOrder(
+                        Provider.of<Repository>(context, listen: false));
                   },
                 ),
               ],
@@ -294,8 +294,9 @@ class _SubscriptionPageState extends State<SubscriptionPage>
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    debugPrint(
-        'success ${response.paymentId} ${response.orderId} ${response.signature}');
+    // """debugPrint(
+    //     'success ${response.paymentId} ${response.orderId} ${response.signature}'
+    //     )""";
     verifyPayment(voucherNo, response.paymentId, amount, context);
   }
 
@@ -331,10 +332,20 @@ class _SubscriptionPageState extends State<SubscriptionPage>
     if (response.success ?? false) {
       Provider.of<Repository>(context, listen: false)
           .addSubscriptions(response);
+      final user = Provider.of<Repository>(context, listen: false).user;
       setState(() {
-        selected = response.subscriptions
-                .indexWhere((element) => (element.is_default ?? 0) == 1) ??
-            0;
+        if (user?.has_subscription ?? false) {
+          if (response.subscriptions.indexWhere((element) =>
+                  (element.id ?? 0) == user?.last_sub?.lastSubscription?.id) >=
+              0) {
+            selected = response.subscriptions.indexWhere((element) =>
+                (element.id ?? 0) == user?.last_sub?.lastSubscription?.id);
+          }
+        } else {
+          selected = response.subscriptions
+                  .indexWhere((element) => (element.is_default ?? 0) == 1) ??
+              0;
+        }
       });
     }
   }
@@ -388,9 +399,22 @@ class _SubscriptionPageState extends State<SubscriptionPage>
       Fluttertoast.showToast(msg: response.message ?? "Something Went wrong");
     }
   }
+  Future<void> fetchProfile() async {
+    // Navigation.instance.navigate(Routes.loadingScreen);
+    final response = await ApiProvider.instance.getProfile();
+    if (response.success ?? false) {
+      // Navigation.instance.goBack();
+      Provider.of<Repository>(context, listen: false).setUser(response.user!);
+      debugPrint("User: ${response.user?.last_sub}");
+    } else {
+      // Navigation.instance.goBack();
+      // showError(response.message ?? "Something went wrong");
+    }
+  }
+
 
   Future<void> verifyPayment(String? orderId, String? paymentId, String? amount,
-      BuildContext context) async {
+      BuildContext context) async{
     final response =
         await ApiProvider.instance.verifyPayment(paymentId, orderId, amount);
     if (response.success ?? false) {
@@ -404,6 +428,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
         // amount: amount,
         message: response.message ?? "You have successfully subscribed",
       );
+      await fetchProfile();
     } else {
       Fluttertoast.showToast(msg: response.message ?? "Something went wrong");
       showFailedDialog(
@@ -470,7 +495,9 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                     fontSize: 12.sp,
                   ),
             ),
-            content: FailedDialogContent(message: message,),
+            content: FailedDialogContent(
+              message: message,
+            ),
             actions: [
               TextButton(
                 onPressed: () {
@@ -489,6 +516,6 @@ class _SubscriptionPageState extends State<SubscriptionPage>
           );
         });
   }
+
+
 }
-
-

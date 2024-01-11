@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Constants/constants.dart';
+import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:niri9/Repository/repository.dart';
 import 'package:niri9/Router/routes.dart';
@@ -74,10 +75,25 @@ class _SplashScreenState extends State<SplashScreen> {
     // await fetchFaq();
     // await fetchHelp();
     // await fetchTerms();
+    if(Storage.instance.isLoggedIn){
+      await fetchProfile();
+    }
     await fetchSettings();
     Navigation.instance.navigateAndRemoveUntil(Routes.homeScreen);
   }
 
+  Future<void> fetchProfile() async {
+    // Navigation.instance.navigate(Routes.loadingScreen);
+    final response = await ApiProvider.instance.getProfile();
+    if (response.success ?? false) {
+      // Navigation.instance.goBack();
+      Provider.of<Repository>(context, listen: false).setUser(response.user!);
+      debugPrint("User: ${response.user?.last_sub}");
+    } else {
+      // Navigation.instance.goBack();
+      // showError(response.message ?? "Something went wrong");
+    }
+  }
   // Future<void> fetchBanner() async {
   //   final response = await ApiProvider.instance.getBannerResponse("home");
   //   if (response.success ?? false) {

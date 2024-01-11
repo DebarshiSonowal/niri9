@@ -462,7 +462,7 @@ class ApiProvider {
   }
 
   Future<VideoResponse> getVideos(int page_no, String? language,
-      String? category, String? genre, String? search, String? page) async {
+      String? category, String? genre, String? search, String? page,String? type) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
         receiveTimeout: const Duration(seconds: Constants.waitTime),
@@ -491,7 +491,7 @@ class ApiProvider {
     }
     if (page != null) {
       data.addAll({
-        'page': page,
+        'page_for': page,
       });
     }
     if (category != null) {
@@ -502,6 +502,11 @@ class ApiProvider {
     if (genre != null) {
       data.addAll({
         'genre': genre ?? "",
+      });
+    }
+    if (type != null) {
+      data.addAll({
+        'type': type ?? "",
       });
     }
     debugPrint(jsonEncode(data));
@@ -1756,7 +1761,7 @@ class ApiProvider {
       debugPrint("E123 ${file.path}");
       return VideoResolutionModel(true, extractURLandResolution(file.path));
     } catch (e) {
-      print("E123$e");
+      print("E1234 $url $e");
       return VideoResolutionModel(false, []);
     }
   }

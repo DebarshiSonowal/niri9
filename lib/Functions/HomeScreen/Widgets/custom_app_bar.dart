@@ -47,8 +47,15 @@ class CustomAppbar extends StatelessWidget {
           ),
           Consumer<Repository>(
             builder: (context, data, _) {
-              return FirstLineAppbar(
-                  updateState: updateState, isExpanded: isExpanded, data: data);
+              return data.appbarOptions.length > 5
+                  ? FirstLineAppbar(
+                      updateState: updateState,
+                      isExpanded: isExpanded,
+                      data: data)
+                  : NormalLineAppbar(
+                      updateState: updateState,
+                      isExpanded: isExpanded,
+                      data: data);
             },
           ),
           !isExpanded
@@ -97,12 +104,15 @@ class CustomAppbar extends StatelessWidget {
                             item: item,
                             index: index,
                             onTap: () {
-                              Navigation.instance
-                                  .navigate(Routes.subscriptionScreen);
+                              // Navigation.instance
+                              //     .navigate(Routes.subscriptionScreen);
                               if (index == 3) {
                                 // Navigation.instance
                                 //     .navigate(Routes.filmFestivalScreen);
                               } else if (index == 5) {}
+                              Navigation.instance.navigate(
+                                  Routes.selectedCategoryScreen,
+                                  args: "${item.name}");
                             },
                           );
                         },
@@ -152,7 +162,8 @@ class SubscriptionAlert extends StatelessWidget {
       // ),
       child: Consumer<Repository>(builder: (context, data, _) {
         return (data.user?.has_subscription ?? false)
-            ? Shimmer.fromColors(
+            ? Container()
+            : Shimmer.fromColors(
                 baseColor: const Color(0xffffed8c),
                 highlightColor: const Color(0xffFFD700),
                 child: GestureDetector(
@@ -184,8 +195,7 @@ class SubscriptionAlert extends StatelessWidget {
                     ),
                   ),
                 ),
-              )
-            : Container();
+              );
       }),
     );
   }
@@ -222,7 +232,7 @@ class FirstLineAppbar extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
                 if (index != 0) {
-                  var item = data.appbarOptions[index-1];
+                  var item = data.appbarOptions[index - 1];
                   return CustomAppbarItem(
                     item: item,
                     index: index - 1,
@@ -233,7 +243,7 @@ class FirstLineAppbar extends StatelessWidget {
                       } else {
                         Navigation.instance.navigate(
                             Routes.selectedCategoryScreen,
-                            args: "${item.slug}");
+                            args: "${item.name}");
                       }
                     },
                   );
@@ -299,6 +309,91 @@ class FirstLineAppbar extends StatelessWidget {
                     ),
                   ),
                 ),
+        ],
+      ),
+    );
+  }
+}
+
+class NormalLineAppbar extends StatelessWidget {
+  const NormalLineAppbar({
+    super.key,
+    required this.updateState,
+    required this.isExpanded,
+    required this.data,
+  });
+
+  final Repository data;
+  final Function updateState;
+  final bool isExpanded;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: 2.w,
+      ),
+      width: double.infinity,
+      height: 6.h,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            width: 90.w,
+            child: ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                if (index != 0) {
+                  var item = data.appbarOptions[index - 1];
+                  return CustomAppbarItem(
+                    item: item,
+                    index: index - 1,
+                    onTap: () {
+                      if (item.name?.toLowerCase() == "film festival" &&
+                          (item.has_festival ?? false)) {
+                        Navigation.instance.navigate(Routes.filmFestivalScreen);
+                      } else {
+                        Navigation.instance.navigate(
+                            Routes.selectedCategoryScreen,
+                            args: "${item.slug}");
+                      }
+                    },
+                  );
+                } else {
+                  var item = AppBarOption(
+                    name: data.categoryAll?.title ?? "",
+                    slug: data.categoryAll?.slug ?? "",
+                    image: data.categoryAll?.img ??
+                        "https://picsum.photos/200/300",
+                    sequence: 0,
+                    has_festival: false,
+                  );
+                  return CustomAppbarItem(
+                    item: item,
+                    index: index,
+                    onTap: () {
+                      if (item.name?.toLowerCase() == "film festival" &&
+                          (item.has_festival ?? false)) {
+                        Navigation.instance.navigate(Routes.filmFestivalScreen);
+                      } else {
+                        Navigation.instance.navigate(
+                            Routes.selectedCategoryScreen,
+                            args: "${item.name}");
+                      }
+                    },
+                  );
+                }
+              },
+              separatorBuilder: (context, index) {
+                return SizedBox(
+                  width: 2.w,
+                );
+              },
+              itemCount: 5,
+            ),
+          ),
         ],
       ),
     );

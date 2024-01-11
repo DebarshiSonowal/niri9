@@ -55,7 +55,7 @@ class LanguageSection extends StatelessWidget {
                       width: 2.w,
                     );
                   },
-                  itemCount: data.languageList.length,
+                  itemCount: data.languages.length,
                 ),
               ),
             );

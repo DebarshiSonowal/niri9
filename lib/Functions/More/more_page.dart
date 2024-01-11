@@ -31,9 +31,9 @@ class _MorePageState extends State<MorePage> {
   void dispose() {
     try {
       Provider.of<Repository>(
-                  Navigation.instance.navigatorKey.currentContext ?? context,
-                  listen: false)
-              .clearSpecificVideos();
+              Navigation.instance.navigatorKey.currentContext ?? context,
+              listen: false)
+          .clearSpecificVideos();
     } catch (e) {
       print(e);
     }
@@ -47,7 +47,7 @@ class _MorePageState extends State<MorePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.section.replaceAll("-", " ").capitalize(),
+          widget.section,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -118,6 +118,7 @@ class _MorePageState extends State<MorePage> {
       category,
       genres,
       term,
+      null,
       null,
     );
     if (response.success ?? false) {

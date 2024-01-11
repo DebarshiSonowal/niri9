@@ -16,7 +16,8 @@ class Video {
       producer_id,
       type_id,
       category_id,
-      status;
+      status,
+      video_type_id;
   String? unique_no,
       title,
       slug,
@@ -52,6 +53,7 @@ class Video {
     id = json['id'] ?? 0;
     season_no = json['season_no'] ?? 0;
     series_id = json['series_id'] ?? 0;
+    video_type_id = json['video_type_id'] ?? 1;
     imdb_rating = json['imdb_rating'] ?? "0";
     language_id = json['language_id'] ?? 0;
     producer_id = json['producer_id'] ?? 0;

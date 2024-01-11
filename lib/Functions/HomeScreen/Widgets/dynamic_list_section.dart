@@ -33,7 +33,7 @@ class DynamicListSectionHome extends StatelessWidget {
                     list: item.videos ?? [],
                     onTap: () {
                       Navigation.instance.navigate(Routes.moreScreen,
-                          args: item.slug ?? "");
+                          args: item.title ?? "");
                     },
                   )
                       : Container();

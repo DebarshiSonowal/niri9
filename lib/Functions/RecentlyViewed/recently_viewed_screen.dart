@@ -83,6 +83,7 @@ class _RecentlyViewedScreenState extends State<RecentlyViewedScreen> {
         color: Constants.backgroundColor,
         padding: EdgeInsets.symmetric(
           horizontal: 4.w,
+          vertical: 2.h,
         ),
         child: SmartRefresher(
           enablePullDown: true,
@@ -123,7 +124,7 @@ class _RecentlyViewedScreenState extends State<RecentlyViewedScreen> {
                         child: GridView.builder(
                           shrinkWrap: true,
                           controller: _scrollController,
-                          itemCount: data.specificVideos.length,
+                          itemCount: data.recently_viewed_list.length,
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3,
@@ -132,7 +133,7 @@ class _RecentlyViewedScreenState extends State<RecentlyViewedScreen> {
                             childAspectRatio: 6.5 / 8.5,
                           ),
                           itemBuilder: (BuildContext context, int index) {
-                            var item = data.specificVideos[index];
+                            var item = data.recently_viewed_list[index];
                             return OttItem(
                                 item: item,
                                 onTap: () {

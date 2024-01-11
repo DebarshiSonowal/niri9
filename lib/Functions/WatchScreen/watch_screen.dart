@@ -38,7 +38,10 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
   bool isPlaying = true, showing = false;
   Future<bool>? _future;
   Timer? _timer;
-  int lastUpdateDuration = 0, selectedVideoListId = 0,lastUpdateTime = 0,selected = 0;
+  int lastUpdateDuration = 0,
+      selectedVideoListId = 0,
+      lastUpdateTime = 0,
+      selected = 0;
   Map<String, VideoPlayerController>? additionalVideoSources;
 
   @override
@@ -172,8 +175,24 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
     if (response.success ?? false) {
       Provider.of<Repository>(context, listen: false)
           .setRentPlanDetails(response.result);
-    } else {
-    }
+    } else {}
+  }
+
+  Future<void> fetchMoreDetails(int id) async {
+    final response = await ApiProvider.instance.getRentPlans(id);
+    if (response.success ?? false) {
+      Provider.of<Repository>(context, listen: false)
+          .setRentPlanDetails(response.result);
+    } else {}
+  }
+
+  Future<void> fetchMoreLikeThis(int id, type, genre) async {
+    final response = await ApiProvider.instance
+        .getVideos(1, null, null, genre, null, null, type);
+    if (response.success ?? false) {
+      Provider.of<Repository>(context, listen: false)
+          .setMoreLikeThisList(response.videos);
+    } else {}
   }
 
   Future<bool> fetchVideo(int index) async {
@@ -187,7 +206,10 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
       await fetchEpisodes(response.video?.series_id ?? 0);
       setState(() {});
       startConditionChecking();
-
+      await fetchMoreLikeThis(
+          response.video!.id!,
+          response.video?.video_type_id == 1 ? "single" : "multi",
+          response.video?.genres.map((e) => e.slug).toList().where((element) => element != null).join(', '),);
       return true;
     } else {
       // Navigation.instance.goBack();
@@ -224,12 +246,11 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
         // "mobile",
         event_name);
     if (response.success ?? false) {
-    } else {
-
-    }
+    } else {}
   }
 
   Future<bool> initializeVideoPlayer(context, url) async {
+    debugPrint("Initializing video player $url");
     final response = await ApiProvider.instance.download2(url);
     if (response.success ?? false) {
       additionalVideoSources = {};
@@ -312,9 +333,10 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
         debugPrint("KJKSZPJ2");
         repo.setVideo(recentViewedList.videoId ?? 0);
         final url = videoDetails?.videos
-            .where((element) => videoListId == element.id)
-            .first
-            .videoPlayer ?? videoDetails?.videos.first.videoPlayer;
+                .where((element) => videoListId == element.id)
+                .first
+                .videoPlayer ??
+            videoDetails?.videos.first.videoPlayer;
 
         setState(() {
           selectedVideoListId = recentViewedList.videoListId ?? 0;
@@ -343,7 +365,6 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
     }
   }
 
-
   void setVideoPlayer(BuildContext context, VideoPlayerController value) async {
     videoPlayerController?.pause();
 
@@ -354,11 +375,13 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
       additionalVideoSources = {};
 
       for (var i in response.videoResolutions) {
-        final dataSource = "https://customer-edsfz57k0gqg8bse.cloudflarestream.com/eb471d0611714d8133bc092c14ecc979/manifest/${i.url.split("?")[0]}";
+        final dataSource =
+            "https://customer-edsfz57k0gqg8bse.cloudflarestream.com/eb471d0611714d8133bc092c14ecc979/manifest/${i.url.split("?")[0]}";
 
         if (value.dataSource != i.url && value.dataSource != dataSource) {
           additionalVideoSources?.addAll({
-            "${i.resolution}": VideoPlayerController.networkUrl(Uri.parse(dataSource)),
+            "${i.resolution}":
+                VideoPlayerController.networkUrl(Uri.parse(dataSource)),
           });
         }
       }
@@ -392,12 +415,12 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
   void videoControllerListener() {
     int currentDuration = videoPlayerController!.value.position.inSeconds;
 
-    final forwardTime =
-        int.parse(Provider.of<Repository>(context, listen: false)
-            .videoSetting
-            ?.forwardTime ??
-            "10") *
-            1000;
+    final forwardTime = int.parse(
+            Provider.of<Repository>(context, listen: false)
+                    .videoSetting
+                    ?.forwardTime ??
+                "10") *
+        1000;
 
     if (currentDuration >= forwardTime && uploadTimer == null) {
       debugPrint("upload timer $currentDuration");
@@ -438,5 +461,4 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
     }
     setState(() {});
   }
-
 }

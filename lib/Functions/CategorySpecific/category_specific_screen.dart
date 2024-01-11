@@ -83,6 +83,7 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
         color: Constants.backgroundColor,
         padding: EdgeInsets.symmetric(
           horizontal: 4.w,
+          vertical: 1.h,
         ),
         child: SmartRefresher(
           enablePullDown: true,
@@ -169,7 +170,7 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
   Future<List<Video>> fetchVideos(context) async {
     // Navigation.instance.navigate(Routes.loadingScreen);
     final response = await ApiProvider.instance
-        .getVideos(page, null, widget.searchTerm, null, null, null);
+        .getVideos(page, null, widget.searchTerm, null, null, null,null);
     if (response.success ?? false) {
       // Navigation.instance.goBack();
       _refreshController.refreshCompleted();
