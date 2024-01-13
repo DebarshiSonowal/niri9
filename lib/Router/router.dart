@@ -75,7 +75,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case Routes.watchScreen:
       return FadeTransitionPageRouteBuilder(
           page: WatchScreen(
-        index: settings.arguments as int,
+        id: settings.arguments as int,
       ));
     case Routes.subscriptionScreen:
       return FadeTransitionPageRouteBuilder(page: const SubscriptionPage());

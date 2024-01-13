@@ -904,19 +904,23 @@ class ApiProvider {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          // 'Authorization': 'Bearer ${Storage.instance.token}'
+          'Authorization': 'Bearer ${Storage.instance.token}'
           // 'APP-KEY': ConstanceData.app_key
         });
     var url = "$baseUrl/$path/videos/$id";
     // var url = "http://asamis.assam.gov.in/api/login";
     dio = Dio(option);
     debugPrint(url.toString());
-    // debugPrint(jsonEncode(data));
+    var data = {
+      'platform':'phone',
+    };
+    debugPrint(jsonEncode(data));
 
     try {
       Response? response = await dio?.get(
         url,
         // data: jsonEncode(data),
+        queryParameters: data,
       );
       debugPrint(
           "VideoDetails response: ${response?.data} ${response?.headers}");

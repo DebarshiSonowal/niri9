@@ -7,11 +7,11 @@ import '../../../Navigation/Navigate.dart';
 class SearchAppbar extends StatelessWidget {
   const SearchAppbar({
     super.key,
-    required this.search, required this.suggest,
+    required this.search, required this.suggest, required this.searchEditingController,
   });
 
   final Function(String) search,suggest;
-
+  final TextEditingController searchEditingController;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -57,6 +57,7 @@ class SearchAppbar extends StatelessWidget {
             height: 37.sp,
             padding: EdgeInsets.symmetric(horizontal: 4.5.w),
             child: TextField(
+              controller: searchEditingController,
               onChanged: (val) {
                 if (val != "") {
                   suggest(val);

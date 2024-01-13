@@ -33,7 +33,8 @@ class _SearchPageState extends State<SearchPage> {
   Sections? selectedSections;
   Category? selectedCategory;
   int page_no = 1;
-
+  String currentSearch="";
+  final searchEditingController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -55,6 +56,11 @@ class _SearchPageState extends State<SearchPage> {
       }
 
     });
+    searchEditingController.addListener(() {
+      setState(() {
+        currentSearch = searchEditingController.text;
+      });
+    });
   }
 
   @override
@@ -68,6 +74,7 @@ class _SearchPageState extends State<SearchPage> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(12.4.h),
         child: SearchAppbar(
+            searchEditingController:searchEditingController,
           search: (String val) {
             search(val);
           }, suggest: (String val) {
@@ -143,7 +150,7 @@ class _SearchPageState extends State<SearchPage> {
                 left: 2.5.w,
               ),
               child: Text(
-                "Today's Top Searches",
+                currentSearch==""?"Today's Top Searches":"",
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Colors.white,
                       fontSize: 13.sp,

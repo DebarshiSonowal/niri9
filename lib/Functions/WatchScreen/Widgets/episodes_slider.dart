@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:niri9/Constants/common_functions.dart';
 import 'package:niri9/Constants/constants.dart';
+import 'package:niri9/Functions/LanguageSelectedPage/language_selected_page.dart';
 import 'package:niri9/Functions/WatchScreen/Widgets/seasons_itme.dart';
+import 'package:niri9/Functions/WatchScreen/Widgets/seasons_list.dart';
 import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Models/video_details.dart';
 import 'package:niri9/Navigation/Navigate.dart';
@@ -11,14 +13,26 @@ import 'package:niri9/Router/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../API/api_provider.dart';
 import '../../../Constants/assets.dart';
 import '../../../Repository/repository.dart';
+import 'episode_item.dart';
+import 'non_season_list.dart';
 import 'rent_bottom_sheet.dart';
+import 'season_list_section.dart';
 
 class EpisodeSlider extends StatefulWidget {
-  const EpisodeSlider({super.key, required this.setVideo});
+  const EpisodeSlider(
+      {super.key,
+      required this.setVideo,
+      required this.updateVideoListId,
+      required this.id,
+      required this.fetchFromId});
 
+  final int id;
   final Function(VideoDetails item) setVideo;
+  final Function(int value) updateVideoListId;
+  final Function(int value) fetchFromId;
 
   @override
   State<EpisodeSlider> createState() => _EpisodeSliderState();
@@ -26,166 +40,89 @@ class EpisodeSlider extends StatefulWidget {
 
 class _EpisodeSliderState extends State<EpisodeSlider> {
   int selected = 0;
+  Future<bool>? _future;
 
-  // final List<String> season1;
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      _future = fetchEpisodes(widget.id, context, (int val) {
+        widget.updateVideoListId(val);
+      });
+    });
+  } // final List<String> season1;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<Repository>(builder: (context, data, _) {
-      return (data.videoDetails?.video_type_id == 2 &&
-              (data.currentSeasons ?? []).isNotEmpty)
-          ? Column(
-              children: [
-                (data.videoDetails?.season_list ?? []).isNotEmpty
-                    ? Container(
-                        height: 8.h,
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 5.w,
-                          vertical: 2.h,
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Episodes",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    color: Colors.white70,
-                                    fontSize: 14.sp,
-                                  ),
-                            ),
-                            SizedBox(
-                              width: 5.w,
-                            ),
-                            (data.videoDetails?.season_list ?? []).isNotEmpty
-                                ? SizedBox(
-                                    height: 8.h,
-                                    width: 65.w,
-                                    child: ListView.builder(
-                                      shrinkWrap: true,
-                                      scrollDirection: Axis.horizontal,
-                                      itemBuilder: (context, index) {
-                                        return SeasonsItem(
-                                          index: index,
-                                          selected: selected,
-                                          list:
-                                              data.videoDetails?.season_list ??
-                                                  [],
-                                          onTap: () {
-                                            setState(() {
-                                              selected = index;
-                                            });
-                                            debugPrint(
-                                                "${data.currentSeasons[selected][0].title}");
-                                          },
-                                        );
-                                      },
-                                      itemCount:
-                                          data.videoDetails?.season_list.length,
+    return FutureBuilder(
+        future: _future,
+        builder: (context, _) {
+          if (_.hasData && _.data != null && _.data != false) {
+            return Consumer<Repository>(builder: (context, data, _) {
+              return (data.videoDetails?.video_type_id == 2 &&
+                      (data.currentSeasons ?? []).isNotEmpty)
+                  ? Column(
+                      children: [
+                        (data.videoDetails?.season_list ?? []).isNotEmpty
+                            ? SeasonsList(
+                                data: data,
+                                selected: selected,
+                                updateSelected: (int value) {
+                                  setState(() {
+                                    selected = value;
+                                  });
+                                  widget.fetchFromId(
+                                      data.currentSeasons[selected].id ?? 0);
+                                },
+                              )
+                            : data.currentSeasons.isNotEmpty
+                                ? Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 5.w,
+                                      vertical: 1.h,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          "Episodes",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(
+                                                color: Colors.white70,
+                                                fontSize: 14.sp,
+                                              ),
+                                        ),
+                                      ],
                                     ),
                                   )
-                                : const SizedBox(),
-                          ],
-                        ),
-                      )
-                    : Container(),
-                (data.videoDetails?.season_list ?? []).isNotEmpty
-                    ? Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 4.w,
-                        ),
-                        // color: Colors.red,
-                        width: double.infinity,
-                        height: 24.h,
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            var item = data.currentSeasons[selected][index];
-                            return GestureDetector(
-                              onTap: () {
-                                debugPrint(
-                                    "Logged: ${Storage.instance.isLoggedIn}");
-
-                                if (Storage.instance.isLoggedIn!) {
-                                  if (data.videoDetails?.view_permission ??
-                                      false) {
-                                    widget.setVideo(item);
-                                    debugPrint("Video Clicked${item.title}");
-                                  } else {
-                                    CommonFunctions()
-                                        .showNotSubscribedDialog(context);
-                                  }
-                                } else {
-                                  showLoginPrompt(context);
-                                }
-                              },
-                              child: EpisodeItem(
-                                item: item,
-                                currentVideoId: data.currentVideoId!,
+                                : Container(),
+                        (data.videoDetails?.season_list ?? []).isNotEmpty
+                            ? SeasonListSection(
+                                data: data,
+                                setVideo: (VideoDetails item) {
+                                  widget.setVideo(item);
+                                },
+                                showLoginPrompt: () => showLoginPrompt(context),
+                                selected: selected,
+                              )
+                            : NonSeasonList(
+                                data: data,
+                                setVideo: (VideoDetails item) {
+                                  widget.setVideo(item);
+                                },
+                                showLoginPrompt: () => showLoginPrompt(context),
                               ),
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return SizedBox(
-                              width: 5.w,
-                            );
-                          },
-                          itemCount: data.currentSeasons[selected].length,
-                        ),
-                      )
-                    : Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 4.w,
-                        ),
-                        // color: Colors.red,
-                        width: double.infinity,
-                        height: 24.h,
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            var item = data.videoDetails?.videos[index];
-                            return GestureDetector(
-                              onTap: () {
-                                debugPrint(
-                                    "Logged: ${Storage.instance.isLoggedIn}");
-
-                                if (Storage.instance.isLoggedIn!) {
-                                  if (data.videoDetails?.view_permission ??
-                                      false) {
-                                    widget.setVideo(item);
-                                    debugPrint("Video Clicked${item.title}");
-                                  } else {
-                                    CommonFunctions()
-                                        .showNotSubscribedDialog(context);
-                                  }
-                                } else {
-                                  showLoginPrompt(context);
-                                }
-                              },
-                              child: EpisodeItem(
-                                item: item!,
-                                currentVideoId: data.currentVideoId!,
-                              ),
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return SizedBox(
-                              width: 5.w,
-                            );
-                          },
-                          itemCount: data.videoDetails?.videos.length ?? 0,
-                        ),
-                      ),
-              ],
-            )
-          : Container();
-    });
+                      ],
+                    )
+                  : Container();
+            });
+          }
+          if (_.hasError || _.data == null || _.data == false) {
+            return Container();
+          }
+          return const ShimmerLanguageScreen();
+        });
   }
 
   void showLoginPrompt(BuildContext context) {
@@ -239,37 +176,24 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
   }
 }
 
-class EpisodeItem extends StatelessWidget {
-  const EpisodeItem({
-    super.key,
-    required this.item,
-    required this.currentVideoId,
-  });
-
-  final VideoDetails item;
-  final int currentVideoId;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border.all(
-        color: (item.id == currentVideoId)
-            ? Constants.thirdColor
-            : Colors.transparent,
-        width: 0.5.w,
-      )),
-      child: CachedNetworkImage(
-        imageUrl: item.profile_pic ?? "",
-        fit: BoxFit.fill,
-        // height: 10.h,
-        width: 40.w,
-        placeholder: (context, index) {
-          return Image.asset(
-            Assets.logoTransparent,
-          ).animate();
-        },
-      ),
-    );
+Future<bool> fetchEpisodes(
+    int id, BuildContext context, Function updateListId) async {
+  final response = await ApiProvider.instance.getEpisodes(id);
+  if (response.success ?? false) {
+    debugPrint("MyEpisodes ${response.result}");
+    // for (var i in response.result) {
+    //   debugPrint("Episodes Adding ${i.id}\n${i.title}\n${i.video_list.length}");
+    //   Provider.of<Repository>(context, listen: false)
+    //       .addSeasons(i.video_list ?? []);
+    // }
+    Provider.of<Repository>(context, listen: false).setSeasons(response.result);
+    debugPrint(
+        "Watchloading: \n${response.result[0].id}\n${response.result[0].video_list.first.id}");
+    Provider.of<Repository>(context, listen: false)
+        .setVideo(response.result[0].id ?? 0);
+    updateListId(response.result[0].video_list.first.id ?? 0);
+    return true;
+  } else {
+    return false;
   }
 }

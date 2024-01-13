@@ -133,23 +133,23 @@ class PremiumCard extends StatelessWidget {
                     SizedBox(
                       width: 25.w,
                       child: Text(
-                        "Pack Country:",
+                        "Duration:",
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white30,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 9.sp,
-                            ),
+                          color: Colors.white30,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 9.sp,
+                        ),
                       ),
                     ),
                     SizedBox(
                       width: 19.w,
                       child: Text(
-                        "India",
+                        "${data.user?.last_sub?.lastSubscription?.duration}",
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 9.sp,
-                            ),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 9.sp,
+                        ),
                       ),
                     ),
                   ],
@@ -170,28 +170,29 @@ class PremiumCard extends StatelessWidget {
                     SizedBox(
                       width: 25.w,
                       child: Text(
-                        "Payment Mode:",
+                        "No Of Screens:",
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white30,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 9.sp,
-                            ),
+                          color: Colors.white30,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 9.sp,
+                        ),
                       ),
                     ),
                     SizedBox(
                       width: 19.w,
                       child: Text(
-                        "CRM",
+                        "${data.user?.last_sub?.lastSubscription?.noOfScreens}",
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 9.sp,
-                            ),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 9.sp,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
+
               Divider(
                 color: Colors.white30,
                 height: 0.2.h,
@@ -255,7 +256,7 @@ class PremiumCard extends StatelessWidget {
                     SizedBox(
                       width: 19.w,
                       child: Text(
-                        "4 Jun, 2023",
+                        DateFormat('dd MMM yyyy').format(DateTime.parse(data.user?.expiry_date??"")),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,

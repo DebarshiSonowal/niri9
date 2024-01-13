@@ -124,7 +124,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
                 SizedBox(
-                  height: 3.h,
+                  height: 5.h,
                 ),
                 Padding(
                   padding: EdgeInsets.only(
@@ -134,6 +134,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     "Current Subscription",
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: Colors.white,
+                          fontSize: 15.sp,
                         ),
                   ),
                 ),
@@ -165,7 +166,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (response.success ?? false) {
       Navigation.instance.goBack();
       Provider.of<Repository>(context, listen: false).setUser(response.user!);
-    debugPrint("User: ${response.user?.last_sub}");
+      debugPrint("User: ${response.user?.last_sub}");
     } else {
       Navigation.instance.goBack();
       showError(response.message ?? "Something went wrong");

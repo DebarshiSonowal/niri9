@@ -22,6 +22,7 @@ import 'alternative_options_bar.dart';
 import 'description_section.dart';
 import 'episodes_slider.dart';
 import 'info_bar.dart';
+import 'more_like_this_section.dart';
 import 'options_bar.dart';
 
 class WatchPrimaryScreen extends StatelessWidget {
@@ -33,13 +34,18 @@ class WatchPrimaryScreen extends StatelessWidget {
     required this.onClicked,
     required this.setVideo,
     required this.setVideoSource,
+    required this.updateVideoListId,
+    required this.id, required this.fetchFromId,
   }) : _customVideoPlayerController = customVideoPlayerController;
 
   final CustomVideoPlayerController? _customVideoPlayerController;
   final VideoPlayerController? videoPlayerController;
   final bool showing;
+  final int id;
   final Function onClicked;
   final Function(VideoDetails item) setVideo;
+  final Function(int item) updateVideoListId;
+  final Function(int item) fetchFromId;
   final Function(MapEntry<String, VideoPlayerController> item) setVideoSource;
 
   @override
@@ -111,6 +117,13 @@ class WatchPrimaryScreen extends StatelessWidget {
             const DescriptionSection(),
             EpisodeSlider(
               setVideo: (VideoDetails item) => setVideo(item),
+              updateVideoListId: (int value) {
+                updateVideoListId(value);
+              },
+              id: id,
+              fetchFromId: (int value) {
+                fetchFromId(value);
+              },
               // selected: selected,
             ),
             Padding(
@@ -143,52 +156,10 @@ class WatchPrimaryScreen extends StatelessWidget {
                 ],
               ),
             ),
-            Consumer<Repository>(builder: (context, data, _) {
-              return Column(
-                children: [
-                  TitleBox(
-                    isEnd: false,
-                    text: "More Like This",
-                    onTap: (){},
-                  ),
-                  Container(
-                    padding:EdgeInsets.symmetric(
-                      horizontal: 2.w,
-                    ),
-                    width: double.infinity,
-                    height: 20.h,
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        var item = data.more_like_this_list[index];
-                        return item.videos.isNotEmpty
-                            ? OttItem(
-                                item: item,
-                                onTap: () {
-                                  if (Storage.instance.isLoggedIn) {
-                                    Navigation.instance
-                                        .navigate(Routes.watchScreen, args: item.id);
-                                  } else {
-                                    CommonFunctions().showLoginSheet(context);
-                                    // CommonFunctions().showLoginDialog(context);
-                                  }
-                                },
-                              )
-                            : Container();
-                      },
-                      separatorBuilder: (context, index) {
-                        return SizedBox(
-                          width: 2.w,
-                        );
-                      },
-                      itemCount: data.more_like_this_list.length,
-                    ),
-                  ),
-                ],
-              );
-            }),
+            MoreLikeThisSection(
+              data:
+                  Provider.of<Repository>(context, listen: false).videoDetails!,
+            ),
             SizedBox(
               height: 2.h,
             ),

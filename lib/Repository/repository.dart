@@ -52,7 +52,7 @@ class Repository extends ChangeNotifier {
 
   List<AppBarOption> get appbarOptions => _appbarOptions;
 
-  List<List<VideoDetails>> currentSeasons = [];
+  List<VideoDetailsResult> currentSeasons = [];
   List<VideoDetails> episodes = [];
   Video? videoDetails;
   List<Subscription> subscriptions = [];
@@ -215,16 +215,16 @@ class Repository extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setSeasons(List<List<VideoDetails>> list) {
+  void setSeasons(List<VideoDetailsResult> list) {
     currentSeasons = list;
     notifyListeners();
   }
 
-  void addSeasons(List<VideoDetails> list) {
-    currentSeasons.add(list);
-    debugPrint("List added ${list.length}");
-    notifyListeners();
-  }
+  // void addSeasons(List<VideoDetails> list) {
+  //   currentSeasons.add(list);
+  //   debugPrint("List added ${list.length}");
+  //   notifyListeners();
+  // }
 
   void addVideos(List<VideoDetails> list) {
     episodes = list;
