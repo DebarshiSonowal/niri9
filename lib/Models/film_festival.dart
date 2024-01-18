@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:niri9/Models/video.dart';
 
 class FilmFestivalResponse {
@@ -13,7 +14,8 @@ class FilmFestivalResponse {
     if (json['result'] != null) {
       result = <FilmFestival>[];
       json['result'].forEach((v) {
-        result!.add(new FilmFestival.fromJson(v));
+        debugPrint("ITEM : ${json['result']}");
+        result!.add(FilmFestival.fromJson(v));
       });
     }
     message = json['message'];
@@ -29,6 +31,7 @@ class FilmFestivalResponse {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['success'] = success;
     if (this.result != null) {
+
       data['result'] = result!.map((v) => v.toJson()).toList();
     }
     data['message'] = message;
@@ -68,6 +71,7 @@ class FilmFestival {
     if (json['videos'] != null) {
       videos = <Video>[];
       json['videos'].forEach((v) {
+        debugPrint("${json['videos']}");
         videos!.add(Video.fromJson(v));
       });
     }

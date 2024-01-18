@@ -8,10 +8,19 @@ import 'package:sizer/sizer.dart';
 import '../../Constants/constants.dart';
 import '../../Navigation/Navigate.dart';
 import '../../Repository/repository.dart';
+import '../../Router/routes.dart';
 import '../More/Widgets/ottitem.dart';
+import 'Widgets/film_festival_appbar.dart';
 
-class FilmFestivalPage extends StatelessWidget {
-  const FilmFestivalPage({Key? key}) : super(key: key);
+class FilmFestivalPage extends StatefulWidget {
+  const FilmFestivalPage({super.key});
+
+  @override
+  State<FilmFestivalPage> createState() => _FilmFestivalPageState();
+}
+
+class _FilmFestivalPageState extends State<FilmFestivalPage> {
+  int selected = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -24,318 +33,134 @@ class FilmFestivalPage extends StatelessWidget {
         height: double.infinity,
         width: double.infinity,
         color: Constants.backgroundColor,
-        child: FutureBuilder<FilmFestival?>(
+        child: FutureBuilder<List<FilmFestival>?>(
           future: fetchFilmFestival(context),
           builder: (context, _) {
-            if(_.hasData&&_.data!=null) {
+            if (_.hasData && _.data != null) {
               return Column(
                 children: [
-                  Padding(
+                  Container(
+                    width: double.infinity,
+                    height: 5.5.h,
                     padding: EdgeInsets.symmetric(
                       horizontal: 4.w,
                       // vertical: 1.h,
                     ),
-                    child: Row(
-                      children: [
-                        Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Container(
-                            width: 25.w,
-                            decoration: BoxDecoration(
-                              // color: Color(0xff868686),
-                              color: const Color(0xfffdfefe),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 2.w, vertical: 1.h),
-                            child: Text(
-                              "Film Festival 2023",
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .headlineMedium
-                                  ?.copyWith(
-                                color: Colors.black,
-                                fontSize: 8.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Container(
-                            width: 25.w,
-                            decoration: BoxDecoration(
-                              color: Color(0xff868686),
-                              // color: const Color(0xfffdfefe),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 2.w, vertical: 1.h),
-                            child: Text(
-                              "Film Festival 2022",
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .headlineMedium
-                                  ?.copyWith(
-                                color: Colors.black,
-                                fontSize: 8.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        var item = _.data![index];
+                        bool isCurrent = selected == index;
+                        return FestivalItem(isCurrent: isCurrent, item: item);
+                      },
+                      separatorBuilder: (context, index) {
+                        return SizedBox(
+                          width: 2.w,
+                        );
+                      },
+                      itemCount: _.data!.length,
                     ),
                   ),
                   SizedBox(
                     height: 1.h,
+                    // child: Text("${_.data![selected].videos?.length??0}"),
                   ),
-                  Consumer<Repository>(builder: (context, data, _) {
-                    return Expanded(
-                      child: GridView.builder(
-                        itemCount: data.selectedCategory.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 2.w,
-                          mainAxisSpacing: 0.5.h,
-                          childAspectRatio: 9 / 12,
-                        ),
-                        itemBuilder: (BuildContext context, int index) {
-                          var item = data.selectedCategory[index];
-                          return OttItem(item: item, onTap: () {});
-                        },
+                  SizedBox(
+                    width: double.infinity,
+                    // height: 20.h,
+                    child: GridView.builder(
+                      itemCount: _.data![selected].videos!.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 2.w,
+                        mainAxisSpacing: 0.5.h,
+                        childAspectRatio: 9 / 12,
                       ),
-                    );
-                  }),
+                      itemBuilder: (BuildContext context, int index) {
+                        var item = _.data![selected].videos![index];
+                        debugPrint("Item: ${item.title ?? ""}");
+                        return GestureDetector(
+                          onTap: () {
+                            Navigation.instance
+                                .navigate(Routes.watchScreen, args: item.id);
+                          },
+                          child: Card(
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            // child: Text("${item.title}",),
+                            child: Image.network(
+                              item.profile_pic!,
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               );
             }
-            if(_.hasError||_.data==null){
+            if (_.hasError || _.data == null) {
               return const Center(
                 child: Text("Something Went wrong"),
               );
             }
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            );
           },
         ),
       ),
     );
   }
 
-  Future<FilmFestival?>fetchFilmFestival(context) async {
+  Future<List<FilmFestival>?> fetchFilmFestival(context) async {
     final response = await ApiProvider.instance.getFestival(1);
     if (response.success ?? false) {
-      return response.result![0];
+      return response.result;
     } else {
-      return null;
+      return List<FilmFestival>.empty();
     }
   }
 }
 
-class FilmFestivalAppbar extends StatelessWidget {
-  const FilmFestivalAppbar({
+class FestivalItem extends StatelessWidget {
+  const FestivalItem({
     super.key,
+    required this.isCurrent,
+    required this.item,
   });
+
+  final bool isCurrent;
+  final FilmFestival item;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Constants.backgroundColor,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: 5.h,
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      child: Container(
+        width: 27.w,
+        decoration: BoxDecoration(
+          // color: Color(0xff868686),
+          color: isCurrent ? const Color(0xfffdfefe) : const Color(0xff868686),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
+        child: Center(
+          child: Text(
+            "${item.name}",
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: isCurrent ? Colors.black : Colors.white,
+                  fontSize: 8.sp,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 3.w,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigation.instance.goBack();
-                  },
-                  child: Icon(
-                    Icons.arrow_back_ios_sharp,
-                    color: Colors.white,
-                    size: 14.sp,
-                  ),
-                ),
-                // SizedBox(
-                //   width: 5.w,
-                // ),
-                Row(
-                  children: [
-                    Text(
-                      "NIRI 9 ",
-                      style:
-                          Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                color: Colors.white,
-                                fontSize: 12.sp,
-                                // fontWeight: FontWeight.bold,
-                              ),
-                    ),
-                    Image.asset(
-                      Assets.filmImage,
-                      scale: 13,
-                    ),
-                    Text(
-                      " FILM FESTIVAL",
-                      style:
-                          Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                color: Colors.white,
-                                fontSize: 12.sp,
-                                // fontWeight: FontWeight.bold,
-                              ),
-                    ),
-                  ],
-                ),
-                Container()
-              ],
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(),
-              Container(
-                width: 37.w,
-                decoration: BoxDecoration(
-                  color: const Color(0xff0a5079),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 3.w,
-                  vertical: 1.w,
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      "REGISTER",
-                      style:
-                          Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                color: Colors.white,
-                                fontSize: 13.sp,
-                                // fontWeight: FontWeight.bold,
-                              ),
-                    ),
-                    Text(
-                      "To Submit Your Films",
-                      style:
-                          Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                color: Colors.white30,
-                                fontSize: 6.sp,
-                                // fontWeight: FontWeight.bold,
-                              ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(),
-              Container(
-                width: 37.w,
-                decoration: BoxDecoration(
-                  color: const Color(0xffd49b03),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 3.w,
-                  vertical: 1.w,
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      "BUY TICKETS",
-                      style:
-                          Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                color: Colors.white,
-                                fontSize: 13.sp,
-                                // fontWeight: FontWeight.bold,
-                              ),
-                    ),
-                    Text(
-                      "Attend Film Festival",
-                      style:
-                          Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                color: Color(0xff8e7b55),
-                                fontSize: 6.sp,
-                                // fontWeight: FontWeight.bold,
-                              ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(),
-            ],
-          ),
-          SizedBox(
-            height: 1.5.h,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "NIRI 9 ",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.white,
-                      fontSize: 12.5.sp,
-                      // fontWeight: FontWeight.bold,
-                    ),
-              ),
-              Text(
-                "INTERNATIONAL ",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: const Color(0xfff15355),
-                      fontSize: 12.5.sp,
-                      // fontWeight: FontWeight.bold,
-                    ),
-              ),
-              Text(
-                "FILM FESTIVAL 20",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.white,
-                      fontSize: 12.5.sp,
-                      // fontWeight: FontWeight.bold,
-                    ),
-              ),
-              Text(
-                "23",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: const Color(0xfff15355),
-                      fontSize: 12.5.sp,
-                      // fontWeight: FontWeight.bold,
-                    ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                "Submit Your Entries Before 23rd March",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: const Color(0xfff15355),
-                      fontSize: 7.sp,
-                      // fontWeight: FontWeight.bold,
-                    ),
-              ),
-              SizedBox(
-                width: 8.w,
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 1.5.h,
-          ),
-        ],
+        ),
       ),
     );
   }

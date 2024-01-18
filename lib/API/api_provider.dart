@@ -34,7 +34,7 @@ class ApiProvider {
 
   static final ApiProvider instance = ApiProvider._();
 
-  final String baseUrl = "http://test.niri9.com";
+  final String baseUrl = "https://niri9.com";
 
   final String path = "api";
 
@@ -168,8 +168,8 @@ class ApiProvider {
             : response?.data['message']['error']);
       }
     } on DioError catch (e) {
-      debugPrint("getOTP error: ${e.error} ${e.message}");
-      return GenericOTPResponse.withError(e.message);
+      debugPrint("getOTP error: ${e.response?.data}\n ${e.error} ${e.message}");
+      return GenericOTPResponse.withError(e.response?.data??e.message);
     }
   }
 
@@ -193,7 +193,7 @@ class ApiProvider {
     debugPrint(jsonEncode(data));
 
     try {
-      Response? response = await dio?.post(
+      Response? response = await dio?.get(
         url,
         data: jsonEncode(data),
       );
