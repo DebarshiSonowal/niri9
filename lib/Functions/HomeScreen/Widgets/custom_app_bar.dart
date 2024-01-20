@@ -239,7 +239,7 @@ class FirstLineAppbar extends StatelessWidget {
                     onTap: () {
                       if (item.name?.toLowerCase() == "film festival" &&
                           (item.has_festival ?? false)) {
-                        Navigation.instance.navigate(Routes.filmFestivalScreen);
+                        // Navigation.instance.navigate(Routes.filmFestivalScreen);
                       } else {
                         Navigation.instance.navigate(
                             Routes.selectedCategoryScreen,
@@ -262,7 +262,7 @@ class FirstLineAppbar extends StatelessWidget {
                     onTap: () {
                       if (item.name?.toLowerCase() == "film festival" &&
                           (item.has_festival ?? false)) {
-                        Navigation.instance.navigate(Routes.filmFestivalScreen);
+                        // Navigation.instance.navigate(Routes.filmFestivalScreen);
                       } else {
                         Navigation.instance.navigate(
                             Routes.selectedCategoryScreen,
@@ -353,7 +353,7 @@ class NormalLineAppbar extends StatelessWidget {
                     onTap: () {
                       if (item.name?.toLowerCase() == "film festival" &&
                           (item.has_festival ?? false)) {
-                        Navigation.instance.navigate(Routes.filmFestivalScreen);
+                        // Navigation.instance.navigate(Routes.filmFestivalScreen);
                       } else {
                         Navigation.instance.navigate(
                             Routes.selectedCategoryScreen,
@@ -376,7 +376,7 @@ class NormalLineAppbar extends StatelessWidget {
                     onTap: () {
                       if (item.name?.toLowerCase() == "film festival" &&
                           (item.has_festival ?? false)) {
-                        Navigation.instance.navigate(Routes.filmFestivalScreen);
+                        // Navigation.instance.navigate(Routes.filmFestivalScreen);
                       } else {
                         Navigation.instance.navigate(
                             Routes.selectedCategoryScreen,

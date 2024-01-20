@@ -281,7 +281,7 @@ class _OtpPageState extends State<OtpPage> {
 
   void showError(String msg) {
     AlertX.instance.showAlert(
-        title: "Error",
+        title: "Oops!",
         msg: msg,
         positiveButtonText: "Done",
         positiveButtonPressed: () {

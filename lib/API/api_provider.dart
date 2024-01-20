@@ -169,7 +169,7 @@ class ApiProvider {
       }
     } on DioError catch (e) {
       debugPrint("getOTP error: ${e.response?.data}\n ${e.error} ${e.message}");
-      return GenericOTPResponse.withError(e.response?.data??e.message);
+      return GenericOTPResponse.withError(e.response?.data['message']??e.message);
     }
   }
 

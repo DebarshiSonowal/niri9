@@ -164,7 +164,7 @@ class _AccountPageState extends State<AccountPage> {
         Navigation.instance.navigate(Routes.subscriptionScreen);
         break;
       case 6:
-        Navigation.instance.navigate(Routes.activateTV);
+        // Navigation.instance.navigate(Routes.activateTV);
         break;
       case 7:
         // _launchUrl(Uri.parse("https://niri9.com/terms-condition.php"));
