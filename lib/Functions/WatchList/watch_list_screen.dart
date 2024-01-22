@@ -45,12 +45,21 @@ class _WatchListScreenState extends State<WatchListScreen> {
         child: FutureBuilder<List<Video>>(
           future: _future,
           builder: (context, _) {
-            if (_.hasData && _.data != []) {
+            debugPrint("sda ${_.data} ${_.hasData} ${(_.data??[]) != []}");
+            if (_.hasData && (_.data??[]) != []) {
               return SizedBox(
                 height: 100.h,
                 width: double.infinity,
-                child: Consumer<Repository>(builder: (context, data, _) {
-                  return SingleChildScrollView(
+                child: Consumer<Repository>(builder: (context,Repository data, _) {
+                  return data.wishList.length<=0?Center(
+                    child: Text(
+                      "No Data Available",
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white,
+                        fontSize: 15.sp,
+                      ),
+                    ),
+                  ):SingleChildScrollView(
                     child: GridView.builder(
                       shrinkWrap: true,
                       controller: _scrollController,
@@ -64,31 +73,33 @@ class _WatchListScreenState extends State<WatchListScreen> {
                       itemBuilder: (BuildContext context, int index) {
                         var item = data.wishList[index];
                         return OttItem(
-                            item: item,
-                            onLongPressed: () {
-                              showDeleteDialog(item.id);
-                            },
-                            onTap: () {
-                              if (Storage.instance.isLoggedIn) {
-                                Navigation.instance.navigate(Routes.watchScreen,
-                                    args: item.id);
-                              } else {
-                                CommonFunctions().showLoginDialog(context);
-                                // Navigation.instance.navigate(Routes.watchScreen,args: item.id);
-                              }
-                            });
+                          item: item,
+                          onLongPressed: () {
+                            showDeleteDialog(item.id);
+                          },
+                          onTap: () {
+                            if (Storage.instance.isLoggedIn) {
+                              Navigation.instance
+                                  .navigate(Routes.watchScreen, args: item.id);
+                            } else {
+                              CommonFunctions().showLoginDialog(context);
+                              // Navigation.instance.navigate(Routes.watchScreen,args: item.id);
+                            }
+                          },
+                        );
                       },
                     ),
                   );
                 }),
               );
             }
-            if ( _.hasError || _.data == []) {
+            if (_.hasError || _.data == []) {
               return Center(
                 child: Text(
                   "Not Available",
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.white,
+                    fontSize: 15.sp,
                       ),
                 ),
               );
@@ -119,7 +130,7 @@ class _WatchListScreenState extends State<WatchListScreen> {
       return response.videos;
     } else {
       debugPrint("Fetched2 ${response.videos.length}");
-      return List<Video>.empty();
+      return List<Video>.empty(growable: true);
     }
   }
 
@@ -176,8 +187,8 @@ class _WatchListScreenState extends State<WatchListScreen> {
                 child: Text(
                   "Delete",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.red,
-                  ),
+                        color: Colors.red,
+                      ),
                 ),
               ),
             ],

@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:lottie/lottie.dart';
 import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Constants/constants.dart';
@@ -13,6 +14,7 @@ import 'package:niri9/Models/video.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+// import 'package:wakelock/wakelock.dart';
 
 // import 'package:read_more_text/read_more_text.dart';
 
@@ -75,6 +77,7 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    KeepScreenOn.turnOff();
     try {
       videoPlayerController?.pause();
       videoPlayerController?.dispose();
@@ -453,6 +456,13 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
 
     if (isVideoPlaying != isPlaying) {
       final String action = isVideoPlaying ? "play" : "pause";
+      // Wakelock.toggle(enable: isVideoPlaying);
+      if(isVideoPlaying){
+        KeepScreenOn.turnOn();
+      }else{
+// Reset
+        KeepScreenOn.turnOff();
+      }
 
       // Trigger "play" or "pause" event when user manually plays or pauses the video
       updateUploadStatus(

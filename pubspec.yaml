@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 #  versionCode 16
 #        versionName "1.1.4"
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.1.11+23
+version: 1.1.14+26
 
 environment:
   sdk: '>=2.19.2 <3.0.0'
@@ -80,6 +80,8 @@ dependencies:
   lottie: ^2.7.0
   animated_background: ^2.0.0
   animated_digit: ^3.2.3
+  keep_screen_on: ^3.0.0
+#  wakelock: ^0.6.0
 
 dev_dependencies:
   flutter_launcher_icons: "^0.13.1"
