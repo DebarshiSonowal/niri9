@@ -75,10 +75,19 @@ class _LanguageSelectedPageState extends State<LanguageSelectedPage> {
     return Scaffold(
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(7.h),
-          child: CategorySpecificAppbar(searchTerm: widget.language.split(",")[1])),
+          child: CategorySpecificAppbar(
+              searchTerm: widget.language.split(",")[1])),
       body: FutureBuilder<List<Sections>>(
         builder: (context, _) {
-          if (_.hasData) {
+          // return Center(
+          //   child: Text(
+          //     "No Data Available ${_.hasData} ${(_.data??[]).length>=0}",
+          //     style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          //       color: Colors.white,
+          //     ),
+          //   ),
+          // );
+          if (_.hasData && ((_.data ?? []).isNotEmpty)) {
             return Container(
               height: double.infinity,
               width: double.infinity,
@@ -124,8 +133,8 @@ class _LanguageSelectedPageState extends State<LanguageSelectedPage> {
                             text: item.title ?? "",
                             list: item.videos ?? [],
                             onTap: () {
-                              Navigation.instance
-                                  .navigate(Routes.moreScreen, args: 0);
+                              Navigation.instance.navigate(Routes.moreScreen,
+                                  args: item.title ?? "");
                             },
                           );
                         },
@@ -137,12 +146,13 @@ class _LanguageSelectedPageState extends State<LanguageSelectedPage> {
               ),
             );
           }
-          if (_.hasError) {
+          if (_.hasError || (_.hasData&&(_.data ?? []).isEmpty)) {
             return Center(
               child: Text(
-                "No Data Available",
+                "No Videos Available",
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white,
+                      fontSize: 14.sp,
                     ),
               ),
             );
@@ -156,8 +166,8 @@ class _LanguageSelectedPageState extends State<LanguageSelectedPage> {
 
   Future<List<Sections>> fetchVideos(context) async {
     // Navigation.instance.navigate(Routes.loadingScreen);
-    final response =
-        await ApiProvider.instance.getSections("language", "$page",widget.language.split(",")[0]);
+    final response = await ApiProvider.instance
+        .getSections("language", "$page", widget.language.split(",")[0]);
     if (response.status ?? false) {
       // Navigation.instance.goBack();
       Provider.of<Repository>(context, listen: false)
@@ -167,7 +177,7 @@ class _LanguageSelectedPageState extends State<LanguageSelectedPage> {
     } else {
       // Navigation.instance.goBack();
       _refreshController.refreshCompleted();
-      return List<Sections>.empty();
+      return List<Sections>.empty(growable: true);
       // showError(response.message ?? "Something went wrong");
     }
   }

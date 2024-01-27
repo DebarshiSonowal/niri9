@@ -115,7 +115,7 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
           child: FutureBuilder<List<Video>>(
               future: fetchVideos(context),
               builder: (context, _) {
-                if (_.hasData) {
+                if (_.hasData&&(_.data ?? []).isNotEmpty) {
                   return SizedBox(
                     height: 100.h,
                     width: double.infinity,
@@ -150,13 +150,14 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
                     }),
                   );
                 }
-                if (_.hasError) {
+                if (_.hasError || (_.hasData&&(_.data ?? []).isEmpty)) {
                   return Center(
                     child: Text(
-                      "Not Available",
+                      "No Videos Available",
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.white,
-                          ),
+                        color: Colors.white,
+                        fontSize: 14.sp,
+                      ),
                     ),
                   );
                 }

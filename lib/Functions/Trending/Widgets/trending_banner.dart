@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:niri9/Functions/Trending/Widgets/trending_slider_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
@@ -140,7 +141,9 @@ class _TrendingBannerSectionState extends State<TrendingBannerSection> {
                           width: 3.w,
                         ),
                         ShareIndicator(
-                          onTap: () {},
+                          onTap: () {
+                            Share.share("Check out our app on Play Store https://play.google.com/store/apps/details?id=com.niri.niri9}");
+                          },
                         ),
                       ],
                     ),

@@ -5,6 +5,7 @@ import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Models/ott.dart';
+import 'package:niri9/Models/video.dart';
 import 'package:niri9/Repository/repository.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -14,6 +15,7 @@ import '../../Constants/common_functions.dart';
 import '../../Helper/storage.dart';
 import '../../Navigation/Navigate.dart';
 import '../../Router/routes.dart';
+import '../../Widgets/grid_view_shimmering.dart';
 import 'Widgets/ottitem.dart';
 
 class MorePage extends StatefulWidget {
@@ -62,42 +64,58 @@ class _MorePageState extends State<MorePage> {
           horizontal: 2.w,
           vertical: 1.h,
         ),
-        child: Consumer<Repository>(builder: (context, data, _) {
-          return GridView.builder(
-            itemCount: data.specificVideos.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 3.w,
-              mainAxisSpacing: 0.7.h,
-              childAspectRatio: 8.5 / 12,
-            ),
-            itemBuilder: (BuildContext context, int index) {
-              var item = data.specificVideos[index];
-              return GestureDetector(
-                onTap: () {
-                  if (Storage.instance.isLoggedIn) {
-                    Navigation.instance
-                        .navigate(Routes.watchScreen, args: item.id);
-                  } else {
-                    CommonFunctions().showLoginDialog(
-                        Navigation.instance.navigatorKey.currentContext ??
-                            context);
-                    // Navigation.instance.navigate(Routes.watchScreen,args: item.id);
-                  }
-                },
-                child: CachedNetworkImage(
-                  imageUrl: item.profile_pic ?? "",
-                  fit: BoxFit.fill,
-                  placeholder: (context, index) {
-                    return Image.asset(
-                      Assets.logoTransparent,
-                    ).animate();
-                  },
-                ),
-              );
-            },
-          );
-        }),
+        child: FutureBuilder<List<Video>>(
+            future: fetchDetails(page_no, widget.section, null, null, null),
+            builder: (context, _) {
+             if(_.hasData&&_.data!=null&&(_.data ?? []).isNotEmpty){
+               return GridView.builder(
+                 itemCount: _.data?.length ?? 0,
+                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                   crossAxisCount: 3,
+                   crossAxisSpacing: 3.w,
+                   mainAxisSpacing: 0.7.h,
+                   childAspectRatio: 8.5 / 12,
+                 ),
+                 itemBuilder: (BuildContext context, int index) {
+                   var item = _.data![index];
+                   return GestureDetector(
+                     onTap: () {
+                       if (Storage.instance.isLoggedIn) {
+                         Navigation.instance
+                             .navigate(Routes.watchScreen, args: item.id);
+                       } else {
+                         CommonFunctions().showLoginDialog(
+                             Navigation.instance.navigatorKey.currentContext ??
+                                 context);
+                         // Navigation.instance.navigate(Routes.watchScreen,args: item.id);
+                       }
+                     },
+                     child: CachedNetworkImage(
+                       imageUrl: item.profile_pic ?? "",
+                       fit: BoxFit.fill,
+                       placeholder: (context, index) {
+                         return Image.asset(
+                           Assets.logoTransparent,
+                         ).animate();
+                       },
+                     ),
+                   );
+                 },
+               );
+             }
+             if (_.hasError || (_.hasData&&(_.data ?? []).isEmpty)) {
+               return Center(
+                 child: Text(
+                   "Not Available",
+                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                     color: Colors.white,
+                     fontSize: 14.sp,
+                   ),
+                 ),
+               );
+             }
+             return const GridViewShimmering();
+            }),
       ),
     );
   }
@@ -110,8 +128,8 @@ class _MorePageState extends State<MorePage> {
     });
   }
 
-  void fetchDetails(int page_no, String sections, String? category,
-      String? genres, String? term) async {
+  Future<List<Video>> fetchDetails(int page_no, String sections,
+      String? category, String? genres, String? term) async {
     final response = await ApiProvider.instance.getVideos(
       page_no,
       sections,
@@ -124,6 +142,9 @@ class _MorePageState extends State<MorePage> {
     if (response.success ?? false) {
       Provider.of<Repository>(context, listen: false)
           .setSearchVideos(response.videos);
+      return response.videos ?? List<Video>.empty(growable: true);
+    } else {
+      return List<Video>.empty(growable: true);
     }
   }
 }

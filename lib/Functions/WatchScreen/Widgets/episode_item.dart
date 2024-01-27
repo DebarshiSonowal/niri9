@@ -19,26 +19,29 @@ class EpisodeItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
+    return Card(
+      elevation: (item.id == currentVideoId) ? 10:1,
+      child: Container(
+        decoration: BoxDecoration(
           border: Border.all(
-            color: (item.id == currentVideoId)
-                ? Constants.thirdColor
-                : Colors.transparent,
-            width: 0.5.w,
-          )),
-      child: CachedNetworkImage(
-        imageUrl: item.profile_pic ?? "",
-        fit: BoxFit.fill,
-        // height: 10.h,
-        width: 40.w,
-        placeholder: (context, index) {
-          return Image.asset(
-            Assets.logoTransparent,
-          ).animate();
-        },
+            color:
+            (item.id == currentVideoId) ? Colors.white : Colors.transparent,
+            width: (item.id == currentVideoId) ? 0.8.w : 0.1.w,
+          ),
+        ),
+        child: CachedNetworkImage(
+          imageUrl: item.profile_pic ?? "",
+          fit: BoxFit.fill,
+          // height: 10.h,
+          width: 40.w,
+          placeholder: (context, index) {
+            return Image.asset(
+              Assets.logoTransparent,
+            ).animate();
+          },
+        ),
+        // child: Text("${item.id} ${currentVideoId}"),
       ),
-      // child: Text("${item.id} ${currentVideoId}"),
     );
   }
 }

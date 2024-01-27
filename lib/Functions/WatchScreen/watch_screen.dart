@@ -193,23 +193,6 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
     } else {}
   }
 
-  // Future<void> fetchMoreDetails(int id) async {
-  //   final response = await ApiProvider.instance.getRentPlans(id);
-  //   if (response.success ?? false) {
-  //     Provider.of<Repository>(context, listen: false)
-  //         .setRentPlanDetails(response.result);
-  //   } else {}
-  // }
-
-  // Future<void> fetchMoreLikeThis(int id, type, genre) async {
-  //   final response = await ApiProvider.instance
-  //       .getVideos(1, null, null, genre, null, null, type);
-  //   if (response.success ?? false) {
-  //     Provider.of<Repository>(context, listen: false)
-  //         .setMoreLikeThisList(response.videos);
-  //   } else {}
-  // }
-
   Future<bool> fetchVideo(int index) async {
     // Navigation.instance.navigate(Routes.loadingScreen);
     final response = await ApiProvider.instance.getVideoDetails(index);
@@ -262,6 +245,9 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
   }
 
   Future<bool> initializeVideoPlayer(context, url) async {
+    final repo = Provider.of<Repository>(context, listen: false);
+    final videoDetails = repo.videoDetails;
+    final recentViewedList = videoDetails?.recentViewedList;
     debugPrint("Initializing video player $url");
     final response = await ApiProvider.instance.download2(url);
     if (response.success ?? false) {
@@ -308,62 +294,64 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
       debugPrint(e.toString());
       return false;
     }
+    if (recentViewedList?.viewedTime!=null&&selectedVideoListId==recentViewedList?.videoListId) {
+      debugPrint("#condition last ${recentViewedList?.viewedTime}");
+      // _customVideoPlayerController.videoPlayerController.notifyListeners(
+      Future.delayed(const Duration(seconds: 4),(){
+        setState(() {
+          _customVideoPlayerController?.videoPlayerController.seekTo(
+            Duration(
+              seconds: recentViewedList!.viewedTime!,
+            ),
+          );
+        });
+      });
+    }
     return true;
   }
-
-  // fetchEpisodes(int id) async {
-  //   final response = await ApiProvider.instance.getEpisodes(id);
-  //   if (response.success ?? false) {
-  //     debugPrint("MyEpisodes ${response.result}");
-  //     for (var i in response.result) {
-  //       debugPrint("Episodes Adding ${i.video_list.length}");
-  //       Provider.of<Repository>(context, listen: false)
-  //           .addSeasons(i.video_list ?? []);
-  //     }
-  //     debugPrint(
-  //         "Watchloading: \n${response.result[0].id}\n${response.result[0].video_list.first.id}");
-  //     Provider.of<Repository>(context, listen: false)
-  //         .setVideo(response.result[0].id ?? 0);
-  //     setState(() {
-  //       selectedVideoListId = response.result[0].video_list.first.id ?? 0;
-  //     });
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
 
   void startConditionChecking() {
     final repo = Provider.of<Repository>(context, listen: false);
     final videoDetails = repo.videoDetails;
 
     if (videoDetails?.view_permission ?? false) {
-      debugPrint("KJKSZPJ1");
+      debugPrint("#condition ${videoDetails?.title} has permission");
       final recentViewedList = videoDetails?.recentViewedList;
       final videoListId = recentViewedList?.videoListId ?? 0;
 
       if (recentViewedList != null && videoListId != 0) {
+        debugPrint(
+            "#condition ${videoDetails?.title} have a recently viewed video $videoListId and $recentViewedList \n ${recentViewedList.videoPlayer}");
         repo.setVideo(videoListId);
-        final url = videoDetails?.videos
-                .where((element) => videoListId == element.id)
-                .first
-                .videoPlayer ??
-            videoDetails?.videos.first.videoPlayer;
+        final url = recentViewedList.videoPlayer;
 
         setState(() {
           selectedVideoListId = recentViewedList.videoListId ?? 0;
-          for (var i = 0; i < (videoDetails?.season_list.length ?? 0); i++) {
-            if (videoDetails?.season_list[i].id == videoListId) {
-              selected = i;
-              break;
+          if (videoDetails?.season_list?.isNotEmpty ?? false) {
+            for (var i = 0; i < (videoDetails?.season_list.length ?? 0); i++) {
+              if (videoDetails?.season_list[i].id == videoListId) {
+                selected = i;
+                debugPrint(
+                    "#condition ${videoDetails?.title} selected from season $selected");
+                break;
+              }
+            }
+          } else {
+            for (var i = 0; i < (videoDetails?.videos.length ?? 0); i++) {
+              if (videoDetails?.videos[i].id == videoListId) {
+                selected = i;
+                debugPrint(
+                    "#condition ${videoDetails?.title} selected $selected");
+                break;
+              }
             }
           }
         });
-        debugPrint(
-            "KJKSZPJ2 ${videoListId} ${url} ${videoDetails?.videos.where((element) => videoListId == element.id).first.title} ${videoDetails?.videos.where((element) => videoListId == element.id).first.id}");
         _future = initializeVideoPlayer(context, url);
+
       } else {
-        debugPrint("KJKSZPJ3");
+        debugPrint(
+            "#condition ${videoDetails?.title} have first video ${videoDetails?.videos.first.id}");
         _future = initializeVideoPlayer(
             context, videoDetails?.videos.first.videoPlayer);
 
@@ -372,9 +360,14 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
         });
       }
     } else {
-      debugPrint("KJKSZPJ4");
-      _future = initializeVideoPlayer(
-          context, videoDetails?.trailer_player ?? Assets.videoUrl);
+      debugPrint("#condition ${videoDetails?.title} doesn't have permission");
+      if (videoDetails?.trailer_player != "") {
+        debugPrint("#condition ${videoDetails?.title} have trailer");
+        _future = initializeVideoPlayer(context, videoDetails?.trailer_player);
+      } else {
+        debugPrint("#condition ${videoDetails?.title} doesn't have permission");
+        _future = false as Future<bool>?;
+      }
     }
   }
 
@@ -457,9 +450,9 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
     if (isVideoPlaying != isPlaying) {
       final String action = isVideoPlaying ? "play" : "pause";
       // Wakelock.toggle(enable: isVideoPlaying);
-      if(isVideoPlaying){
+      if (isVideoPlaying) {
         KeepScreenOn.turnOn();
-      }else{
+      } else {
 // Reset
         KeepScreenOn.turnOff();
       }

@@ -89,7 +89,7 @@ class OptionsBar extends StatelessWidget {
                 ),
               ),
             ),
-            Expanded(
+            data.videoDetails?.trailer_player!=""?Expanded(
               flex: 2,
               child: Center(
                 child: GestureDetector(
@@ -122,7 +122,7 @@ class OptionsBar extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
+            ):Container(),
           ],
         ),
       );

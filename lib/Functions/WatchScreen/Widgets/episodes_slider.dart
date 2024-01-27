@@ -99,7 +99,7 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
                                 : Container(),
                         (data.videoDetails?.season_list ?? []).isNotEmpty
                             ? SeasonListSection(
-                                data: data,
+                                // data: data,
                                 setVideo: (VideoDetails item) {
                                   widget.setVideo(item);
                                 },
@@ -107,7 +107,7 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
                                 selected: selected,
                               )
                             : NonSeasonList(
-                                data: data,
+                                // data: data,
                                 setVideo: (VideoDetails item) {
                                   widget.setVideo(item);
                                 },
@@ -189,9 +189,9 @@ Future<bool> fetchEpisodes(
     Provider.of<Repository>(context, listen: false).setSeasons(response.result);
     debugPrint(
         "Watchloading: \n${response.result[0].id}\n${response.result[0].video_list.first.id}");
-    Provider.of<Repository>(context, listen: false)
-        .setVideo(response.result[0].id ?? 0);
-    updateListId(response.result[0].video_list.first.id ?? 0);
+    // Provider.of<Repository>(context, listen: false)
+    //     .setVideo(response.result[0].id ?? 0);
+    // updateListId(response.result[0].video_list.first.id ?? 0);
     return true;
   } else {
     return false;
