@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:lottie/lottie.dart';
 import 'package:niri9/API/api_provider.dart';
@@ -121,8 +122,7 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
                   setVideo: (VideoDetails item) async {
                     debugPrint("Showing ${item.videoPlayer}");
                     await initializeVideoPlayer(context, item.videoPlayer);
-                    Provider.of<Repository>(context, listen: false)
-                        .setVideo(item.id ?? 0);
+                    Provider.of<Repository>(context, listen: false).setVideo(item.id ?? 0);
                     selectedVideoListId = item.id ?? 0;
                     if (mounted) {
                       setState(() {});
@@ -244,7 +244,8 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
     } else {}
   }
 
-  Future<bool> initializeVideoPlayer(context, url) async {
+  Future<bool> reinitializeVideoPlayer(context, url) async {
+
     final repo = Provider.of<Repository>(context, listen: false);
     final videoDetails = repo.videoDetails;
     final recentViewedList = videoDetails?.recentViewedList;
@@ -294,6 +295,7 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
       debugPrint(e.toString());
       return false;
     }
+    // EasyLoading.dismiss();
     if (recentViewedList?.viewedTime!=null&&selectedVideoListId==recentViewedList?.videoListId) {
       debugPrint("#condition last ${recentViewedList?.viewedTime}");
       // _customVideoPlayerController.videoPlayerController.notifyListeners(
@@ -305,6 +307,76 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
             ),
           );
         });
+      });
+    }
+    return true;
+  }
+
+
+  Future<bool> initializeVideoPlayer(context, url) async {
+    EasyLoading.show(status: 'loading...');
+    final repo = Provider.of<Repository>(context, listen: false);
+    final videoDetails = repo.videoDetails;
+    final recentViewedList = videoDetails?.recentViewedList;
+    debugPrint("Initializing video player $url");
+    final response = await ApiProvider.instance.download2(url);
+    if (response.success ?? false) {
+      additionalVideoSources = {};
+      for (var i in response.videoResolutions) {
+        additionalVideoSources?.addAll({
+          "${i.resolution}": VideoPlayerController.networkUrl(
+              Uri.parse(url ?? Assets.videoUrl))
+            ..addListener(() => videoControllerListener(context)),
+        });
+      }
+      // additionalVideoSources?.addAll({
+      //   "2048": videoPlayerController,
+      // });
+      setState(() {
+        debugPrint("E123B $additionalVideoSources");
+      });
+    } else {
+      debugPrint("E123C ");
+      return false;
+    }
+    try {
+      videoPlayerController =
+      VideoPlayerController.networkUrl(Uri.parse(url ?? Assets.videoUrl))
+        ..initialize().then((value) async {
+          videoPlayerController
+              ?.addListener(() => videoControllerListener(context));
+          _customVideoPlayerController = CustomVideoPlayerController(
+            context: context,
+            videoPlayerController: videoPlayerController!,
+            customVideoPlayerSettings: const CustomVideoPlayerSettings(
+              playOnlyOnce: false,
+
+              // customVideoPlayerPopupSettings: ,
+            ),
+            additionalVideoSources: additionalVideoSources,
+          );
+          videoPlayerController?.play();
+        });
+      additionalVideoSources?.addAll({
+        "Auto": videoPlayerController!,
+      });
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+
+    if (recentViewedList?.viewedTime!=null&&selectedVideoListId==recentViewedList?.videoListId) {
+      debugPrint("#condition last ${recentViewedList?.viewedTime}");
+      // _customVideoPlayerController.videoPlayerController.notifyListeners(
+      Future.delayed(const Duration(seconds: 4),(){
+        setState(() {
+          _customVideoPlayerController?.videoPlayerController.seekTo(
+            Duration(
+              seconds: recentViewedList!.viewedTime!,
+            ),
+          );
+        });
+        EasyLoading.dismiss();
       });
     }
     return true;
@@ -347,12 +419,12 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
             }
           }
         });
-        _future = initializeVideoPlayer(context, url);
+        _future = reinitializeVideoPlayer(context, url);
 
       } else {
         debugPrint(
             "#condition ${videoDetails?.title} have first video ${videoDetails?.videos.first.id}");
-        _future = initializeVideoPlayer(
+        _future = reinitializeVideoPlayer(
             context, videoDetails?.videos.first.videoPlayer);
 
         setState(() {
@@ -363,7 +435,7 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
       debugPrint("#condition ${videoDetails?.title} doesn't have permission");
       if (videoDetails?.trailer_player != "") {
         debugPrint("#condition ${videoDetails?.title} have trailer");
-        _future = initializeVideoPlayer(context, videoDetails?.trailer_player);
+        _future = reinitializeVideoPlayer(context, videoDetails?.trailer_player);
       } else {
         debugPrint("#condition ${videoDetails?.title} doesn't have permission");
         _future = false as Future<bool>?;

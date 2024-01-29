@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -20,7 +22,8 @@ class EpisodeItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: (item.id == currentVideoId) ? 10:1,
+      // elevation: (item.id == currentVideoId) ? 10.0 : 1.0,
+      shadowColor: Colors.white,
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
@@ -29,16 +32,31 @@ class EpisodeItem extends StatelessWidget {
             width: (item.id == currentVideoId) ? 0.8.w : 0.1.w,
           ),
         ),
-        child: CachedNetworkImage(
-          imageUrl: item.profile_pic ?? "",
-          fit: BoxFit.fill,
-          // height: 10.h,
-          width: 40.w,
-          placeholder: (context, index) {
-            return Image.asset(
-              Assets.logoTransparent,
-            ).animate();
-          },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(0.0),
+          child: Stack(
+            children: [
+              CachedNetworkImage(
+                imageUrl: item.profile_pic ?? "",
+                fit: BoxFit.fill,
+                // height: 10.h,
+                filterQuality: (item.id == currentVideoId) ?FilterQuality.high:FilterQuality.low,
+                width: 40.w,
+                placeholder: (context, index) {
+                  return Image.asset(
+                    Assets.logoTransparent,
+                  ).animate();
+                },
+              ),
+              if (item.id != currentVideoId)
+                BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 0.7, sigmaY: 0.7),
+                  child: Container(
+                    color: Colors.transparent, // Adjust as needed
+                  ),
+                ),
+            ],
+          ),
         ),
         // child: Text("${item.id} ${currentVideoId}"),
       ),
