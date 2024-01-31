@@ -2,21 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Constants/constants.dart';
-import 'package:niri9/Navigation/Navigate.dart';
 import 'package:niri9/Repository/repository.dart';
-import 'package:niri9/Router/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
-import '../../Models/sections.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../Widgets/title_box.dart';
-import '../LanguageSelectedPage/language_selected_page.dart';
 import 'Widgets/custom_app_bar.dart';
-import 'Widgets/dynamic_list_item.dart';
 import 'Widgets/dynamic_list_section.dart';
 import 'Widgets/home_banner.dart';
 import 'Widgets/language_section.dart';
-import 'Widgets/ott_item.dart';
 import 'Widgets/recently_viewed_section.dart';
 
 class HomeScreenPage extends StatefulWidget {
