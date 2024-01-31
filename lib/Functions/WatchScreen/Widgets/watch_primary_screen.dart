@@ -2,6 +2,7 @@ import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:niri9/Functions/HomeScreen/Widgets/ott_item.dart';
 import 'package:niri9/Functions/WatchScreen/Widgets/video_section.dart';
 import 'package:provider/provider.dart';
@@ -68,9 +69,11 @@ class WatchPrimaryScreen extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () async {
+                      EasyLoading.dismiss();
                       await videoPlayerController?.pause();
                       await videoPlayerController?.dispose();
                       _customVideoPlayerController?.dispose();
+
                       Navigation.instance.goBack();
                     },
                     child: Icon(

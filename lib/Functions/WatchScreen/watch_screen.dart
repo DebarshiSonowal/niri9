@@ -92,88 +92,102 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          height: double.infinity,
-          width: double.infinity,
-          color: Constants.primaryColor,
-          child: FutureBuilder(
-            future: _future,
-            builder: (context, _) {
-              if (_.hasData) {
-                return WatchPrimaryScreen(
-                  customVideoPlayerController: _customVideoPlayerController,
-                  videoPlayerController: videoPlayerController,
-                  showing: showing,
-                  onClicked: () {
-                    showing = true;
-                    if (mounted) {
-                      setState(() {});
-                    }
-                    if (_timer?.isActive ?? false) _timer?.cancel();
-                    _timer = Timer(const Duration(seconds: 3), () {
-                      showing = false;
+    return WillPopScope(
+      onWillPop: () async {
+        try {
+          await videoPlayerController?.pause();
+          await videoPlayerController?.dispose();
+          _customVideoPlayerController?.dispose();
+          EasyLoading.dismiss();
+        } catch (e) {
+          debugPrint("$e");
+        }
+
+        return true;
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Container(
+            height: double.infinity,
+            width: double.infinity,
+            color: Constants.primaryColor,
+            child: FutureBuilder(
+              future: _future,
+              builder: (context, _) {
+                if (_.hasData) {
+                  return WatchPrimaryScreen(
+                    customVideoPlayerController: _customVideoPlayerController,
+                    videoPlayerController: videoPlayerController,
+                    showing: showing,
+                    onClicked: () {
+                      showing = true;
                       if (mounted) {
                         setState(() {});
                       }
-                    });
-                  },
-                  setVideo: (VideoDetails item) async {
-                    debugPrint("Showing ${item.videoPlayer}");
-                    await initializeVideoPlayer(context, item.videoPlayer);
-                    Provider.of<Repository>(context, listen: false).setVideo(item.id ?? 0);
-                    selectedVideoListId = item.id ?? 0;
-                    if (mounted) {
-                      setState(() {});
-                    }
-                  },
-                  setVideoSource:
-                      (MapEntry<String, VideoPlayerController> item) {
-                    setVideoPlayer(context, item.value);
-                  },
-                  updateVideoListId: (int item) {
-                    setState(() {
-                      selectedVideoListId = item;
-                    });
-                  },
-                  id: Provider.of<Repository>(context, listen: false)
-                          .videoDetails
-                          ?.series_id ??
-                      0,
-                  fetchFromId: (int item) {
-                    fetchDetails(item);
-                  },
-                );
-              }
-              if (_.hasError || (_.hasData && _.data == false)) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Lottie.asset(Assets.notFoundAnimation),
-                    const Text("This Movie/WebSeries is not available"),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
+                      if (_timer?.isActive ?? false) _timer?.cancel();
+                      _timer = Timer(const Duration(seconds: 3), () {
+                        showing = false;
+                        if (mounted) {
+                          setState(() {});
+                        }
+                      });
+                    },
+                    setVideo: (VideoDetails item) async {
+                      debugPrint("Showing ${item.videoPlayer}");
+                      await initializeVideoPlayer(context, item.videoPlayer);
+                      Provider.of<Repository>(context, listen: false).setVideo(item.id ?? 0);
+                      selectedVideoListId = item.id ?? 0;
+                      if (mounted) {
+                        setState(() {});
+                      }
+                    },
+                    setVideoSource:
+                        (MapEntry<String, VideoPlayerController> item) {
+                      setVideoPlayer(context, item.value);
+                    },
+                    updateVideoListId: (int item) {
+                      setState(() {
+                        selectedVideoListId = item;
+                      });
+                    },
+                    id: Provider.of<Repository>(context, listen: false)
+                            .videoDetails
+                            ?.series_id ??
+                        0,
+                    fetchFromId: (int item) {
+                      fetchDetails(item);
+                    },
+                  );
+                }
+                if (_.hasError || (_.hasData && _.data == false)) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Lottie.asset(Assets.notFoundAnimation),
+                      const Text("This Movie/WebSeries is not available"),
+                      SizedBox(
+                        height: 2.h,
                       ),
-                      onPressed: () {
-                        Navigation.instance.goBack();
-                      },
-                      child: Text(
-                        "Go Back",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white,
-                            ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                        ),
+                        onPressed: () {
+                          Navigation.instance.goBack();
+                        },
+                        child: Text(
+                          "Go Back",
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Colors.white,
+                              ),
+                        ),
                       ),
-                    ),
-                  ],
-                );
-              }
-              return const ShimmeringWatchScreenLoader();
-            },
+                    ],
+                  );
+                }
+                return const ShimmeringWatchScreenLoader();
+              },
+            ),
           ),
         ),
       ),
@@ -286,7 +300,23 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
                 ),
                 additionalVideoSources: additionalVideoSources,
               );
-              videoPlayerController?.play();
+              videoPlayerController?.play().then((value){
+                if (recentViewedList?.viewedTime!=null&&selectedVideoListId==recentViewedList?.videoListId) {
+                  debugPrint("#condition last ${recentViewedList?.viewedTime}");
+                  // _customVideoPlayerController.videoPlayerController.notifyListeners(
+                  setState(() {
+                    _customVideoPlayerController?.videoPlayerController.seekTo(
+                      Duration(
+                        seconds: recentViewedList!.viewedTime!,
+                      ),
+                    );
+                  });
+                  EasyLoading.dismiss();
+                  Future.delayed(const Duration(seconds: 4),(){
+
+                  });
+                }
+              });
             });
       additionalVideoSources?.addAll({
         "Auto": videoPlayerController!,
@@ -296,19 +326,19 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
       return false;
     }
     // EasyLoading.dismiss();
-    if (recentViewedList?.viewedTime!=null&&selectedVideoListId==recentViewedList?.videoListId) {
-      debugPrint("#condition last ${recentViewedList?.viewedTime}");
-      // _customVideoPlayerController.videoPlayerController.notifyListeners(
-      Future.delayed(const Duration(seconds: 4),(){
-        setState(() {
-          _customVideoPlayerController?.videoPlayerController.seekTo(
-            Duration(
-              seconds: recentViewedList!.viewedTime!,
-            ),
-          );
-        });
-      });
-    }
+    // if (recentViewedList?.viewedTime!=null&&selectedVideoListId==recentViewedList?.videoListId) {
+    //   debugPrint("#condition last ${recentViewedList?.viewedTime}");
+    //   // _customVideoPlayerController.videoPlayerController.notifyListeners(
+    //   Future.delayed(const Duration(seconds: 4),(){
+    //     setState(() {
+    //       _customVideoPlayerController?.videoPlayerController.seekTo(
+    //         Duration(
+    //           seconds: recentViewedList!.viewedTime!,
+    //         ),
+    //       );
+    //     });
+    //   });
+    // }
     return true;
   }
 
@@ -355,7 +385,25 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
             ),
             additionalVideoSources: additionalVideoSources,
           );
-          videoPlayerController?.play();
+          videoPlayerController?.play().then((value){
+            if (recentViewedList?.viewedTime!=null&&selectedVideoListId==recentViewedList?.videoListId) {
+              debugPrint("#condition last ${recentViewedList?.viewedTime}");
+              // _customVideoPlayerController.videoPlayerController.notifyListeners(
+              setState(() {
+                _customVideoPlayerController?.videoPlayerController.seekTo(
+                  Duration(
+                    seconds: recentViewedList!.viewedTime!,
+                  ),
+                );
+              });
+              EasyLoading.dismiss();
+              Future.delayed(const Duration(seconds: 4),(){
+
+              });
+            }else{
+              EasyLoading.dismiss();
+            }
+          });
         });
       additionalVideoSources?.addAll({
         "Auto": videoPlayerController!,
@@ -365,20 +413,7 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
       return false;
     }
 
-    if (recentViewedList?.viewedTime!=null&&selectedVideoListId==recentViewedList?.videoListId) {
-      debugPrint("#condition last ${recentViewedList?.viewedTime}");
-      // _customVideoPlayerController.videoPlayerController.notifyListeners(
-      Future.delayed(const Duration(seconds: 4),(){
-        setState(() {
-          _customVideoPlayerController?.videoPlayerController.seekTo(
-            Duration(
-              seconds: recentViewedList!.viewedTime!,
-            ),
-          );
-        });
-        EasyLoading.dismiss();
-      });
-    }
+
     return true;
   }
 

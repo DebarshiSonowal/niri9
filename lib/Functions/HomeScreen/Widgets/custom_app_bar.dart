@@ -107,8 +107,8 @@ class CustomAppbar extends StatelessWidget {
                               // Navigation.instance
                               //     .navigate(Routes.subscriptionScreen);
                               if (index == 3) {
-                                // Navigation.instance
-                                //     .navigate(Routes.filmFestivalScreen);
+                                Navigation.instance
+                                    .navigate(Routes.filmFestivalScreen);
                               } else if (index == 5) {}
                               Navigation.instance.navigate(
                                   Routes.selectedCategoryScreen,
