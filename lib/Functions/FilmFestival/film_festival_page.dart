@@ -30,6 +30,9 @@ class _FilmFestivalPageState extends State<FilmFestivalPage> {
         child: const FilmFestivalAppbar(),
       ),
       body: Container(
+        padding: EdgeInsets.only(
+          bottom: 1.h,
+        ),
         height: double.infinity,
         width: double.infinity,
         color: Constants.backgroundColor,
@@ -37,70 +40,78 @@ class _FilmFestivalPageState extends State<FilmFestivalPage> {
           future: fetchFilmFestival(context),
           builder: (context, _) {
             if (_.hasData && _.data != null) {
-              return Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: 5.5.h,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 4.w,
-                      // vertical: 1.h,
-                    ),
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        var item = _.data![index];
-                        bool isCurrent = selected == index;
-                        return FestivalItem(isCurrent: isCurrent, item: item);
-                      },
-                      separatorBuilder: (context, index) {
-                        return SizedBox(
-                          width: 2.w,
-                        );
-                      },
-                      itemCount: _.data!.length,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 1.h,
-                    // child: Text("${_.data![selected].videos?.length??0}"),
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    // height: 20.h,
-                    child: GridView.builder(
-                      itemCount: _.data![selected].videos!.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 2.w,
-                        mainAxisSpacing: 0.5.h,
-                        childAspectRatio: 9 / 12,
+              return SingleChildScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: 5.5.h,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 4.w,
+                        // vertical: 1.h,
                       ),
-                      itemBuilder: (BuildContext context, int index) {
-                        var item = _.data![selected].videos![index];
-                        debugPrint("Item: ${item.title ?? ""}");
-                        return GestureDetector(
-                          onTap: () {
-                            Navigation.instance
-                                .navigate(Routes.watchScreen, args: item.id);
-                          },
-                          child: Card(
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            // child: Text("${item.title}",),
-                            child: Image.network(
-                              item.profile_pic!,
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        );
-                      },
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          var item = _.data![index];
+                          bool isCurrent = selected == index;
+                          return FestivalItem(isCurrent: isCurrent, item: item);
+                        },
+                        separatorBuilder: (context, index) {
+                          return SizedBox(
+                            width: 2.w,
+                          );
+                        },
+                        itemCount: _.data!.length,
+                      ),
                     ),
-                  ),
-                ],
+                    SizedBox(
+                      height: 1.h,
+                      // child: Text("${_.data![selected].videos?.length??0}"),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 80.h,
+                      child: GridView.builder(
+                        padding: EdgeInsets.only(
+                          bottom: 10.h,
+                        ),
+                        // physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: _.data![selected].videos!.length??0,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 2.w,
+                          mainAxisSpacing: 0.5.h,
+                          childAspectRatio: 9 / 12,
+                        ),
+                        itemBuilder: (BuildContext context, int index) {
+                          var item = _.data![selected].videos![index];
+                          debugPrint("Item: ${item.title ?? ""}");
+                          return GestureDetector(
+                            onTap: () {
+                              Navigation.instance
+                                  .navigate(Routes.watchScreen, args: item.id);
+                            },
+                            child: Card(
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              // child: Text("${item.title}",),
+                              child: Image.network(
+                                item.profile_pic!,
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               );
             }
             if (_.hasError || _.data == null) {

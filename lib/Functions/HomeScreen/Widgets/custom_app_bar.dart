@@ -104,15 +104,17 @@ class CustomAppbar extends StatelessWidget {
                             item: item,
                             index: index,
                             onTap: () {
+                              debugPrint("onClicked ${item.name?.toLowerCase()}");
                               // Navigation.instance
                               //     .navigate(Routes.subscriptionScreen);
-                              if (index == 3) {
-                                Navigation.instance
-                                    .navigate(Routes.filmFestivalScreen);
-                              } else if (index == 5) {}
-                              Navigation.instance.navigate(
-                                  Routes.selectedCategoryScreen,
-                                  args: "${item.name}");
+                              if (item.name?.toLowerCase() == "film festival" &&
+                                  (item.has_festival ?? false)) {
+                                Navigation.instance.navigate(Routes.filmFestivalScreen);
+                              } else {
+                                Navigation.instance.navigate(
+                                    Routes.selectedCategoryScreen,
+                                    args: "${item.name}");
+                              }
                             },
                           );
                         },
@@ -237,6 +239,7 @@ class FirstLineAppbar extends StatelessWidget {
                     item: item,
                     index: index - 1,
                     onTap: () {
+                      debugPrint("onClicked ${item.name?.toLowerCase()}");
                       if (item.name?.toLowerCase() == "film festival" &&
                           (item.has_festival ?? false)) {
                         Navigation.instance.navigate(Routes.filmFestivalScreen);
@@ -260,6 +263,7 @@ class FirstLineAppbar extends StatelessWidget {
                     item: item,
                     index: index,
                     onTap: () {
+                      debugPrint("onClicked ${item.name?.toLowerCase()}");
                       if (item.name?.toLowerCase() == "film festival" &&
                           (item.has_festival ?? false)) {
                         Navigation.instance.navigate(Routes.filmFestivalScreen);
@@ -351,9 +355,10 @@ class NormalLineAppbar extends StatelessWidget {
                     item: item,
                     index: index - 1,
                     onTap: () {
+                      debugPrint("onClicked ${item.name?.toLowerCase()}");
                       if (item.name?.toLowerCase() == "film festival" &&
                           (item.has_festival ?? false)) {
-                        // Navigation.instance.navigate(Routes.filmFestivalScreen);
+                        Navigation.instance.navigate(Routes.filmFestivalScreen);
                       } else {
                         Navigation.instance.navigate(
                             Routes.selectedCategoryScreen,
