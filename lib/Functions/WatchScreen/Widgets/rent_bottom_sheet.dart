@@ -193,7 +193,7 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
       // 'key': FlutterConfig.get('RAZORPAY_KEY'),
       'amount': "${total * 100}",
       // 'order_id': id,
-      "image": "https://tratri.in/assets/assets/images/logos/logo-razorpay.jpg",
+      // "image": "https://tratri.in/assets/assets/images/logos/logo-razorpay.jpg",
       // 'name': '${profile?.f_name} ${profile?.l_name}',
       'description': 'Books',
       'prefill': {
@@ -206,7 +206,7 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
       //   'order_id': id,
       // },
     };
-    debugPrint("$options");
+    debugPrint("shoWMeas $options");
     try {
       _razorpay.open(options);
     } catch (e) {

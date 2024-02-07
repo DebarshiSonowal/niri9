@@ -114,7 +114,7 @@ class _FilmFestivalPageState extends State<FilmFestivalPage> {
                 ),
               );
             }
-            if (_.hasError || _.data == null) {
+            if (_.hasError || (_.hasData &&_.data == null)) {
               return const Center(
                 child: Text("Something Went wrong"),
               );

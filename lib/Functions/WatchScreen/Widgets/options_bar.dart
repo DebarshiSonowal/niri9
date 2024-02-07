@@ -60,7 +60,8 @@ class OptionsBar extends StatelessWidget {
                       name: "Share",
                       icon: Icons.share,
                       onTap: () {
-                        Share.share("Check out our app on Play Store https://play.google.com/store/apps/details?id=com.niri.niri9}");
+                        Share.share(
+                            "Check out our app on Play Store https://play.google.com/store/apps/details?id=com.niri.niri9}");
                       },
                     ),
                     SizedBox(
@@ -73,32 +74,36 @@ class OptionsBar extends StatelessWidget {
                         addToMyList(data.videoDetails?.id);
                       },
                     ),
-                    (data.videoDetails?.has_rent ?? false)?SizedBox(
+                    (data.videoDetails?.has_rent ?? false) ? SizedBox(
                       width: 5.w,
-                    ):Container(),
-                    (data.videoDetails?.has_rent ?? false)?IconTextButton(
+                    ) : Container(),
+                    (data.videoDetails?.has_rent ?? false) ? IconTextButton(
                       name: "Rent",
                       icon: Icons.money,
                       onTap: () {
                         if (data.videoDetails?.has_rent ?? false) {
-                          showRenting(context,data.videoDetails);
+                          showRenting(context, data.videoDetails);
                         }
                       },
-                    ):Container(),
+                    ) : Container(),
                   ],
                 ),
               ),
             ),
-            data.videoDetails?.trailer_player!=""?Expanded(
+            data.videoDetails?.trailer_player != "" ? Expanded(
               flex: 2,
               child: Center(
                 child: GestureDetector(
                   onTap: () async {
                     // _launchUrl(data.videoDetails?.trailer_player ?? "");
-                    await customVideoPlayerController.videoPlayerController
-                        .pause();
-                    await showTrailer(
-                        data.videoDetails?.trailer_player ?? "", context);
+                    if ((data.videoDetails?.trailer_player ?? "")!="") {
+                      await customVideoPlayerController.videoPlayerController
+                          .pause();
+                      await showTrailer(
+                          data.videoDetails?.trailer_player ?? "", context);
+                    } else {
+
+                    }
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -113,21 +118,26 @@ class OptionsBar extends StatelessWidget {
                       ),
                       Text(
                         "Watch Trailer",
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Colors.white70,
-                              fontSize: 12.sp,
-                            ),
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(
+                          color: Colors.white70,
+                          fontSize: 12.sp,
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ):Container(),
+            ) : Container(),
           ],
         ),
       );
     });
   }
+
   Future<void> addToMyList(int? id) async {
     final response = await ApiProvider.instance.addMyVideos(id);
     if (response.success ?? false) {
@@ -151,14 +161,14 @@ class OptionsBar extends StatelessWidget {
       ),
       // context and builder are
       // required properties in this widget
-      isDismissible:true,
+      isDismissible: true,
       context: context,
       builder: (BuildContext context) {
         // we set up a container inside which
         // we create center column and display text
 
         // Returning SizedBox instead of a Container
-        return RentBottomSheet(videoDetails:videoDetails);
+        return RentBottomSheet(videoDetails: videoDetails);
       },
     );
   }
@@ -282,22 +292,30 @@ class RentalBodyWidget extends StatelessWidget {
             ),
             Text(
               "Illegal",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.sp,
-                  ),
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 16.sp,
+              ),
             ),
             SizedBox(
               height: 1.5.h,
             ),
             Text(
               "Web Series . 10-Dec-2023 . Session 1",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.black54,
-                    // fontWeight: FontWeight.bold,
-                    fontSize: 12.sp,
-                  ),
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(
+                color: Colors.black54,
+                // fontWeight: FontWeight.bold,
+                fontSize: 12.sp,
+              ),
             ),
             SizedBox(
               height: 1.5.h,
@@ -321,19 +339,27 @@ class RentalBodyWidget extends StatelessWidget {
                     children: [
                       Text(
                         "Validity",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.black,
-                              // fontWeight: FontWeight.bold,
-                              fontSize: 10.sp,
-                            ),
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(
+                          color: Colors.black,
+                          // fontWeight: FontWeight.bold,
+                          fontSize: 10.sp,
+                        ),
                       ),
                       Text(
                         "15 days",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10.sp,
-                            ),
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10.sp,
+                        ),
                       ),
                     ],
                   ),
@@ -343,11 +369,15 @@ class RentalBodyWidget extends StatelessWidget {
                   ),
                   Text(
                     "You have 15 days to start watching this content once retired",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey.shade700,
-                          // fontWeight: FontWeight.bold,
-                          fontSize: 10.sp,
-                        ),
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(
+                      color: Colors.grey.shade700,
+                      // fontWeight: FontWeight.bold,
+                      fontSize: 10.sp,
+                    ),
                   ),
                 ],
               ),
@@ -374,19 +404,27 @@ class RentalBodyWidget extends StatelessWidget {
                     children: [
                       Text(
                         "Watch Time",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.black,
-                              // fontWeight: FontWeight.bold,
-                              fontSize: 10.sp,
-                            ),
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(
+                          color: Colors.black,
+                          // fontWeight: FontWeight.bold,
+                          fontSize: 10.sp,
+                        ),
                       ),
                       Text(
                         "50 hours",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10.sp,
-                            ),
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10.sp,
+                        ),
                       ),
                     ],
                   ),
@@ -396,11 +434,15 @@ class RentalBodyWidget extends StatelessWidget {
                   ),
                   Text(
                     "You have 15 days to start watching this content once retired",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey.shade700,
-                          // fontWeight: FontWeight.bold,
-                          fontSize: 10.sp,
-                        ),
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(
+                      color: Colors.grey.shade700,
+                      // fontWeight: FontWeight.bold,
+                      fontSize: 10.sp,
+                    ),
                   ),
                 ],
               ),
@@ -413,10 +455,13 @@ class RentalBodyWidget extends StatelessWidget {
               width: double.infinity,
               child: Theme(
                 data: ThemeData(
-                  textTheme: Theme.of(context).textTheme.apply(
-                        bodyColor: Colors.black87,
-                        fontSizeFactor: 2.5,
-                      ),
+                  textTheme: Theme
+                      .of(context)
+                      .textTheme
+                      .apply(
+                    bodyColor: Colors.black87,
+                    fontSizeFactor: 2.5,
+                  ),
                 ),
                 child: const UnorderedList<String>(
                   items: [
@@ -449,11 +494,15 @@ class RentalBodyWidget extends StatelessWidget {
                     width: 40.w,
                     child: Text(
                       "By renting you agree to our Terms of Service",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey.shade700,
-                            // fontWeight: FontWeight.bold,
-                            fontSize: 10.sp,
-                          ),
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(
+                        color: Colors.grey.shade700,
+                        // fontWeight: FontWeight.bold,
+                        fontSize: 10.sp,
+                      ),
                     ),
                   ),
                   Container(
@@ -466,10 +515,14 @@ class RentalBodyWidget extends StatelessWidget {
                     child: Center(
                       child: Text(
                         "Rent for ₹59",
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),

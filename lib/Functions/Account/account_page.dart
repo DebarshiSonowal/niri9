@@ -105,6 +105,9 @@ class _AccountPageState extends State<AccountPage> {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               var item = data.items[index];
+              if(item.name=="Activate TV"){
+                return Container();
+              }
               return ListTile(
                 onTap: () {
                   onTap(index, item);
@@ -126,6 +129,10 @@ class _AccountPageState extends State<AccountPage> {
               );
             },
             separatorBuilder: (context, index) {
+              var item = data.items[index];
+              if(item.name=="Activate TV"){
+                return Container();
+              }
               return Divider(
                 thickness: 0.05.h,
                 color: Colors.white,
