@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Models/appbar_option.dart';
@@ -26,7 +28,7 @@ class CustomAppbar extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(
-            height: 2.5.h,
+            height: Platform.isAndroid?2.5.h:3.h,
           ),
           Row(
             children: [

@@ -162,7 +162,7 @@ class _LoginSheetBodyState extends State<LoginSheetBody> {
                   ),
                 ),
                 SizedBox(
-                  height: 2.h,
+                  height: 5.h,
                   width: 80.w,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

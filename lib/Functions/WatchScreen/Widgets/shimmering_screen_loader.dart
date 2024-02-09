@@ -263,7 +263,7 @@ class ShimmeringWatchScreenLoader extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 3.h,
+            height: 2.h,
           ),
           Shimmer.fromColors(
             baseColor: Colors.white,
@@ -292,7 +292,7 @@ class ShimmeringWatchScreenLoader extends StatelessWidget {
             ],
           ),
           SizedBox(
-            height: 2.h,
+            height: 1.h,
           ),
           Shimmer.fromColors(
             baseColor: Colors.white,
@@ -307,7 +307,7 @@ class ShimmeringWatchScreenLoader extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 2.h,
+            height: 1.h,
           ),
           // SizedBox(
           //   height: 20.h,

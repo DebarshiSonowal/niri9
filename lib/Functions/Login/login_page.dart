@@ -145,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(
-                      height: 2.h,
+                      height: 2.5.h,
                       child: Checkbox(
                         checkColor: Colors.blue,
                         fillColor: MaterialStateProperty.all(Colors.white10),
@@ -158,8 +158,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     SizedBox(
-                      height: 2.h,
-                      width: 80.w,
+                      height: 4.h,
+                      width: 75.w,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

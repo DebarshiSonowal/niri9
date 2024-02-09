@@ -197,85 +197,88 @@ class ShimmerLanguageScreen extends StatelessWidget {
       ),
       height: double.infinity,
       width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Shimmer.fromColors(
-            baseColor: Colors.white,
-            highlightColor: Colors.white70,
-            child: Container(
-              color: Colors.white30,
-              width: 20.w,
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Shimmer.fromColors(
+              baseColor: Colors.white,
+              highlightColor: Colors.white70,
+              child: Container(
+                color: Colors.white30,
+                width: 20.w,
+                height: 2.h,
+              ),
+            ),
+            SizedBox(
               height: 2.h,
             ),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          SizedBox(
-            width: double.infinity,
-            height: 25.h,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                return Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: Colors.white70,
-                  child: Container(
-                    height: 20.h,
-                    width: 40.w,
-                    color: Colors.white30,
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) {
-                return SizedBox(
-                  width: 2.h,
-                );
-              },
-              itemCount: 4,
+            SizedBox(
+              width: double.infinity,
+              height: 25.h,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  return Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: Colors.white70,
+                    child: Container(
+                      height: 20.h,
+                      width: 40.w,
+                      color: Colors.white30,
+                    ),
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return SizedBox(
+                    width: 2.h,
+                  );
+                },
+                itemCount: 4,
+              ),
             ),
-          ),
-          SizedBox(
-            height: 4.h,
-          ),
-          Shimmer.fromColors(
-            baseColor: Colors.white,
-            highlightColor: Colors.white70,
-            child: Container(
-              color: Colors.white30,
-              width: 20.w,
+            SizedBox(
+              height: 4.h,
+            ),
+            Shimmer.fromColors(
+              baseColor: Colors.white,
+              highlightColor: Colors.white70,
+              child: Container(
+                color: Colors.white30,
+                width: 20.w,
+                height: 2.h,
+              ),
+            ),
+            SizedBox(
               height: 2.h,
             ),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          SizedBox(
-            width: double.infinity,
-            height: 25.h,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                return Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: Colors.white70,
-                  child: Container(
-                    height: 20.h,
-                    width: 40.w,
-                    color: Colors.white30,
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) {
-                return SizedBox(
-                  width: 2.h,
-                );
-              },
-              itemCount: 4,
+            SizedBox(
+              width: double.infinity,
+              height: 25.h,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  return Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: Colors.white70,
+                    child: Container(
+                      height: 20.h,
+                      width: 40.w,
+                      color: Colors.white30,
+                    ),
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return SizedBox(
+                    width: 2.h,
+                  );
+                },
+                itemCount: 4,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

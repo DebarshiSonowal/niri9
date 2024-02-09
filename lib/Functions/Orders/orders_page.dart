@@ -254,47 +254,74 @@ class OrderItemWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                "Total: ",
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white70,
-                      fontSize: 8.sp,
-                    ),
+              SizedBox(
+                width: 8.w,
+                child: Text(
+                  "Total: ",
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white70,
+                        fontSize: 8.sp,
+                      ),
+                ),
               ),
-              Text(
-                "₹${item.total}",
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white,
-                      fontSize: 14.sp,
+              SizedBox(
+                width: 20.w,
+                child: Row(
+                  children: [
+                    Text(
+                      "₹${item.total}",
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.white,
+                            fontSize: 12.sp,
+                          ),
                     ),
+                  ],
+                ),
               ),
-              Text(
-                "Tax: ",
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white70,
-                      fontSize: 8.sp,
-                    ),
+              SizedBox(
+                width: 8.w,
+                child: Text(
+                  "Tax: ",
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white70,
+                        fontSize: 8.sp,
+                      ),
+                ),
               ),
-              Text(
-                "₹${item.taxAmt}",
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white,
-                      fontSize: 14.sp,
-                    ),
+              SizedBox(
+                width: 15.w,
+                child: Text(
+                  "₹${item.taxAmt}",
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white,
+                    fontSize: 12.sp,
+                      ),
+                ),
               ),
-              Text(
-                "Grand Total: ",
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white70,
-                      fontSize: 8.sp,
-                    ),
+              SizedBox(
+                width: 8.w,
+                child: Text(
+                  "Grand Total: ",
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white70,
+                        fontSize: 8.sp,
+                      ),
+                ),
               ),
-              Text(
-                "₹${item.grandTotal}",
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white,
-                      fontSize: 14.sp,
+              SizedBox(
+                width: 20.w,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      "₹${item.grandTotal}",
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.white,
+                        fontSize: 12.sp,
+                          ),
                     ),
+                  ],
+                ),
               ),
             ],
           ),
