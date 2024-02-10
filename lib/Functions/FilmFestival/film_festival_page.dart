@@ -26,7 +26,7 @@ class _FilmFestivalPageState extends State<FilmFestivalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(17.h),
+        preferredSize: Size.fromHeight(7.h),
         child: const FilmFestivalAppbar(),
       ),
       body: Container(
@@ -155,6 +155,7 @@ class FestivalItem extends StatelessWidget {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       child: Container(
+        alignment: Alignment.center,
         width: 27.w,
         decoration: BoxDecoration(
           // color: Color(0xff868686),
