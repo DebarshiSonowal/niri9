@@ -10,15 +10,10 @@ import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:lottie/lottie.dart';
 import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Constants/constants.dart';
-import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Models/video.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
-// import 'package:wakelock/wakelock.dart';
-
-// import 'package:read_more_text/read_more_text.dart';
-
 import '../../Constants/assets.dart';
 import '../../Models/video_details.dart';
 import '../../Repository/repository.dart';

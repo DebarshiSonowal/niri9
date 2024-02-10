@@ -1,24 +1,14 @@
 import 'package:appinio_video_player/appinio_video_player.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:niri9/Functions/HomeScreen/Widgets/ott_item.dart';
 import 'package:niri9/Functions/WatchScreen/Widgets/video_section.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
-
 import '../../../Constants/assets.dart';
-import '../../../Constants/common_functions.dart';
-import '../../../Helper/storage.dart';
-import '../../../Models/video.dart';
 import '../../../Models/video_details.dart';
 import '../../../Navigation/Navigate.dart';
 import '../../../Repository/repository.dart';
-import '../../../Router/routes.dart';
-import '../../../Widgets/title_box.dart';
-import '../../HomeScreen/Widgets/dynamic_list_item.dart';
 import 'alternative_options_bar.dart';
 import 'description_section.dart';
 import 'episodes_slider.dart';

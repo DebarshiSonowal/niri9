@@ -1,7 +1,5 @@
 import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_social_button/flutter_social_button.dart';
-import 'package:niri9/Navigation/Navigate.dart';
 import 'package:sizer/sizer.dart';
 
 class VideoSection extends StatelessWidget {
@@ -20,7 +18,6 @@ class VideoSection extends StatelessWidget {
       child: Stack(
         // alignment: Alignment.topCenter,
         children: [
-
           Container(
             color: Colors.black,
             height: 28.h,
@@ -148,7 +145,6 @@ class VideoSection extends StatelessWidget {
           //     ),
           //   ),
           // ),
-
         ],
       ),
     );
