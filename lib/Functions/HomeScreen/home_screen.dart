@@ -5,6 +5,7 @@ import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Repository/repository.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:upgrader/upgrader.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../Widgets/title_box.dart';
 import 'Widgets/custom_app_bar.dart';
@@ -36,68 +37,70 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(
-          isExpanded ? 15.h : 24.h,
-        ),
-        child: CustomAppbar(
-          isExpanded: isExpanded,
-          updateState: () {
-            setState(() {
-              isExpanded = !isExpanded;
-            });
-          },
-        ),
-      ),
-      body: SafeArea(
-        child: Container(
-          color: Constants.primaryColor,
-          height: 100.h,
-          width: 100.w,
-          padding: EdgeInsets.symmetric(
-            vertical: 0.5.h,
+    return UpgradeAlert(
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(
+            isExpanded ? 15.h : 24.h,
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const HomeBanner(),
-                TitleBox(
-                  text: "Explore in your language",
-                  onTap: () {},
-                  isEnd: false,
-                ),
-                LanguageSection(
-                  scrollController: _scrollController,
-                  onScroll: (UserScrollNotification notification) {
-                    // final ScrollDirection direction = notification.direction;
-                    // final ScrollMetrics metrics = notification.metrics;
-                    //
-                    // if (direction == ScrollDirection.forward &&
-                    //     metrics.pixels > 0) {
-                    //   // Slight swipe to the right
-                    //   setState(() {
-                    //     isEnd = false;
-                    //   });
-                    // } else if (direction == ScrollDirection.reverse &&
-                    //     metrics.pixels < metrics.maxScrollExtent) {
-                    //   // Slight swipe to the left
-                    //
-                    //   setState(() {
-                    //     isEnd = true;
-                    //   });
-                    // }
-                  },
-                ),
-                const RecentlyViewedSection(),
-                const DynamicListSectionHome(),
-              ],
+          child: CustomAppbar(
+            isExpanded: isExpanded,
+            updateState: () {
+              setState(() {
+                isExpanded = !isExpanded;
+              });
+            },
+          ),
+        ),
+        body: SafeArea(
+          child: Container(
+            color: Constants.primaryColor,
+            height: 100.h,
+            width: 100.w,
+            padding: EdgeInsets.symmetric(
+              vertical: 0.5.h,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const HomeBanner(),
+                  TitleBox(
+                    text: "Explore in your language",
+                    onTap: () {},
+                    isEnd: false,
+                  ),
+                  LanguageSection(
+                    scrollController: _scrollController,
+                    onScroll: (UserScrollNotification notification) {
+                      // final ScrollDirection direction = notification.direction;
+                      // final ScrollMetrics metrics = notification.metrics;
+                      //
+                      // if (direction == ScrollDirection.forward &&
+                      //     metrics.pixels > 0) {
+                      //   // Slight swipe to the right
+                      //   setState(() {
+                      //     isEnd = false;
+                      //   });
+                      // } else if (direction == ScrollDirection.reverse &&
+                      //     metrics.pixels < metrics.maxScrollExtent) {
+                      //   // Slight swipe to the left
+                      //
+                      //   setState(() {
+                      //     isEnd = true;
+                      //   });
+                      // }
+                    },
+                  ),
+                  const RecentlyViewedSection(),
+                  const DynamicListSectionHome(),
+                ],
+              ),
             ),
           ),
         ),
+        bottomNavigationBar: const CustomBottomNavBar(),
       ),
-      bottomNavigationBar: const CustomBottomNavBar(),
     );
   }
 

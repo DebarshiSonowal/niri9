@@ -74,10 +74,10 @@ class OptionsBar extends StatelessWidget {
                         addToMyList(data.videoDetails?.id);
                       },
                     ),
-                    (data.videoDetails?.has_rent ?? false) ? SizedBox(
+                    ((data.videoDetails?.has_rent ?? false)&&!(data.user?.has_subscription??false)) ? SizedBox(
                       width: 5.w,
                     ) : Container(),
-                    (data.videoDetails?.has_rent ?? false) ? IconTextButton(
+                    ((data.videoDetails?.has_rent ?? false)&&!(data.user?.has_subscription??false)) ? IconTextButton(
                       name: "Rent",
                       icon: Icons.money,
                       onTap: () {

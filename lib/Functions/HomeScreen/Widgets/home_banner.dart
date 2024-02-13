@@ -12,6 +12,8 @@ import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../API/api_provider.dart';
+import '../../../Constants/common_functions.dart';
+import '../../../Helper/storage.dart';
 import '../../../Navigation/Navigate.dart';
 import '../../../Repository/repository.dart';
 import '../../../Router/routes.dart';
@@ -112,8 +114,12 @@ class _BannerSectionState extends State<BannerSection> {
                         return BannerImageItem(
                           item: item,
                           onTap: (int? val) {
-                            Navigation.instance
-                                .navigate(Routes.watchScreen, args: val);
+                            if (Storage.instance.isLoggedIn) {
+                              Navigation.instance
+                                  .navigate(Routes.watchScreen, args: val);
+                            } else {
+                              CommonFunctions().showLoginDialog(context);
+                            }
                           },
                         );
                       },
