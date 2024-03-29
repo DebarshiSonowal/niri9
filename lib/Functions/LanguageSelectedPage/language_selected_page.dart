@@ -12,6 +12,7 @@ import '../../Models/sections.dart';
 import '../../Navigation/Navigate.dart';
 import '../../Repository/repository.dart';
 import '../../Router/routes.dart';
+import '../../Widgets/category_specific_appbar.dart';
 import '../HomeScreen/Widgets/dynamic_list_item.dart';
 import '../HomeScreen/Widgets/ott_item.dart';
 
@@ -284,58 +285,4 @@ class ShimmerLanguageScreen extends StatelessWidget {
   }
 }
 
-class CategorySpecificAppbar extends StatelessWidget {
-  const CategorySpecificAppbar({
-    super.key,
-    required this.searchTerm,
-  });
 
-  final String searchTerm;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Constants.backgroundColor,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: 5.h,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 3.w,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigation.instance.goBack();
-                  },
-                  child: Icon(
-                    Icons.arrow_back_ios_sharp,
-                    color: Colors.white,
-                    size: 14.sp,
-                  ),
-                ),
-                // SizedBox(
-                //   width: 5.w,
-                // ),
-                Text(
-                  searchTerm.capitalize(),
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: Colors.white,
-                        fontSize: 15.sp,
-                        // fontWeight: FontWeight.bold,
-                      ),
-                ),
-                Container()
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

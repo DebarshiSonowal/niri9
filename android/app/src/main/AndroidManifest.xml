@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.niri.niri9">
+
     <uses-permission android:name="android.permission.INTERNET"/>
+
    <application
         android:label="NIRI9"
         android:name="${applicationName}"

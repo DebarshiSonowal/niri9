@@ -33,20 +33,6 @@ class _DynamicListItemState extends State<DynamicListItem> {
   @override
   void initState() {
     super.initState();
-    // _scrollController.addListener(() {
-    //   if (_scrollController.offset <= _scrollController.position.minScrollExtent&&isEnd!=false) {
-    //     setState(() {
-    //       debugPrint("reach the top");
-    //       isEnd = false;
-    //     });
-    //   }
-    //   if (_scrollController.offset >= _scrollController.position.maxScrollExtent&&isEnd==false) {
-    //     setState(() {
-    //       debugPrint("reach the bottom");
-    //       isEnd = true;
-    //     });
-    //   }
-    // });
   }
 
   @override

@@ -1,16 +1,21 @@
 import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_touch_ripple/widgets/widget.dart';
 import 'package:sizer/sizer.dart';
 
 class VideoSection extends StatelessWidget {
   const VideoSection({
     super.key,
-    required CustomVideoPlayerController customVideoPlayerController, required this.isPlaying, required this.showing, required this.onClicked,
+    required CustomVideoPlayerController customVideoPlayerController,
+    required this.isPlaying,
+    required this.showing,
+    required this.onClicked,
   }) : _customVideoPlayerController = customVideoPlayerController;
 
   final CustomVideoPlayerController _customVideoPlayerController;
-  final bool isPlaying,showing;
+  final bool isPlaying, showing;
   final Function onClicked;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -26,80 +31,135 @@ class VideoSection extends StatelessWidget {
               customVideoPlayerController: _customVideoPlayerController,
             ),
           ),
-          // Align(
-          //   alignment: Alignment.center,
-          //   child: SizedBox(
-          //     height: 20.h,
-          //     // color: Colors.grey,
-          //     child: Row(
-          //       crossAxisAlignment: CrossAxisAlignment.end,
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       children: [
-          //         // IconButton(
-          //         //   onPressed: () {
-          //         //     _customVideoPlayerController.videoPlayerController.seekTo(_customVideoPlayerController.videoPlayerController.value.position-const Duration(seconds: 10));
-          //         //   },
-          //         //   icon: const Icon(
-          //         //     FontAwesomeIcons.backward,
-          //         //     color: Colors.white,
-          //         //   ),
-          //         // ),
-          //         // IconButton(
-          //         //   splashColor: Colors.grey.shade300,
-          //         //   onPressed: () {
-          //         //     isPlaying?_customVideoPlayerController.videoPlayerController.pause():_customVideoPlayerController.videoPlayerController.play();
-          //         //   },
-          //         //   icon:  Icon(
-          //         //     isPlaying?FontAwesomeIcons.pause:FontAwesomeIcons.play,
-          //         //     color: Colors.white,
-          //         //   ),
-          //         // ),
-          //         // IconButton(
-          //         //   onPressed: () {
-          //         //     _customVideoPlayerController.videoPlayerController.seekTo(_customVideoPlayerController.videoPlayerController.value.position+const Duration(seconds: 10));
-          //         //   },
-          //         //   icon: const Icon(
-          //         //     FontAwesomeIcons.fastForward,
-          //         //     color: Colors.white,
-          //         //   ),
-          //         // ),
-          //         GestureDetector(
-          //           behavior: HitTestBehavior.translucent,
-          //           onDoubleTap: (){
-          //             _customVideoPlayerController.videoPlayerController.seekTo(_customVideoPlayerController.videoPlayerController.value.position-const Duration(seconds: 10));
-          //             debugPrint("Forward");
-          //             },
-          //           child: Container(
-          //             color: Colors.transparent,
-          //             width: 40.w,
-          //             height: 50.h,
-          //           ),
-          //         ),
-          //         SizedBox(
-          //           width: 4.w,
-          //         ),
-          //         GestureDetector(
-          //           behavior: HitTestBehavior.translucent,
-          //           onDoubleTap: (){
-          //             _customVideoPlayerController.videoPlayerController.seekTo(_customVideoPlayerController.videoPlayerController.value.position+const Duration(seconds: 10));
-          //           },
-          //           child:Container(
-          //             color: Colors.transparent,
-          //             width: 40.w,
-          //             height: 50.h,
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //     //       :GestureDetector(
-          //     //   onTap: ()=>onClicked(),
-          //     //   child: Container(
-          //     //     width: 50.w,
-          //     //     color: Colors.transparent,
-          //     //   ),
-          //     // ),
-          //   ),
-          // ),
+          Align(
+            alignment: Alignment.center,
+            child: SizedBox(
+              height: 20.h,
+              // color: Colors.grey,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // IconButton(
+                  //   onPressed: () {
+                  //     _customVideoPlayerController.videoPlayerController.seekTo(_customVideoPlayerController.videoPlayerController.value.position-const Duration(seconds: 10));
+                  //   },
+                  //   icon: const Icon(
+                  //     FontAwesomeIcons.backward,
+                  //     color: Colors.white,
+                  //   ),
+                  // ),
+                  // IconButton(
+                  //   splashColor: Colors.grey.shade300,
+                  //   onPressed: () {
+                  //     isPlaying?_customVideoPlayerController.videoPlayerController.pause():_customVideoPlayerController.videoPlayerController.play();
+                  //   },
+                  //   icon:  Icon(
+                  //     isPlaying?FontAwesomeIcons.pause:FontAwesomeIcons.play,
+                  //     color: Colors.white,
+                  //   ),
+                  // ),
+                  // IconButton(
+                  //   onPressed: () {
+                  //     _customVideoPlayerController.videoPlayerController.seekTo(_customVideoPlayerController.videoPlayerController.value.position+const Duration(seconds: 10));
+                  //   },
+                  //   icon: const Icon(
+                  //     FontAwesomeIcons.fastForward,
+                  //     color: Colors.white,
+                  //   ),
+                  // ),
+                  Material(
+                    color: Colors.grey.withOpacity(0.1),
+                    child: Container(
+                      // color: Colors.red,
+                      child: InkWell(
+                        splashColor: Colors.white,
+                        // behavior: HitTestBehavior.translucent,
+                        radius: 30.w,
+                        // behavior: HitTestBehavior.translucent,
+                        onDoubleTap: () {
+                          _customVideoPlayerController.videoPlayerController.seekTo(
+                              _customVideoPlayerController
+                                      .videoPlayerController.value.position -
+                                  const Duration(seconds: 10));
+                          debugPrint("BackWard");
+                        },
+                        // rippleColor: Colors.white,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 2.w,
+                            vertical: 2.w,
+                          ),
+                          child: Icon(
+                            Icons.fast_rewind,
+                            color: Colors.white,
+                            size: 30.sp,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 15.w,
+                  ),
+                  Material(
+                    color: Colors.grey.withOpacity(0.05),
+                    child: Container(
+                      // color: Colors.red,
+                      child: InkWell(
+                        splashColor: Colors.white,
+                        // behavior: HitTestBehavior.translucent,
+                        radius: 30.w,
+                        // behavior: HitTestBehavior.translucent,
+                        onDoubleTap: () {
+                          _customVideoPlayerController.videoPlayerController.seekTo(
+                              _customVideoPlayerController
+                                  .videoPlayerController.value.position +
+                                  const Duration(seconds: 10));
+                        },
+                        // rippleColor: Colors.white,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 2.w,
+                            vertical: 2.w,
+                          ),
+                          child: Icon(
+                            Icons.fast_forward,
+                            color: Colors.white,
+                            size: 30.sp,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // TouchRipple(
+                  //   onDoubleTap: () {
+                  //     _customVideoPlayerController.videoPlayerController.seekTo(
+                  //         _customVideoPlayerController
+                  //                 .videoPlayerController.value.position +
+                  //             const Duration(seconds: 10));
+                  //   },
+                  //   rippleColor: Colors.white,
+                  //   child: Padding(
+                  //     padding: EdgeInsets.all(10.w),
+                  //     child: Icon(
+                  //       Icons.fast_forward,
+                  //       color: Colors.transparent,
+                  //       size: 30.sp,
+                  //     ),
+                  //   ),
+                  // ),
+                ],
+              ),
+              //       :GestureDetector(
+              //   onTap: ()=>onClicked(),
+              //   child: Container(
+              //     width: 50.w,
+              //     color: Colors.transparent,
+              //   ),
+              // ),
+            ),
+          ),
           // Align(
           //   alignment: Alignment.topCenter,
           //   child: Container(
