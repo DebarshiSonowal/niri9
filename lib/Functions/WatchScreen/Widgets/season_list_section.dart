@@ -18,7 +18,8 @@ class SeasonListSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<Repository>(
       builder: (context,data,_) {
-        return Container(
+        return (data.currentSeasons.isEmpty||data.currentSeasons[selected]
+            .video_list.isEmpty)?Container():Container(
           padding: EdgeInsets.symmetric(
             horizontal: 4.w,
           ),
@@ -54,7 +55,7 @@ class SeasonListSection extends StatelessWidget {
                 // child: Text("${data.currentSeasons[selected]}"),
                 child: EpisodeItem(
                   item: item,
-                  currentVideoId: data.currentVideoId!,
+                  currentVideoId: data.currentVideoId??0,
                 ),
               );
             },
