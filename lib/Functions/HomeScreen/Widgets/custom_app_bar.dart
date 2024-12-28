@@ -28,7 +28,7 @@ class CustomAppbar extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(
-            height: Platform.isAndroid?2.5.h:3.h,
+            height: Platform.isAndroid ? 2.5.h : 3.h,
           ),
           Row(
             children: [
@@ -106,12 +106,14 @@ class CustomAppbar extends StatelessWidget {
                             item: item,
                             index: index,
                             onTap: () {
-                              debugPrint("onClicked ${item.name?.toLowerCase()}");
+                              debugPrint(
+                                  "onClicked ${item.name?.toLowerCase()}");
                               // Navigation.instance
                               //     .navigate(Routes.subscriptionScreen);
                               if (item.name?.toLowerCase() == "film festival" &&
                                   (item.has_festival ?? false)) {
-                                Navigation.instance.navigate(Routes.filmFestivalScreen);
+                                Navigation.instance
+                                    .navigate(Routes.filmFestivalScreen);
                               } else {
                                 Navigation.instance.navigate(
                                     Routes.selectedCategoryScreen,
@@ -193,7 +195,7 @@ class SubscriptionAlert extends StatelessWidget {
                         "Subscribe",
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: const Color(0xffffed8c),
-                              fontSize: 8.sp,
+                              fontSize: 12.sp,
                             ),
                       ),
                     ),
@@ -305,8 +307,8 @@ class FirstLineAppbar extends StatelessWidget {
                           children: [
                             Image.asset(
                               !isExpanded ? Assets.lessImage : Assets.moreImage,
-                              height: 12.sp,
-                              width: 12.sp,
+                              height: 18.sp,
+                              width: 18.sp,
                               // color: Colors.white,
                             ),
                           ],

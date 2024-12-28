@@ -66,6 +66,10 @@ class _OrderPageScreenState extends State<OrderPageScreen>
             ),
             TabBar(
               controller: _tabController,
+              indicatorColor: Colors.white,
+              labelStyle: TextStyle(fontSize: 14.sp, color: Colors.white),
+              unselectedLabelStyle:
+                  TextStyle(fontSize: 12.sp, color: Colors.grey),
               tabs: const [
                 Tab(
                   text: "Orders",
@@ -126,7 +130,8 @@ class OrderItemsList extends StatelessWidget {
           },
           itemCount: data.orders
               .where((element) => element.order_for == "subscription")
-              .toList().length,
+              .toList()
+              .length,
           separatorBuilder: (BuildContext context, int index) {
             return SizedBox(
               height: 2.h,
@@ -158,7 +163,8 @@ class RentItemsList extends StatelessWidget {
           },
           itemCount: data.orders
               .where((element) => element.order_for != "subscription")
-              .toList().length,
+              .toList()
+              .length,
           separatorBuilder: (BuildContext context, int index) {
             return SizedBox(
               height: 2.h,
@@ -201,7 +207,7 @@ class OrderItemWidget extends StatelessWidget {
                 "Order Id: ",
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white70,
-                      fontSize: 8.sp,
+                      fontSize: 12.sp,
                     ),
               ),
               SizedBox(
@@ -209,7 +215,7 @@ class OrderItemWidget extends StatelessWidget {
                   "${item.id}",
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.white,
-                        fontSize: 10.sp,
+                        fontSize: 13.sp,
                       ),
                 ),
               ),
@@ -218,7 +224,7 @@ class OrderItemWidget extends StatelessWidget {
                 "Date: ",
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white70,
-                      fontSize: 8.sp,
+                      fontSize: 12.sp,
                     ),
               ),
               SizedBox(
@@ -226,7 +232,7 @@ class OrderItemWidget extends StatelessWidget {
                   "${item.orderDate?.split(" ").first}",
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.white,
-                        fontSize: 10.sp,
+                        fontSize: 13.sp,
                       ),
                 ),
               ),
@@ -260,7 +266,7 @@ class OrderItemWidget extends StatelessWidget {
                   "Total: ",
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.white70,
-                        fontSize: 8.sp,
+                        fontSize: 12.sp,
                       ),
                 ),
               ),
@@ -272,7 +278,7 @@ class OrderItemWidget extends StatelessWidget {
                       "₹${item.total}",
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.white,
-                            fontSize: 12.sp,
+                            fontSize: 14.sp,
                           ),
                     ),
                   ],
@@ -284,7 +290,7 @@ class OrderItemWidget extends StatelessWidget {
                   "Tax: ",
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.white70,
-                        fontSize: 8.sp,
+                        fontSize: 12.sp,
                       ),
                 ),
               ),
@@ -294,7 +300,7 @@ class OrderItemWidget extends StatelessWidget {
                   "₹${item.taxAmt}",
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.white,
-                    fontSize: 12.sp,
+                        fontSize: 14.sp,
                       ),
                 ),
               ),
@@ -304,7 +310,7 @@ class OrderItemWidget extends StatelessWidget {
                   "Grand Total: ",
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.white70,
-                        fontSize: 8.sp,
+                        fontSize: 12.sp,
                       ),
                 ),
               ),
@@ -317,7 +323,7 @@ class OrderItemWidget extends StatelessWidget {
                       "₹${item.grandTotal}",
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.white,
-                        fontSize: 12.sp,
+                            fontSize: 14.sp,
                           ),
                     ),
                   ],

@@ -1,18 +1,19 @@
-import 'package:appinio_video_player/appinio_video_player.dart';
+// import 'package:appinio_video_player/appinio_video_player.dart';
+import 'package:cached_video_player_plus/cached_video_player_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_touch_ripple/widgets/widget.dart';
+// import 'package:flutter_touch_ripple/widgets/widget.dart';
 import 'package:sizer/sizer.dart';
 
 class VideoSection extends StatelessWidget {
   const VideoSection({
     super.key,
-    required CustomVideoPlayerController customVideoPlayerController,
+    required CachedVideoPlayerPlusController customVideoPlayerController,
     required this.isPlaying,
     required this.showing,
     required this.onClicked,
   }) : _customVideoPlayerController = customVideoPlayerController;
 
-  final CustomVideoPlayerController _customVideoPlayerController;
+  final CachedVideoPlayerPlusController _customVideoPlayerController;
   final bool isPlaying, showing;
   final Function onClicked;
 
@@ -27,12 +28,16 @@ class VideoSection extends StatelessWidget {
             color: Colors.black,
             height: 28.h,
             width: double.infinity,
-            child: CustomVideoPlayer(
-              customVideoPlayerController: _customVideoPlayerController,
+            child: CachedVideoPlayerPlus(
+              _customVideoPlayerController,
             ),
           ),
-          Align(
-            alignment: Alignment.center,
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            top: 0,
+            // alignment: Alignment.center,
             child: SizedBox(
               height: 20.h,
               // color: Colors.grey,
@@ -78,9 +83,14 @@ class VideoSection extends StatelessWidget {
                         radius: 30.w,
                         // behavior: HitTestBehavior.translucent,
                         onDoubleTap: () {
-                          _customVideoPlayerController.videoPlayerController.seekTo(
-                              _customVideoPlayerController
-                                      .videoPlayerController.value.position -
+                          _customVideoPlayerController.seekTo(
+                              _customVideoPlayerController.value.position -
+                                  const Duration(seconds: 10));
+                          debugPrint("BackWard");
+                        },
+                        onTap: () {
+                          _customVideoPlayerController.seekTo(
+                              _customVideoPlayerController.value.position -
                                   const Duration(seconds: 10));
                           debugPrint("BackWard");
                         },
@@ -112,9 +122,13 @@ class VideoSection extends StatelessWidget {
                         radius: 30.w,
                         // behavior: HitTestBehavior.translucent,
                         onDoubleTap: () {
-                          _customVideoPlayerController.videoPlayerController.seekTo(
-                              _customVideoPlayerController
-                                  .videoPlayerController.value.position +
+                          _customVideoPlayerController.seekTo(
+                              _customVideoPlayerController.value.position +
+                                  const Duration(seconds: 10));
+                        },
+                        onTap: () {
+                          _customVideoPlayerController.seekTo(
+                              _customVideoPlayerController.value.position +
                                   const Duration(seconds: 10));
                         },
                         // rippleColor: Colors.white,

@@ -52,7 +52,7 @@ class _NonSeasonListState extends State<NonSeasonList> {
               },
               child: EpisodeItem(
                 item: item!,
-                currentVideoId: data.currentVideoId!,
+                currentVideoId: data.currentVideoId??0,
               ),
             );
           },

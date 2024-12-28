@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/cli_commands.dart';
+import 'package:niri9/main.dart';
 import 'package:sizer/sizer.dart';
 
 import '../Constants/constants.dart';

@@ -5,6 +5,7 @@ class Assets {
   static const item2Image = "assets/images/test_item2.jpg";
   static const item3Image = "assets/images/test_item3.jpg";
   static const logoTransparent = "assets/images/logo_transparent.png";
+  static const popUpImage = "assets/images/300x600.jpg";
 
   //bottom
   static const homeImage = "assets/images/home.png";
@@ -34,7 +35,8 @@ class Assets {
   static const episodeImage2 = "assets/images/episode_image2.jpg";
 
   // static String videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-  static String videoUrl = "https://customer-edsfz57k0gqg8bse.cloudflarestream.com/eb471d0611714d8133bc092c14ecc979/manifest/stream_tb067f647f3ee9200161205d1160c8490_r543241465.m3u8";
+  static String videoUrl =
+      "https://customer-edsfz57k0gqg8bse.cloudflarestream.com/eb471d0611714d8133bc092c14ecc979/manifest/stream_tb067f647f3ee9200161205d1160c8490_r543241465.m3u8";
 
   static const smartTV = "assets/images/smart.png";
   // static String videoUrl = "https://customer-edsfz57k0gqg8bse.cloudflarestream.com/586d3a3a3600c6df1ce400b0abde47c6/manifest/video.m3u8";
@@ -45,6 +47,4 @@ class Assets {
   static const successAnimation = "assets/animations/success.json";
   static const failedAnimation = "assets/animations/failed_anim.json";
   static const notFoundAnimation = "assets/animations/not_found.json";
-
-
 }

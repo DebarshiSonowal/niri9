@@ -18,25 +18,27 @@ class SuccessfulContentWidget extends StatelessWidget {
       ),
       width: 60.w,
       height: 34.h,
-      child: Column(
-        children: [
-          SizedBox(
-            width: 50.w,
-            height: 25.h,
-            child:
-            Lottie.asset(Assets.successAnimation, fit: BoxFit.fill),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          Text(
-            message ?? "Some Messages",
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white,
-              fontSize: 12.sp,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              width: 50.w,
+              height: 22.h,
+              child:
+              Lottie.asset(Assets.successAnimation, fit: BoxFit.fill),
             ),
-          ),
-        ],
+            SizedBox(
+              height: 2.h,
+            ),
+            Text(
+              message ?? "Some Messages",
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.white,
+                fontSize: 12.sp,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

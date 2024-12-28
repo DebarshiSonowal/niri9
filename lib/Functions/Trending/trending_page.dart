@@ -32,6 +32,15 @@ class _TrendingPageState extends State<TrendingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              Navigation.instance.goBack();
+            },
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            )),
+        backgroundColor: Colors.black,
         title: Text(
           "Trending",
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -73,12 +82,7 @@ class _TrendingPageState extends State<TrendingPage> {
     // });
     Future.delayed(Duration.zero, () {
       // fetchData(context);
-      Provider.of<Repository>(context,listen: false).updateIndex(2);
+      Provider.of<Repository>(context, listen: false).updateIndex(2);
     });
   }
 }
-
-
-
-
-

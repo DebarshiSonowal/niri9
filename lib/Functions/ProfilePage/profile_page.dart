@@ -50,7 +50,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Image.asset(
                     Assets.profileImage,
                     color: Colors.white,
-                    scale: 4,
+                    scale: 7,
                   ),
                 ),
                 SizedBox(
@@ -60,7 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   "${data.user?.f_name} ${data.user?.l_name}",
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         color: Colors.white,
-                        fontSize: 12.sp,
+                        fontSize: 13.sp,
                       ),
                 ),
                 SizedBox(
@@ -75,6 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         "Email:",
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                               color: Colors.white54,
+                              fontSize: 12.sp,
                             ),
                       ),
                     ),
@@ -87,7 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         data.user?.email ?? "N/A",
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                               color: Colors.white,
-                              fontSize: 8.sp,
+                              fontSize: 13.sp,
                             ),
                       ),
                     ),
@@ -105,6 +106,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         "Mobile:",
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                               color: Colors.white54,
+                              fontSize: 12.sp,
                             ),
                       ),
                     ),
@@ -117,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         "${data.user?.mobile ?? "N/A"}",
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                               color: Colors.white,
-                              fontSize: 8.sp,
+                              fontSize: 13.sp,
                             ),
                       ),
                     ),
@@ -131,7 +133,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     left: 15.sp,
                   ),
                   child: Text(
-                    "Current Subscription",
+                    data.user?.last_sub == null ? "" : "Current Subscription",
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: Colors.white,
                           fontSize: 15.sp,

@@ -70,7 +70,6 @@ class _TrendingBannerState extends State<TrendingBanner> {
   }
 }
 
-
 class PlayNowButton extends StatelessWidget {
   const PlayNowButton({
     super.key,
@@ -92,8 +91,9 @@ class PlayNowButton extends StatelessWidget {
       child: Center(
         child: Text(
           "Play Now",
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Colors.black,
+                fontSize: 15.sp,
                 fontWeight: FontWeight.bold,
               ),
         ),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,279 +27,166 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final mobileController = TextEditingController();
-  final passwordController = TextEditingController();
-  bool visible = true, agree = false;
+  bool agree = false;
   CountryCode selectedCountryCode = CountryCode(name: 'IN', dialCode: "+91");
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(
-          horizontal: 2.w,
-          vertical: 1.h,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                height: 5.h,
-              ),
-              Image.asset(
+      backgroundColor:
+          Colors.black, // Added background color for better contrast
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
+        child: Column(
+          children: [
+            SizedBox(height: 10.h),
+            Center(
+              child: Image.asset(
                 Assets.logo,
-                scale: 12,
-                fit: BoxFit.fill,
+                height: 15.h, // Adjusted height for better visibility
+                fit: BoxFit.contain,
               ),
-              SizedBox(
-                height: 7.h,
+            ),
+            SizedBox(height: 5.h),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 2.w),
+              decoration: BoxDecoration(
+                color: Colors.white12,
+                borderRadius: BorderRadius.circular(8.0),
+                border: Border.all(
+                  color: Colors.white38,
+                  width: 0.2.h,
+                ),
               ),
-              Container(
-                height: 50.sp,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5.0),
-                  border: Border.all(
+              child: Row(
+                children: [
+                  CountryCodePicker(
+                    onChanged: _onCountryChange,
+                    initialSelection: 'IN',
+                    favorite: const ['+91', 'IN'],
+                    showCountryOnly: false,
+                    showOnlyCountryWhenClosed: false,
+                    alignLeft: false,
+                    backgroundColor: Colors.transparent,
+                    dialogBackgroundColor: Colors.black54,
+                    textStyle: TextStyle(color: Colors.white, fontSize: 14.sp),
+                  ),
+                  VerticalDivider(
+                    thickness: 1.sp,
                     color: Colors.white38,
-                    width: 0.1.h,
                   ),
-                ),
-                margin: EdgeInsets.symmetric(horizontal: 4.5.w),
-                width: double.infinity,
-                child: Container(
-                  width: double.infinity,
-                  color: Colors.transparent,
-                  // padding: EdgeInsets.symmetric(horizontal: 4.5.w),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 25.w,
-                        child: CountryCodePicker(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 0.w, vertical: 0.3.h),
-                          onChanged: _onCountryChange,
-                          // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
-                          initialSelection: 'IN',
-                          favorite: const ['+91', 'IN'],
-                          // optional. Shows only country name and flag
-                          showCountryOnly: false,
-                          // optional. Shows only country name and flag when popup is closed.
-                          showOnlyCountryWhenClosed: false,
-                          // optional. aligns the flag and the Text left
-                          alignLeft: false,
-                          backgroundColor: Colors.black54,
-                          dialogBackgroundColor: Colors.black54,
-                          // flagWidth: 25.sp,
-                        ),
+                  Expanded(
+                    child: TextField(
+                      controller: mobileController,
+                      keyboardType: TextInputType.phone,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14.sp,
                       ),
-                      SizedBox(
-                        height: 50.sp,
-                        // width: 1.w,
-                        child: VerticalDivider(
-                          thickness: 1.sp,
-                          color: Colors.white38,
+                      decoration: InputDecoration(
+                        hintText: "Enter Phone Number",
+                        hintStyle: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14.sp,
                         ),
-                      ),
-                      Expanded(
-                        child: TextField(
-                          controller: mobileController,
-                          keyboardType: TextInputType.phone,
-                          onSubmitted: (val) {},
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
-                              ?.copyWith(
-                                color: Colors.white,
-                                fontSize: 14.sp,
-                              ),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            filled: true,
-                            hintStyle: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 11.sp,
-                            ),
-                            hintText: "Phone Number",
-                            fillColor: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 2.5.h,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 2.w,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 2.5.h,
-                      child: Checkbox(
-                        checkColor: Colors.blue,
-                        fillColor: MaterialStateProperty.all(Colors.white10),
-                        value: agree,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            agree = !agree;
-                          });
-                        },
+                        border: InputBorder.none,
                       ),
                     ),
-                    SizedBox(
-                      height: 4.h,
-                      width: 75.w,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text.rich(
-                            TextSpan(
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 8.5.sp,
-                              ),
-                              text: 'By proceeding you are agreeing to our ',
-                              children: <InlineSpan>[
-                                TextSpan(
-                                  text: 'Terms & Conditions',
-                                  style: TextStyle(
-                                    fontSize: 9.sp,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                              ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 1.h),
+            Row(
+              children: [
+                Checkbox(
+                  fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+                    if (!agree) {
+                      return Colors.grey; // Set desired color when not checked
+                    }
+                    return Colors.white10; // Default active color
+                  }),
+                  checkColor: Colors.blue,
+                  value: agree,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      agree = value ?? false;
+                    });
+                  },
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        agree = !agree;
+                      });
+                    },
+                    child: RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12.sp,
+                        ),
+                        text: 'By proceeding you are agreeing to our ',
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Terms & Conditions',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12.sp,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 2.h,
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 4.5.w),
-                height: 5.h,
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    elevation: MaterialStateProperty.all(10),
-                    backgroundColor: MaterialStateProperty.all(Colors.black),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(5),
-                        ),
-                        side: BorderSide(color: Colors.white38),
-                      ),
-                    ),
                   ),
-                  onPressed: () {
-                    // loginByOTP(mobileController.text);
-                    if (agree) {
-                      if (mobileController.text.isNotEmpty &&
-                          mobileController.text.length >= 10) {
-                        debugPrint(
-                            "nybe ${selectedCountryCode.dialCode} ${mobileController.text}");
-                        if (selectedCountryCode.dialCode == "+91") {
-                          Navigation.instance.navigate(
-                            Routes.otpScreen,
-                            args:
-                                "${selectedCountryCode.dialCode}${mobileController.text.toString()}",
-                          );
-                        } else {
-                          loginByFirebase(selectedCountryCode.dialCode,
-                              mobileController.text.toString());
-                        }
-                      } else {
-                        Fluttertoast.showToast(
-                            msg: "Enter a valid mobile number");
-                      }
-                    } else {
-                      Fluttertoast.showToast(
-                          msg: "Please agree to our terms & conditions");
-                    }
-                  },
-                  child: Text(
-                    "Submit",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12.sp,
-                    ),
+                ),
+              ],
+            ),
+            SizedBox(height: 1.h),
+            SizedBox(
+              width: double.infinity,
+              height: 4.5.h,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(color: Colors.white38),
+                  ),
+                ),
+                onPressed: _handleSubmit,
+                child: Text(
+                  "Submit",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              SizedBox(
-                height: 2.h,
-              ),
-              // Container(
-              //   padding: EdgeInsets.symmetric(
-              //     horizontal: 4.w,
-              //   ),
-              //   height: 2.h,
-              //   width: double.infinity,
-              //   child: Row(
-              //     children: [
-              //       Expanded(
-              //         child: Divider(
-              //           thickness: 0.05.h,
-              //           color: Colors.white70,
-              //         ),
-              //       ),
-              //       Container(
-              //         padding: EdgeInsets.symmetric(
-              //           horizontal: 5.w,
-              //         ),
-              //         child: Text(
-              //           "Or",
-              //           style:
-              //               Theme.of(context).textTheme.headlineSmall?.copyWith(
-              //                     color: Colors.white,
-              //                     fontSize: 12.sp,
-              //                   ),
-              //         ),
-              //       ),
-              //       Expanded(
-              //         child: Divider(
-              //           thickness: 0.05.h,
-              //           color: Colors.white70,
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              // SizedBox(
-              //   height: 5.h,
-              // ),
-              // Padding(
-              //   padding: EdgeInsets.symmetric(horizontal: 4.5.w),
-              //   child: SocialLoginButton(
-              //     height: 5.h,
-              //     width: double.infinity,
-              //     buttonType: SocialLoginButtonType.google,
-              //     onPressed: () {
-              //       signInWithGoogle();
-              //     },
-              //   ),
-              // ),
-            ],
-          ),
+            ),
+            SizedBox(height: 3.h),
+            Divider(
+              color: Colors.white70,
+              thickness: 0.1.h,
+            ),
+            SizedBox(height: 2.h),
+            Platform.isAndroid
+                ? SizedBox(
+                    height: 5.h,
+                    width: double.infinity,
+                    child: SocialLoginButton(
+                      buttonType: SocialLoginButtonType.google,
+                      onPressed: signInWithGoogle,
+                      borderRadius: 8,
+                      // padding: EdgeInsets.symmetric(vertical: 1.5.h),
+                    ),
+                  )
+                : Container(),
+          ],
         ),
       ),
     );
@@ -307,6 +196,29 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       selectedCountryCode = countryCode;
     });
+  }
+
+  void _handleSubmit() {
+    if (agree) {
+      if (mobileController.text.isNotEmpty &&
+          mobileController.text.length >= 10) {
+        debugPrint(
+            "nybe ${selectedCountryCode.dialCode} ${mobileController.text}");
+        if (selectedCountryCode.dialCode == "+91") {
+          Navigation.instance.navigate(
+            Routes.otpScreen,
+            args: "${selectedCountryCode.dialCode}${mobileController.text}",
+          );
+        } else {
+          loginByFirebase(
+              selectedCountryCode.dialCode ?? "", mobileController.text);
+        }
+      } else {
+        Fluttertoast.showToast(msg: "Enter a valid mobile number");
+      }
+    } else {
+      Fluttertoast.showToast(msg: "Please agree to our terms & conditions");
+    }
   }
 
   Future<UserCredential> signInWithGoogle() async {
@@ -331,12 +243,11 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  void loginByFirebase(dialcode, number) async {
+  void loginByFirebase(String dialCode, String number) async {
     Navigation.instance.navigate(Routes.loadingScreen);
     final response = await ApiProvider.instance.login(
       "firebase",
-      // selectedCountryCode.dialCode.toString(),
-      dialcode,
+      dialCode,
       number,
       "",
       "",

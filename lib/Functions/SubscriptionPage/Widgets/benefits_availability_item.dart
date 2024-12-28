@@ -19,7 +19,7 @@ class BenefitsAvailabilityItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: selected == i ?Colors.grey.shade900:Colors.transparent,
+        color: selected == i ? Colors.grey.shade900 : Colors.transparent,
         border: Border.all(
           color: Colors.transparent,
         ),
@@ -36,9 +36,11 @@ class BenefitsAvailabilityItem extends StatelessWidget {
               child: Text(
                 data.subscriptions[i].title ?? "",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: checkConditions(data,data.subscriptions[i].id)?Colors.green:Colors.white,
+                      color: checkConditions(data, data.subscriptions[i].id)
+                          ? Colors.green
+                          : Colors.white,
                       // fontWeight: FontWeight.bold,
-                      fontSize: 11.sp,
+                      fontSize: 13.sp,
                     ),
                 textAlign: TextAlign.center,
               ),
@@ -47,9 +49,11 @@ class BenefitsAvailabilityItem extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: 8.h,
-            child:  Icon(
+            child: Icon(
               Icons.check,
-              color: checkConditions(data,data.subscriptions[i].id)?Colors.green:Colors.white,
+              color: checkConditions(data, data.subscriptions[i].id)
+                  ? Colors.green
+                  : Colors.white,
             ),
           ),
           SizedBox(
@@ -59,7 +63,9 @@ class BenefitsAvailabilityItem extends StatelessWidget {
               Icons.check,
               color:
                   (data.subscriptions[i].displayData?.watch_tv?.value ?? false)
-                      ? checkConditions(data,data.subscriptions[i].id)?Colors.green:Colors.white
+                      ? checkConditions(data, data.subscriptions[i].id)
+                          ? Colors.green
+                          : Colors.white
                       : Colors.white30,
             ),
           ),
@@ -69,7 +75,9 @@ class BenefitsAvailabilityItem extends StatelessWidget {
             child: Icon(
               Icons.check,
               color: (data.subscriptions[i].displayData?.ad?.value ?? false)
-                  ? checkConditions(data,data.subscriptions[i].id)?Colors.green:Colors.white
+                  ? checkConditions(data, data.subscriptions[i].id)
+                      ? Colors.green
+                      : Colors.white
                   : Colors.white30,
             ),
           ),
@@ -80,7 +88,9 @@ class BenefitsAvailabilityItem extends StatelessWidget {
               child: Text(
                 '${data.subscriptions[i].displayData?.screens?.value ?? 1}',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: checkConditions(data,data.subscriptions[i].id)?Colors.green:Colors.white,
+                      color: checkConditions(data, data.subscriptions[i].id)
+                          ? Colors.green
+                          : Colors.white,
                       // fontWeight: FontWeight.bold,
                       fontSize: 10.sp,
                     ),
@@ -94,7 +104,9 @@ class BenefitsAvailabilityItem extends StatelessWidget {
               child: Text(
                 data.subscriptions[i].displayData?.quality?.value ?? '720p',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: checkConditions(data,data.subscriptions[i].id)?Colors.green:Colors.white,
+                      color: checkConditions(data, data.subscriptions[i].id)
+                          ? Colors.green
+                          : Colors.white,
                       // fontWeight: FontWeight.bold,
                       fontSize: 10.sp,
                     ),
@@ -105,11 +117,12 @@ class BenefitsAvailabilityItem extends StatelessWidget {
       ),
     );
   }
+
   checkConditions(Repository data, int? id) {
-    if(data.user?.last_subscription??false){
+    if (data.user?.last_subscription ?? false) {
       return false;
     }
-    if(data.user?.last_sub?.lastSubscription?.id==id){
+    if (data.user?.last_sub?.lastSubscription?.id == id) {
       return true;
     }
     return false;

@@ -7,7 +7,9 @@ import '../../../Repository/repository.dart';
 
 class PaymentWidget extends StatelessWidget {
   const PaymentWidget({
-    super.key, required this.selected, required this.upgrade,
+    super.key,
+    required this.selected,
+    required this.upgrade,
   });
 
   final int selected;
@@ -28,7 +30,7 @@ class PaymentWidget extends StatelessWidget {
                     "You Pay",
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.white70,
-                          fontSize: 10.sp,
+                          fontSize: 12.sp,
                         ),
                   ),
                   GestureDetector(
@@ -46,7 +48,7 @@ class PaymentWidget extends StatelessWidget {
                     "₹",
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.white,
-                          fontSize: 16.sp,
+                          fontSize: 18.sp,
                         ),
                   ),
                   Consumer<Repository>(builder: (context, data, _) {
@@ -56,7 +58,7 @@ class PaymentWidget extends StatelessWidget {
                       textStyle:
                           Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: Colors.white,
-                                fontSize: 16.sp,
+                                fontSize: 18.sp,
                               ),
                     );
                   }),
@@ -65,16 +67,18 @@ class PaymentWidget extends StatelessWidget {
             ],
           ),
         ),
+        Spacer(),
         SizedBox(
-          width: 62.w,
-          height: 6.h,
+          width: 55.w,
+          height: 4.5.h,
           child: ElevatedButton(
-            onPressed: ()=>upgrade(),
+            onPressed: () => upgrade(),
             child: Text(
               "Upgrade",
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white,
-                fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.bold,
                   ),
             ),
           ),

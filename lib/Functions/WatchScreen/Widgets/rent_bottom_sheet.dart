@@ -157,7 +157,7 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
                               Provider.of<Repository>(context, listen: false));
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: const Color(0xff1b5fbd),
+                          backgroundColor: const Color(0xff1b5fbd),
                           shape: RoundedRectangleBorder(
                             borderRadius:
                                 BorderRadius.circular(8), // <-- Radius

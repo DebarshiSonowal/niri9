@@ -33,13 +33,13 @@ class _SearchPageState extends State<SearchPage> {
   Sections? selectedSections;
   Category? selectedCategory;
   int page_no = 1;
-  String currentSearch="";
+  String currentSearch = "";
   final searchEditingController = TextEditingController();
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
-      Provider.of<Repository>(context,listen: false).updateIndex(1);
+      Provider.of<Repository>(context, listen: false).updateIndex(1);
       selectedGenre = Provider.of<Repository>(context, listen: false).genres[0];
       selectedCategory =
           Provider.of<Repository>(context, listen: false).categories[0];
@@ -51,10 +51,9 @@ class _SearchPageState extends State<SearchPage> {
             .categories
             .firstWhere((element) => element.name == widget.filters);
         search("");
-      }else{
+      } else {
         search("");
       }
-
     });
     searchEditingController.addListener(() {
       setState(() {
@@ -74,12 +73,13 @@ class _SearchPageState extends State<SearchPage> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(12.4.h),
         child: SearchAppbar(
-            searchEditingController:searchEditingController,
+          searchEditingController: searchEditingController,
           search: (String val) {
             search(val);
-          }, suggest: (String val) {
+          },
+          suggest: (String val) {
             suggest(val);
-        },
+          },
         ),
       ),
       body: Container(
@@ -150,10 +150,10 @@ class _SearchPageState extends State<SearchPage> {
                 left: 2.5.w,
               ),
               child: Text(
-                currentSearch==""?"Today's Top Searches":"",
+                currentSearch == "" ? "Today's Top Searches" : "",
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Colors.white,
-                      fontSize: 13.sp,
+                      fontSize: 14.sp,
                       // fontWeight: FontWeight.bold,
                     ),
               ),
@@ -204,6 +204,7 @@ class _SearchPageState extends State<SearchPage> {
       Navigation.instance.goBack();
     }
   }
+
   void suggest(String search) async {
     // Navigation.instance.navigate(Routes.loadingScreen);
     final response = await ApiProvider.instance.search(search);

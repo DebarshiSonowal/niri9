@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:animated_background/animated_background.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_config/flutter_config.dart';
+// import 'package:flutter_config/flutter_config.dart';
 import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,6 +11,7 @@ import 'package:lottie/lottie.dart';
 import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Constants/assets.dart';
 import 'package:niri9/Constants/constants.dart';
+import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Models/plan_pricing.dart';
 import 'package:niri9/Models/subscription.dart';
 import 'package:niri9/Models/user.dart';
@@ -279,8 +280,13 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                     });
                   },
                   upgrade: () {
-                    initiateOrder(
-                        Provider.of<Repository>(context, listen: false));
+                    if (Storage.instance.isLoggedIn) {
+                      initiateOrder(
+                          Provider.of<Repository>(context, listen: false));
+                    } else {
+                      Fluttertoast.showToast(
+                          msg: "Please Log In before buying a subscription");
+                    }
                   },
                 ),
               ],
@@ -399,11 +405,13 @@ class _SubscriptionPageState extends State<SubscriptionPage>
       Fluttertoast.showToast(msg: response.message ?? "Something Went wrong");
     }
   }
+
   Future<void> fetchProfile() async {
     // Navigation.instance.navigate(Routes.loadingScreen);
     final response = await ApiProvider.instance.getProfile();
     if (response.success ?? false) {
       // Navigation.instance.goBack();
+      // Storage.instance.
       Provider.of<Repository>(context, listen: false).setUser(response.user!);
       debugPrint("User: ${response.user?.last_sub}");
     } else {
@@ -412,15 +420,18 @@ class _SubscriptionPageState extends State<SubscriptionPage>
     }
   }
 
-
   Future<void> verifyPayment(String? orderId, String? paymentId, String? amount,
-      BuildContext context) async{
+      BuildContext context) async {
+    Navigation.instance.navigate(Routes.loadingScreen);
     final response =
         await ApiProvider.instance.verifyPayment(paymentId, orderId, amount);
     if (response.success ?? false) {
       Fluttertoast.showToast(
           msg: response.message ?? "Payment was successfully");
       // showDialog(context: context, builder: builder);
+
+      await fetchProfile();
+      Navigation.instance.goBack();
       showSuccessDialog(
         context: context,
         // orderId: orderId,
@@ -428,8 +439,9 @@ class _SubscriptionPageState extends State<SubscriptionPage>
         // amount: amount,
         message: response.message ?? "You have successfully subscribed",
       );
-      await fetchProfile();
+      Navigation.instance.goBack();
     } else {
+      Navigation.instance.goBack();
       Fluttertoast.showToast(msg: response.message ?? "Something went wrong");
       showFailedDialog(
         context: context,
@@ -438,6 +450,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
         // amount: amount,
         message: response.message ?? "Please try again later",
       );
+      Navigation.instance.goBack();
     }
   }
 
@@ -516,6 +529,4 @@ class _SubscriptionPageState extends State<SubscriptionPage>
           );
         });
   }
-
-
 }

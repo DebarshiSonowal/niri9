@@ -11,6 +11,7 @@ class CommonFunctions {
         context: context,
         builder: (context) {
           return AlertDialog(
+            backgroundColor: Colors.black,
             title: Text(
               "Oops! You are not logged in",
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -26,7 +27,7 @@ class CommonFunctions {
                   "You need to log in to view the videos",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Colors.white70,
-                        fontSize: 11.sp,
+                        fontSize: 14.sp,
                       ),
                 ),
               ),
@@ -40,7 +41,7 @@ class CommonFunctions {
                 child: Text(
                   "LOG IN",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: 11.sp,
                       ),
                 ),
@@ -52,7 +53,7 @@ class CommonFunctions {
                 child: Text(
                   "Cancel",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: 11.sp,
                       ),
                 ),
@@ -134,4 +135,3 @@ class CommonFunctions {
         });
   }
 }
-

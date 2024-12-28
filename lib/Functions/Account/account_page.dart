@@ -31,7 +31,7 @@ class _AccountPageState extends State<AccountPage> {
           child: Column(
             children: [
               SizedBox(
-                height: 4.h,
+                height: 3.h,
               ),
               Row(
                 children: [
@@ -58,7 +58,7 @@ class _AccountPageState extends State<AccountPage> {
                     "Account Settings",
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Colors.white,
-                          fontSize: 13.sp,
+                          fontSize: 15.sp,
                         ),
                   ),
                   const Spacer(),
@@ -83,7 +83,7 @@ class _AccountPageState extends State<AccountPage> {
                       "Manage Profiles",
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: Colors.white,
-                            fontSize: 13.sp,
+                            fontSize: 15.sp,
                           ),
                     ),
                   ),
@@ -105,7 +105,7 @@ class _AccountPageState extends State<AccountPage> {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               var item = data.items[index];
-              if(item.name=="Activate TV"){
+              if (item.name == "Activate TV") {
                 return Container();
               }
               return ListTile(
@@ -124,13 +124,14 @@ class _AccountPageState extends State<AccountPage> {
                       : (item.name ?? ""),
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         color: Colors.white,
+                        fontSize: 14.sp,
                       ),
                 ),
               );
             },
             separatorBuilder: (context, index) {
               var item = data.items[index];
-              if(item.name=="Activate TV"){
+              if (item.name == "Activate TV") {
                 return Container();
               }
               return Divider(

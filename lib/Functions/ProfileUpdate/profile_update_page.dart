@@ -87,7 +87,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                 height: 4.h,
               ),
               TextFormField(
-                style: Theme.of(context).textTheme.headline5?.copyWith(
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: Colors.black,
                       // fontSize: 1.6.h,
                     ),
@@ -102,7 +102,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                   fillColor: Colors.white,
                   floatingLabelBehavior: FloatingLabelBehavior.never,
                   labelText: 'Enter your First Name',
-                  labelStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                  labelStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: Colors.black,
                         // fontSize: 1.5.h,
                       ),
@@ -114,7 +114,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                 height: 2.h,
               ),
               TextFormField(
-                style: Theme.of(context).textTheme.headline5?.copyWith(
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: Colors.black,
                       // fontSize: 1.6.h,
                     ),
@@ -129,7 +129,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                   fillColor: Colors.white,
                   floatingLabelBehavior: FloatingLabelBehavior.never,
                   labelText: 'Enter your Last Name',
-                  labelStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                  labelStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: Colors.black,
                         // fontSize: 1.5.h,
                       ),
@@ -141,7 +141,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                 height: 2.h,
               ),
               TextFormField(
-                style: Theme.of(context).textTheme.headline5?.copyWith(
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: Colors.black,
                       // fontSize: 1.6.h,
                     ),
@@ -156,7 +156,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                   fillColor: Colors.white,
                   floatingLabelBehavior: FloatingLabelBehavior.never,
                   labelText: 'Enter your Email',
-                  labelStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                  labelStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: Colors.black,
                         // fontSize: 1.5.h,
                       ),

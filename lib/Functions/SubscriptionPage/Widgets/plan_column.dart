@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:niri9/Models/display_data.dart';
+import 'package:niri9/main.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Constants/constants.dart';

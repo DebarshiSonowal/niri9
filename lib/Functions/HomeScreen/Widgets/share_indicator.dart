@@ -12,7 +12,7 @@ class ShareIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: ()=>onTap(),
+      onTap: () => onTap(),
       child: SizedBox(
         width: 15.w,
         height: 5.h,
@@ -21,16 +21,16 @@ class ShareIndicator extends StatelessWidget {
           children: [
             Icon(
               Icons.share,
-              size: 16.sp,
+              size: 19.sp,
               color: Colors.white,
             ),
             Text(
               "Share",
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white,
-                fontSize: 9.sp,
-                fontWeight: FontWeight.bold,
-              ),
+                    color: Colors.white,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
             )
           ],
         ),

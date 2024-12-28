@@ -84,7 +84,7 @@ class BannerSection extends StatefulWidget {
 
 class _BannerSectionState extends State<BannerSection> {
   int _current = 0;
-  final CarouselController controller = CarouselController();
+  final CarouselSliderController controller = CarouselSliderController();
 
   @override
   void initState() {

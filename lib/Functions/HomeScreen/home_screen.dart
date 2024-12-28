@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:niri9/API/api_provider.dart';
+import 'package:niri9/Constants/assets.dart';
 import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Repository/repository.dart';
 import 'package:provider/provider.dart';
@@ -31,8 +32,27 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
     Future.delayed(Duration.zero, () {
       // fetchData(context);
       Provider.of<Repository>(context, listen: false).updateIndex(0);
-      fetchRecentlyViewed(context,1);
+      fetchRecentlyViewed(context, 1);
     });
+    Future.delayed(Duration(seconds: 2), () => showPopupAd());
+  }
+
+  void showPopupAd() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(Assets.popUpImage),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -112,7 +132,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
 
     await fetchTypes(context);
     if (!context.mounted) return;
-    await fetchRecentlyViewed(context,1);
+    await fetchRecentlyViewed(context, 1);
     // Navigation.instance.goBack();
   }
 
@@ -150,7 +170,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
 //         .updateRefund(response.result!);
 //   } else {}
 // }
-  Future<void> fetchRecentlyViewed(BuildContext context,int page_no) async {
+  Future<void> fetchRecentlyViewed(BuildContext context, int page_no) async {
     final response = await ApiProvider.instance.getRecentlyVideos(page_no);
     if (response.success ?? false) {
       if (!context.mounted) return;

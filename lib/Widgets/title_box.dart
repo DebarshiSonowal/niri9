@@ -5,7 +5,10 @@ import '../Constants/constants.dart';
 
 class TitleBox extends StatelessWidget {
   const TitleBox({
-    super.key, this.text, required this.onTap, required this.isEnd,
+    super.key,
+    this.text,
+    required this.onTap,
+    required this.isEnd,
   });
   final String? text;
   final Function onTap;
@@ -22,14 +25,21 @@ class TitleBox extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(text??""),
-          isEnd?GestureDetector(
-            onTap: ()=>onTap(),
-            child: const Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: Constants.thirdColor,
+          Text(
+            text ?? "",
+            style: TextStyle(
+              fontSize: 16.sp,
             ),
-          ):Container(),
+          ),
+          isEnd
+              ? GestureDetector(
+                  onTap: () => onTap(),
+                  child: const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: Constants.thirdColor,
+                  ),
+                )
+              : Container(),
         ],
       ),
     );

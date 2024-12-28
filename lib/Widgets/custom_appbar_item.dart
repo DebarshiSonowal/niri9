@@ -29,14 +29,14 @@ class CustomAppbarItem extends StatelessWidget {
               (index == 0 || index == 2)
                   ? CachedNetworkImage(
                       imageUrl: item.image!,
-                      height: 16.sp,
-                      width: 16.sp,
+                      height: 19.sp,
+                      width: 19.sp,
                       // color: Colors.white,
                     )
                   : CachedNetworkImage(
                       imageUrl: item.image!,
-                      height: 16.sp,
-                      width: 16.sp,
+                      height: 19.sp,
+                      width: 19.sp,
                       // color: Colors.white,
                     ),
               SizedBox(
@@ -48,7 +48,7 @@ class CustomAppbarItem extends StatelessWidget {
                   child: Text(
                     item.name ?? "",
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.white,
                         ),
                   ),

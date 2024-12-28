@@ -27,20 +27,17 @@ class BenefitsName extends StatelessWidget {
                 children: <InlineSpan>[
                   TextSpan(
                     text: 'Movies, Tv Series, Music Video',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(
-                      color: Colors.white54,
-                      fontSize: 10.sp,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.white54,
+                          fontSize: 13.sp,
+                        ),
                   )
                 ],
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white,
-                  // fontWeight: FontWeight.bold,
-                  fontSize: 9.sp,
-                ),
+                      color: Colors.white,
+                      // fontWeight: FontWeight.bold,
+                      fontSize: 12.sp,
+                    ),
               ),
             ),
             // height:,
@@ -53,12 +50,11 @@ class BenefitsName extends StatelessWidget {
               children: [
                 Text(
                   'Watch On TV',
-                  style:
-                  Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white,
-                    // fontWeight: FontWeight.bold,
-                    fontSize: 10.sp,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                        // fontWeight: FontWeight.bold,
+                        fontSize: 13.sp,
+                      ),
                 ),
               ],
             ),
@@ -71,12 +67,11 @@ class BenefitsName extends StatelessWidget {
               children: [
                 Text(
                   'Ads Free',
-                  style:
-                  Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white,
-                    // fontWeight: FontWeight.bold,
-                    fontSize: 10.sp,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                        // fontWeight: FontWeight.bold,
+                        fontSize: 13.sp,
+                      ),
                 ),
               ],
             ),
@@ -91,14 +86,11 @@ class BenefitsName extends StatelessWidget {
                   width: 30.w,
                   child: Text(
                     'Number of devices that can be logged in',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(
-                      color: Colors.white,
-                      // fontWeight: FontWeight.bold,
-                      fontSize: 10.sp,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.white,
+                          // fontWeight: FontWeight.bold,
+                          fontSize: 13.sp,
+                        ),
                     maxLines: 2,
                   ),
                 ),
@@ -113,12 +105,11 @@ class BenefitsName extends StatelessWidget {
               children: [
                 Text(
                   'Max Video Quality',
-                  style:
-                  Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white,
-                    // fontWeight: FontWeight.bold,
-                    fontSize: 10.sp,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                        // fontWeight: FontWeight.bold,
+                        fontSize: 13.sp,
+                      ),
                 ),
               ],
             ),

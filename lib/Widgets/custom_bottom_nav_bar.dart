@@ -23,7 +23,7 @@ class CustomBottomNavBar extends StatelessWidget {
         Provider.of<Repository>(context, listen: false).updateIndex(val);
         switch (val) {
           case 1:
-            Navigation.instance.navigate(Routes.searchScreen,args: "");
+            Navigation.instance.navigate(Routes.searchScreen, args: "");
             break;
           case 2:
             Navigation.instance.navigate(Routes.premiumScreen);
@@ -39,19 +39,23 @@ class CustomBottomNavBar extends StatelessWidget {
             break;
         }
       },
-      selectedFontSize: 11.sp,
-      unselectedFontSize: 9.sp,
+      selectedFontSize: 13.sp,
+      unselectedFontSize: 11.sp,
       showUnselectedLabels: true,
       unselectedIconTheme: const IconThemeData(color: Color(0xff9a9a9a)),
       currentIndex:
-      Provider.of<Repository>(context, listen: false).currentIndex,
+          Provider.of<Repository>(context, listen: false).currentIndex,
       items: [
         BottomNavigationBarItem(
           backgroundColor: Constants.bottomNavigationBarBackgroundColor,
           icon: Image.asset(
             Assets.homeImage,
             scale: 24,
-            color: Provider.of<Repository>(context, listen: false).currentIndex==0?Colors.red:Colors.white,
+            color:
+                Provider.of<Repository>(context, listen: false).currentIndex ==
+                        0
+                    ? Colors.red
+                    : Colors.white,
           ),
           label: "Home",
         ),
@@ -60,7 +64,11 @@ class CustomBottomNavBar extends StatelessWidget {
           icon: Image.asset(
             Assets.searchImage,
             scale: 24,
-            color: Provider.of<Repository>(context, listen: false).currentIndex==1?Colors.red:Colors.white,
+            color:
+                Provider.of<Repository>(context, listen: false).currentIndex ==
+                        1
+                    ? Colors.red
+                    : Colors.white,
           ),
           label: "Search",
         ),
@@ -69,7 +77,11 @@ class CustomBottomNavBar extends StatelessWidget {
           icon: Image.asset(
             Assets.premiumImage,
             scale: 24,
-            color: Provider.of<Repository>(context, listen: false).currentIndex==2?Colors.red:Colors.white,
+            color:
+                Provider.of<Repository>(context, listen: false).currentIndex ==
+                        2
+                    ? Colors.red
+                    : Colors.white,
           ),
           label: "Trending",
         ),
@@ -79,7 +91,11 @@ class CustomBottomNavBar extends StatelessWidget {
             Assets.rentImage,
             // color: Colors.white,
             scale: 24,
-            color: Provider.of<Repository>(context, listen: false).currentIndex==3?Colors.red:Colors.white,
+            color:
+                Provider.of<Repository>(context, listen: false).currentIndex ==
+                        3
+                    ? Colors.red
+                    : Colors.white,
           ),
           label: "Rent",
         ),
@@ -87,7 +103,11 @@ class CustomBottomNavBar extends StatelessWidget {
           backgroundColor: Constants.bottomNavigationBarBackgroundColor,
           icon: Image.asset(
             Assets.accountImage,
-            color: Provider.of<Repository>(context, listen: false).currentIndex==4?Colors.red:Colors.white,
+            color:
+                Provider.of<Repository>(context, listen: false).currentIndex ==
+                        4
+                    ? Colors.red
+                    : Colors.white,
             scale: 24,
           ),
           label: "Account",

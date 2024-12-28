@@ -108,11 +108,11 @@ class _OtpPageState extends State<OtpPage> {
                     inactiveFillColor: Colors.black54,
                   ),
 
-                  textStyle: Theme.of(context).textTheme.headline5?.copyWith(
+                  textStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         color: Colors.white,
                       ),
                   hintCharacter: '0',
-                  hintStyle: Theme.of(context).textTheme.headline5?.copyWith(
+                  hintStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         color: Colors.grey.shade300,
                         fontSize: 2.h,
                       ),
@@ -261,7 +261,7 @@ class _OtpPageState extends State<OtpPage> {
             title: const Text("Error"),
             content: Text(
               errorMessage,
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             actions: [
               TextButton(

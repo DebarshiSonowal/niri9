@@ -30,7 +30,7 @@ class AlertX {
               backgroundColor: Colors.white,
               title: Text(
                 title,
-                style: Theme.of(context).textTheme.headline4?.copyWith(
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                 ),
@@ -40,7 +40,7 @@ class AlertX {
               actionsPadding: const EdgeInsets.only(left: 16, right: 16),
               content: Text(
                 msg,
-                style: Theme.of(context).textTheme.headline5?.copyWith(
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: Colors.black87,
                 ),
               ),
@@ -50,7 +50,7 @@ class AlertX {
                     onPressed: negativeButtonPressed,
                     child: Text(
                       negativeButtonText,
-                      style: Theme.of(context).textTheme.headline4?.copyWith(
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         color: Colors.grey.shade700,
                         fontWeight: FontWeight.bold,
                       ),
@@ -62,7 +62,7 @@ class AlertX {
                   },
                   child: Text(
                     positiveButtonText,
-                    style: Theme.of(context).textTheme.headline4?.copyWith(
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Constants.primaryColor,
                       fontWeight: FontWeight.bold,
                     ),

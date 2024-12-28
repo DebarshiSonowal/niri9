@@ -1,10 +1,12 @@
-import 'package:appinio_video_player/appinio_video_player.dart';
+// import 'package:appinio_video_player/appinio_video_player.dart';
+import 'package:cached_video_player_plus/cached_video_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:niri9/Functions/WatchScreen/Widgets/video_section.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
+// import 'package:video_player/video_player.dart';
 import '../../../Constants/assets.dart';
 import '../../../Models/video_details.dart';
 import '../../../Navigation/Navigate.dart';
@@ -19,25 +21,27 @@ import 'options_bar.dart';
 class WatchPrimaryScreen extends StatelessWidget {
   const WatchPrimaryScreen({
     super.key,
-    required CustomVideoPlayerController? customVideoPlayerController,
-    required this.videoPlayerController,
+    required CachedVideoPlayerPlusController? customVideoPlayerController,
+    // required this.videoPlayerController,
     required this.showing,
     required this.onClicked,
     required this.setVideo,
     required this.setVideoSource,
     required this.updateVideoListId,
-    required this.id, required this.fetchFromId,
+    required this.id,
+    required this.fetchFromId,
   }) : _customVideoPlayerController = customVideoPlayerController;
 
-  final CustomVideoPlayerController? _customVideoPlayerController;
-  final VideoPlayerController? videoPlayerController;
+  final CachedVideoPlayerPlusController? _customVideoPlayerController;
+  // final CachedVideoPlayerController? videoPlayerController;
   final bool showing;
   final int id;
   final Function onClicked;
   final Function(VideoDetails item) setVideo;
   final Function(int item) updateVideoListId;
   final Function(int item) fetchFromId;
-  final Function(MapEntry<String, VideoPlayerController> item) setVideoSource;
+  final Function(MapEntry<String, CachedVideoPlayerPlusController> item)
+      setVideoSource;
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +64,8 @@ class WatchPrimaryScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () async {
                       EasyLoading.dismiss();
-                      await videoPlayerController?.pause();
-                      await videoPlayerController?.dispose();
+                      // await videoPlayerController?.pause();
+                      // await videoPlayerController?.dispose();
                       _customVideoPlayerController?.dispose();
 
                       Navigation.instance.goBack();
@@ -69,26 +73,18 @@ class WatchPrimaryScreen extends StatelessWidget {
                     child: Icon(
                       Icons.arrow_back,
                       color: Colors.white,
-                      size: 15.sp,
+                      size: 20.sp,
                     ),
                   ),
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     showQuality(context);
-                  //   },
-                  //   child: const Icon(
-                  //     Icons.settings,
-                  //     color: Colors.white,
-                  //   ),
-                  // ),
                 ],
               ),
             ),
-            (_customVideoPlayerController != null &&
-                    videoPlayerController != null)
+            (_customVideoPlayerController != null
+                // && videoPlayerController != null
+                )
                 ? VideoSection(
                     customVideoPlayerController: _customVideoPlayerController!,
-                    isPlaying: videoPlayerController!.value.isPlaying,
+                    isPlaying: _customVideoPlayerController!.value.isPlaying,
                     showing: showing,
                     onClicked: onClicked,
                   )
@@ -101,8 +97,9 @@ class WatchPrimaryScreen extends StatelessWidget {
                     ),
                   ),
             const InfoBar(),
-            (_customVideoPlayerController != null &&
-                    videoPlayerController != null)
+            (_customVideoPlayerController != null
+                // && videoPlayerController != null
+                )
                 ? OptionsBar(
                     customVideoPlayerController: _customVideoPlayerController!,
                   )

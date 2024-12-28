@@ -45,6 +45,15 @@ class _RentPageState extends State<RentPage> {
     // );
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              Navigation.instance.goBack();
+            },
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            )),
+        backgroundColor: Colors.black,
         title: Text(
           "Rent",
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
