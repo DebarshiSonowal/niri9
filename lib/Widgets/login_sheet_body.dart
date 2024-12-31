@@ -399,13 +399,13 @@ class _LoginSheetBodyState extends State<LoginSheetBody> {
   void verifyOTP(String mobile, String otp) async {
     debugPrint("OTP verification for $mobile");
     if (isIndianNumber(mobile)) {
-      loginByOTP("${selectedCountryCode.dialCode}$mobile", otp);
+      loginByOTP("$mobile", otp);
     } else {
       try {
         PhoneAuthCredential credential = PhoneAuthProvider.credential(
             verificationId: _verificationId ?? "", smsCode: otpController.text);
         await _auth.signInWithCredential(credential).then((value) {
-          loginByOTP("${selectedCountryCode.dialCode}$mobile", "");
+          loginByOTP("$mobile", "");
         });
       } on FirebaseAuthException catch (e) {
         debugPrint("FirebaseAuthException: ${e.code} ${e.message}");

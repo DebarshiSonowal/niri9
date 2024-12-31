@@ -130,42 +130,62 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Theme.of(context).cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
           title: Text(
             "Oops!",
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white,
-                  fontSize: 14.sp,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Theme.of(context).textTheme.titleLarge?.color,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
                 ),
           ),
           content: Text(
-            "Looks like you haven't logged in",
+            "Looks like you haven't logged in. Please log in to continue.",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white70,
-                  fontSize: 12.sp,
+                  color: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.color
+                      ?.withOpacity(0.8),
+                  fontSize: 14.sp,
                 ),
           ),
+          actionsAlignment: MainAxisAlignment.end,
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.of(context).pop();
               },
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.secondary,
+              ),
               child: Text(
                 "Cancel",
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white,
-                      fontSize: 12.sp,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontSize: 14.sp,
                     ),
               ),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () {
                 Navigation.instance.navigate(Routes.loginScreen);
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                padding:
+                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 1.5.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
               child: Text(
                 "Login",
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: Colors.white,
-                      fontSize: 12.sp,
+                      fontSize: 14.sp,
                     ),
               ),
             ),

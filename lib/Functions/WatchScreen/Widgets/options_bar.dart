@@ -109,7 +109,7 @@ class OptionsBar extends StatelessWidget {
                           if ((data.videoDetails?.trailer_player ?? "") != "") {
                             await customVideoPlayerController.pause();
                             await showTrailer(
-                                data.videoDetails?.trailer_player ?? "",
+                                "${data.videoDetails?.trailer_player}?${DateTime.now().microsecondsSinceEpoch}",
                                 context);
                           } else {}
                         },
@@ -182,6 +182,7 @@ class OptionsBar extends StatelessWidget {
   }
 
   Future<bool> showTrailer(String url, BuildContext context) async {
+    debugPrint("showTrailer $url");
     final resp = await showDialog(
       context: context,
       builder: (context) {

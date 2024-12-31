@@ -10,7 +10,8 @@ class PlansSection extends StatelessWidget {
   const PlansSection({
     super.key,
     required this.selected,
-    required this.onTap, required this.upgrade,
+    required this.onTap,
+    required this.upgrade,
   });
 
   final int selected;
@@ -26,7 +27,7 @@ class PlansSection extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SizedBox(
-            height: 15.5.h,
+            height: 14.h,
             width: double.infinity,
             child: Consumer<Repository>(builder: (context, data, _) {
               return ListView.separated(
@@ -49,7 +50,10 @@ class PlansSection extends StatelessWidget {
               );
             }),
           ),
-          PaymentWidget(selected: selected,upgrade: ()=>upgrade(),),
+          PaymentWidget(
+            selected: selected,
+            upgrade: () => upgrade(),
+          ),
         ],
       ),
     );

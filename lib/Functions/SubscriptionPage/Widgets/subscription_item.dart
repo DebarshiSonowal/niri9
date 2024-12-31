@@ -23,7 +23,7 @@ class SubscriptionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 15.5.h,
+      height: 14.h,
       child: Stack(
         alignment: Alignment.topRight,
         children: [
@@ -106,38 +106,38 @@ class SubscriptionItem extends StatelessWidget {
                             fontSize: 14.sp,
                           ),
                     ),
-                    SizedBox(
-                      height: 0.5.h,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          "₹${(item.base_price_inr ?? 599).toInt()}",
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Colors.white70,
-                                    fontSize: 12.sp,
-                                    decoration: TextDecoration.lineThrough,
-                                  ),
-                        ),
-                        SizedBox(
-                          width: 0.5.w,
-                        ),
-                        Text(
-                          "₹${(item.base_price_usd ?? 100).toInt()} OFF",
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: checkConditions(data, item.id)
-                                        ? Colors.green
-                                        : Colors.red,
-                                    fontSize: 13.sp,
-                                    // decoration:
-                                    // TextDecoration.lineThrough,
-                                  ),
-                        ),
-                      ],
-                    ),
+                    // SizedBox(
+                    //   height: 0.5.h,
+                    // ),
+                    // Row(
+                    //   crossAxisAlignment: CrossAxisAlignment.end,
+                    //   children: [
+                    //     Text(
+                    //       "₹${(item.base_price_inr ?? 599).toInt()}",
+                    //       style:
+                    //           Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    //                 color: Colors.white70,
+                    //                 fontSize: 12.sp,
+                    //                 decoration: TextDecoration.lineThrough,
+                    //               ),
+                    //     ),
+                    //     SizedBox(
+                    //       width: 0.5.w,
+                    //     ),
+                    //     Text(
+                    //       "₹${(item.base_price_usd ?? 100).toInt()} OFF",
+                    //       style:
+                    //           Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    //                 color: checkConditions(data, item.id)
+                    //                     ? Colors.green
+                    //                     : Colors.red,
+                    //                 fontSize: 13.sp,
+                    //                 // decoration:
+                    //                 // TextDecoration.lineThrough,
+                    //               ),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 );
               }),

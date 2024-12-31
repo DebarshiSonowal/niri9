@@ -20,7 +20,7 @@ class PaymentWidget extends StatelessWidget {
       children: [
         SizedBox(
           width: 30.w,
-          height: 6.h,
+          height: 7.h,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

@@ -6,6 +6,7 @@ import 'package:niri9/Functions/WatchScreen/Widgets/video_section.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
+
 // import 'package:video_player/video_player.dart';
 import '../../../Constants/assets.dart';
 import '../../../Models/video_details.dart';
@@ -30,9 +31,11 @@ class WatchPrimaryScreen extends StatelessWidget {
     required this.updateVideoListId,
     required this.id,
     required this.fetchFromId,
+    required this.updateIsPlaying,
   }) : _customVideoPlayerController = customVideoPlayerController;
 
   final CachedVideoPlayerPlusController? _customVideoPlayerController;
+
   // final CachedVideoPlayerController? videoPlayerController;
   final bool showing;
   final int id;
@@ -40,6 +43,7 @@ class WatchPrimaryScreen extends StatelessWidget {
   final Function(VideoDetails item) setVideo;
   final Function(int item) updateVideoListId;
   final Function(int item) fetchFromId;
+  final Function(bool val) updateIsPlaying;
   final Function(MapEntry<String, CachedVideoPlayerPlusController> item)
       setVideoSource;
 
@@ -87,6 +91,9 @@ class WatchPrimaryScreen extends StatelessWidget {
                     isPlaying: _customVideoPlayerController!.value.isPlaying,
                     showing: showing,
                     onClicked: onClicked,
+                    updateIsPlaying: (bool val) {
+                      updateIsPlaying(val);
+                    },
                   )
                 : Shimmer.fromColors(
                     baseColor: Colors.black,

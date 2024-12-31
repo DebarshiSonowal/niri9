@@ -149,6 +149,9 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
                     fetchFromId: (int item) {
                       fetchDetails(item);
                     },
+                    updateIsPlaying: (bool val) {
+                      setState(() {});
+                    },
                   );
                 }
                 if (_.hasError || (_.hasData && _.data == false)) {
@@ -259,8 +262,9 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
       for (var i in response.videoResolutions) {
         additionalVideoSources?.addAll({
           "${i.resolution}": CachedVideoPlayerPlusController.networkUrl(
-              Uri.parse(url ?? Assets.videoUrl))
-            ..addListener(() => videoControllerListener(context)),
+            Uri.parse(url ?? Assets.videoUrl),
+            invalidateCacheIfOlderThan: const Duration(seconds: 1),
+          )..addListener(() => videoControllerListener(context)),
         });
       }
       setState(() {
@@ -272,8 +276,9 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
     }
     try {
       videoPlayerController = CachedVideoPlayerPlusController.networkUrl(
-          Uri.parse(url ?? Assets.videoUrl))
-        ..initialize().then((value) async {
+        Uri.parse(url ?? Assets.videoUrl),
+        invalidateCacheIfOlderThan: const Duration(seconds: 1),
+      )..initialize().then((value) async {
           videoPlayerController
               ?.addListener(() => videoControllerListener(context));
           videoPlayerController?.play().then((value) {
@@ -314,8 +319,9 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
       for (var i in response.videoResolutions) {
         additionalVideoSources?.addAll({
           "${i.resolution}": CachedVideoPlayerPlusController.networkUrl(
-              Uri.parse(url ?? Assets.videoUrl))
-            ..addListener(() => videoControllerListener(context)),
+            Uri.parse(url ?? Assets.videoUrl),
+            invalidateCacheIfOlderThan: const Duration(seconds: 1),
+          )..addListener(() => videoControllerListener(context)),
         });
       }
       setState(() {});
@@ -325,8 +331,9 @@ class _WatchScreenState extends State<WatchScreen> with WidgetsBindingObserver {
     }
     try {
       videoPlayerController = CachedVideoPlayerPlusController.networkUrl(
-          Uri.parse(url ?? Assets.videoUrl))
-        ..initialize().then((value) async {
+        Uri.parse(url ?? Assets.videoUrl),
+        invalidateCacheIfOlderThan: const Duration(seconds: 1),
+      )..initialize().then((value) async {
           videoPlayerController
               ?.addListener(() => videoControllerListener(context));
           videoPlayerController?.play().then((value) {

@@ -61,6 +61,7 @@ class _TrailerWidgetState extends State<TrailerWidget> {
     _customVideoPlayerController = CachedVideoPlayerPlusController.networkUrl(
       Uri.parse(
           "https://customer-edsfz57k0gqg8bse.cloudflarestream.com/4cd3574842ee86e0bff21ed6c9d61238/manifest/video.m3u8"),
+      invalidateCacheIfOlderThan: const Duration(seconds: 1),
     );
     await _customVideoPlayerController.initialize();
     _customVideoPlayerController.play();

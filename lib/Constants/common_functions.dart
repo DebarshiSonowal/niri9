@@ -65,58 +65,66 @@ class CommonFunctions {
 
   void showNotSubscribedDialog(BuildContext context) {
     showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              "Oops! You're are not allowed to view it.",
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.white,
-                    fontSize: 13.sp,
-                  ),
-            ),
-            content: SizedBox(
-              width: 70.w,
-              height: 5.h,
-              child: Center(
-                child: Text(
-                  "You need to either buy a subscription or upgrade to a better plan",
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white70,
-                        fontSize: 11.sp,
-                      ),
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.black,
+          title: Text(
+            "Oops! You are not allowed to view it.",
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.white,
+                  fontSize: 14.sp,
                 ),
+          ),
+          content: SizedBox(
+            width: 70.w,
+            height: 5.h,
+            child: Center(
+              child: Text(
+                "You need to either buy a subscription or upgrade to a better plan",
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.white70,
+                      fontSize: 13.sp,
+                    ),
               ),
             ),
-            actions: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigation.instance.navigate(Routes.subscriptionScreen);
-                },
-                child: Text(
-                  "Upgrade",
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white,
-                        fontSize: 11.sp,
-                      ),
-                ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigation.instance.navigate(Routes.subscriptionScreen);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue, // Adjust button color as needed
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  "Cancel",
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white,
-                        fontSize: 11.sp,
-                      ),
-                ),
+              child: Text(
+                "Upgrade",
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                    ),
               ),
-            ],
-          );
-        });
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey, // Adjust button color as needed
+              ),
+              child: Text(
+                "Cancel",
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                    ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void showLoginSheet(BuildContext context) {
