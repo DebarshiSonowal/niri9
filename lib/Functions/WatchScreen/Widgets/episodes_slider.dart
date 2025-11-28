@@ -171,7 +171,7 @@ class _EpisodeSliderState extends State<EpisodeSlider> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigation.instance.navigate(Routes.loginScreen);
+                Navigation.instance.navigate(Routes.loginScreen, args: "");
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColor,

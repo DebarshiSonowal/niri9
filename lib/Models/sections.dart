@@ -41,7 +41,7 @@ class SectionsResponse {
   List<Sections> sections = [];
 
   SectionsResponse.fromJson(json) {
-    status = json['status'] ?? true;
+    status = json['success'] ?? json['status'] ?? true;
     message = json['message'] ?? "Something went wrong";
     sections = json['result'] == null
         ? []

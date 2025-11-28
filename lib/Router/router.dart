@@ -19,6 +19,7 @@ import 'package:niri9/Functions/Rent/rent_page.dart';
 import 'package:niri9/Functions/Search/search_page.dart';
 import 'package:niri9/Functions/TermsConditions/terms_conditions.dart';
 import 'package:niri9/Functions/WatchList/watch_list_screen.dart';
+import 'package:niri9/Functions/WatchScreen/watch_screen_new.dart';
 import 'package:niri9/Router/routes.dart';
 
 import '../Functions/AboutPage/about_page.dart';
@@ -29,7 +30,6 @@ import '../Functions/RecentlyViewed/recently_viewed_screen.dart';
 import '../Functions/SplashScreen/splash_screen.dart';
 import '../Functions/SubscriptionPage/subscription_page.dart';
 import '../Functions/Trending/trending_page.dart';
-import '../Functions/WatchScreen/watch_screen.dart';
 import '../Widgets/FadeTransitionBuilder.dart';
 import '../Widgets/loading_dialog.dart';
 
@@ -38,10 +38,18 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case Routes.splashScreen:
       return FadeTransitionPageRouteBuilder(page: const SplashScreen());
     case Routes.loginScreen:
-      return FadeTransitionPageRouteBuilder(page: const LoginPage());
-    case Routes.otpScreen:
       return FadeTransitionPageRouteBuilder(
-          page: OtpPage(mobile: settings.arguments as String));
+        page: LoginPage(
+          fromwhere: settings.arguments as String,
+        ),
+      );
+    case Routes.otpScreen:
+      final data = settings.arguments as Map<String, dynamic>;
+      return FadeTransitionPageRouteBuilder(
+          page: OtpPage(
+        mobile: data['mobile'],
+        whereToGo: data['whereToGo'],
+      ));
     case Routes.profile:
       return FadeTransitionPageRouteBuilder(page: const ProfilePage());
     //main
@@ -74,7 +82,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return FadeTransitionPageRouteBuilder(page: const FilmFestivalPage());
     case Routes.watchScreen:
       return FadeTransitionPageRouteBuilder(
-          page: WatchScreen(
+          page: WatchScreenNew(
         id: settings.arguments as int,
       ));
     case Routes.subscriptionScreen:
@@ -96,7 +104,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case Routes.activateTV:
       return FadeTransitionPageRouteBuilder(page: const ActivateTvScreen());
     case Routes.notificationInbox:
-      return FadeTransitionPageRouteBuilder(page: const NotificationInboxScreen());
+      return FadeTransitionPageRouteBuilder(
+          page: const NotificationInboxScreen());
 
     case Routes.watchlistScreen:
       return FadeTransitionPageRouteBuilder(page: const WatchListScreen());

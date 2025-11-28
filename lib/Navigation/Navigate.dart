@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../Repository/repository.dart';
+import '../Router/routes.dart';
 
 class Navigation {
   final String initialRoute = "/";
@@ -7,6 +10,7 @@ class Navigation {
   static final Navigation instance = Navigation._privateConstructor();
 
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
   Future<dynamic>? navigate(String path, {Object? args}) {
     return navigatorKey.currentState?.pushNamed(path, arguments: args);

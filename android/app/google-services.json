@@ -1,68 +1,26 @@
 {
   "project_info": {
-    "project_number": "300760354070",
-    "firebase_url": "https://niri9-c2612-default-rtdb.firebaseio.com",
-    "project_id": "niri9-c2612",
-    "storage_bucket": "niri9-c2612.appspot.com"
+    "project_number": "835213281230",
+    "project_id": "niri9-aca24",
+    "storage_bucket": "niri9-aca24.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:300760354070:android:e2086c9a9609e0f61c5437",
+        "mobilesdk_app_id": "1:835213281230:android:6ed0654bd054add1f74d9f",
         "android_client_info": {
           "package_name": "com.niri.niri9"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "300760354070-i35oqbo6ht75f9i3i96lq641b31pme5g.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.niri.niri9",
-            "certificate_hash": "a52f9258b3365bf1adbbd4827d758d8a0ded38b8"
-          }
-        },
-        {
-          "client_id": "300760354070-k5i9mdr3g89abm8o02qnpsvbs4in3g62.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.niri.niri9",
-            "certificate_hash": "47e7a7645890251f58d46ec289d91e377d071cdb"
-          }
-        },
-        {
-          "client_id": "300760354070-r97lc1drqp3qde8ob2atees1soaqmk2g.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.niri.niri9",
-            "certificate_hash": "8380022215f67f9de75f4dc3f93b7b62247453ac"
-          }
-        },
-        {
-          "client_id": "300760354070-le1qmdn4g1j0a6ld2s17bgmrmfml2nmf.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBJbNMXvoQX1JlYEQ5EpL3rGv2Tb6wDSRw"
+          "current_key": "AIzaSyDDUgtHxkoVRkOa0pZINERUdsnLs57s5uQ"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "300760354070-le1qmdn4g1j0a6ld2s17bgmrmfml2nmf.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "300760354070-9rmome94nca70mtr4h9p1k9cm0a4t89q.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.niri9"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

@@ -1,8 +1,7 @@
-import 'package:cached_video_player_plus/cached_video_player_plus.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-
-import '../../../Constants/assets.dart';
+import 'package:video_player/video_player.dart';
 
 class TrailerWidget extends StatefulWidget {
   const TrailerWidget({super.key, required this.url});
@@ -14,18 +13,18 @@ class TrailerWidget extends StatefulWidget {
 }
 
 class _TrailerWidgetState extends State<TrailerWidget> {
-  late CachedVideoPlayerPlusController _customVideoPlayerController;
-  late Future<bool> _future;
-
+  late VideoPlayerController _videoPlayerController;
+  ChewieController? _chewieController;
   @override
   void initState() {
     super.initState();
-    _future = initiateVideoPlayer(widget.url);
+    initializePlayer(widget.url);
   }
 
   @override
   void dispose() {
-    _customVideoPlayerController.dispose();
+    _chewieController?.dispose();
+    _videoPlayerController.dispose();
     super.dispose();
   }
 
@@ -35,37 +34,33 @@ class _TrailerWidgetState extends State<TrailerWidget> {
       width: 85.w,
       height: 20.h,
       color: Colors.black,
-      child: FutureBuilder<bool>(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              return const Center(
-                child: Text("Something went wrong"),
-              );
-            }
-            return CachedVideoPlayerPlus(_customVideoPlayerController);
-          }
-          return const Center(
-            child: CircularProgressIndicator(
-              color: Colors.white,
-            ),
-          );
-        },
+      child: Center(
+        child: _chewieController != null
+            ? Chewie(controller: _chewieController!)
+            : CircularProgressIndicator(),
       ),
     );
   }
 
-  Future<bool> initiateVideoPlayer(String url) async {
-    debugPrint(url);
-    _customVideoPlayerController = CachedVideoPlayerPlusController.networkUrl(
-      Uri.parse(
-          "https://customer-edsfz57k0gqg8bse.cloudflarestream.com/4cd3574842ee86e0bff21ed6c9d61238/manifest/video.m3u8"),
-      invalidateCacheIfOlderThan: const Duration(seconds: 1),
+  Future<void> initializePlayer(String url) async {
+    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(url));
+
+    await _videoPlayerController.initialize();
+
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController,
+      autoPlay: true,
+      looping: false,
+      aspectRatio: _videoPlayerController.value.aspectRatio,
+      allowFullScreen: true,
+      allowMuting: true,
+      materialProgressColors: ChewieProgressColors(
+        playedColor: Colors.red,
+        handleColor: Colors.redAccent,
+        backgroundColor: Colors.grey,
+        bufferedColor: Colors.lightGreen,
+      ),
     );
-    await _customVideoPlayerController.initialize();
-    _customVideoPlayerController.play();
     setState(() {});
-    return true;
   }
 }

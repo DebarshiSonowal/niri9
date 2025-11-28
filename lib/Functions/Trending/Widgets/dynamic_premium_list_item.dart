@@ -11,6 +11,7 @@ import '../../../Router/routes.dart';
 import '../../../Widgets/title_box.dart';
 import '../../HomeScreen/Widgets/ott_item.dart';
 import 'premium_ott_item.dart';
+import 'numbered_ott_item.dart';
 
 class DynamicPremiumListItem extends StatefulWidget {
   const DynamicPremiumListItem(
@@ -31,43 +32,88 @@ class _DynamicPremiumListItemState extends State<DynamicPremiumListItem> {
   @override
   void initState() {
     super.initState();
-    // _scrollController.addListener(() {
-    //   if (_scrollController.offset <= _scrollController.position.minScrollExtent&&isEnd!=false) {
-    //     setState(() {
-    //       debugPrint("reach the top");
-    //       isEnd = false;
-    //     });
-    //   }
-    //   if (_scrollController.offset >= _scrollController.position.maxScrollExtent&&isEnd==false) {
-    //     setState(() {
-    //       debugPrint("reach the bottom");
-    //       isEnd = true;
-    //     });
-    //   }
-    // });
+    _scrollController.addListener(_onScrollChange);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScrollChange);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScrollChange() {
+    if (!_scrollController.hasClients) return;
+
+    try {
+      final position = _scrollController.position;
+      if (position.pixels.isFinite && position.maxScrollExtent.isFinite) {
+        final isAtEnd = position.pixels >= position.maxScrollExtent - 50;
+        if (isAtEnd != isEnd && mounted) {
+          setState(() {
+            isEnd = isAtEnd;
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Scroll position error in premium list: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 30.h,
-      width: double.infinity,
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 1.h),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TitleBox(
-            isEnd: isEnd,
-            text: widget.text,
-            onTap: () => widget.onTap(),
-          ),
+          // Netflix-style section title
           Container(
-            // color: Colors.green,
-            padding: EdgeInsets.symmetric(
-              horizontal: 2.w,
-              vertical: 1.h,
+            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.text,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => widget.onTap(),
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 3.w, vertical: 0.5.h),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'See all',
+                          style: TextStyle(
+                            color: Colors.grey.shade400,
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(width: 1.w),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.grey.shade400,
+                          size: 4.w,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
+          ),
+
+          // Netflix-style numbered items list
+          Container(
             height: 24.h,
-            width: double.infinity,
             child: NotificationListener<UserScrollNotification>(
               onNotification: (notification) {
                 final ScrollDirection direction = notification.direction;
@@ -93,11 +139,11 @@ class _DynamicPremiumListItemState extends State<DynamicPremiumListItem> {
               child: ListView.separated(
                 controller: _scrollController,
                 scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
+                padding: EdgeInsets.symmetric(horizontal: 6.w),
                 itemBuilder: (context, index) {
                   var item = widget.list[index];
-                  return OttItem(
-                    // index: index,
+                  return NumberedOttItem(
+                    index: index,
                     item: item,
                     onTap: () {
                       if (Storage.instance.isLoggedIn) {
@@ -110,11 +156,11 @@ class _DynamicPremiumListItemState extends State<DynamicPremiumListItem> {
                   );
                 },
                 separatorBuilder: (context, index) {
-                  return SizedBox(
-                    width: 4.w,
-                  );
+                  return SizedBox(width: 4.w);
                 },
-                itemCount: widget.list.length,
+                itemCount: widget.list.length > 10
+                    ? 10
+                    : widget.list.length, // Limit to top 10
               ),
             ),
           ),

@@ -23,7 +23,7 @@ class IconTextButton extends StatelessWidget {
           Icon(
             icon,
             color: Colors.white,
-            size: 24.sp,
+            size: 18.sp,
           ),
           SizedBox(
             height: 1.h,

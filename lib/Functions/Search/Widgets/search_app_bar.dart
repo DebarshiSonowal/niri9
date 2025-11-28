@@ -37,7 +37,7 @@ class SearchAppbar extends StatelessWidget {
                   child: Icon(
                     Icons.arrow_back_ios_sharp,
                     color: Colors.white,
-                    size: 14.sp,
+                    size: 20.sp,
                   ),
                 ),
                 SizedBox(

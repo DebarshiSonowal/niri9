@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -14,7 +13,7 @@ class BenefitsWidget extends StatelessWidget {
     required this.selected,
   });
 
-  final int selected;
+  final int? selected;
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +21,8 @@ class BenefitsWidget extends StatelessWidget {
       height: 60.h,
       width: 100.w,
       child: Consumer<Repository>(builder: (context, data, _) {
-        return BenefitsItem(selected: selected,data:data);
+        return BenefitsItem(selected: selected, data: data);
       }),
     );
   }
 }
-
-
-

@@ -33,6 +33,8 @@ class Assets {
   static const advertiseBannerImage2 = "assets/images/launcing_banner2.jpg";
   static const episodeImage = "assets/images/episode_image.jpg";
   static const episodeImage2 = "assets/images/episode_image2.jpg";
+  static const addPopupImage = "assets/images/popup.jpg";
+
 
   // static String videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
   static String videoUrl =

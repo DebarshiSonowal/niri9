@@ -16,30 +16,56 @@ class TitleBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 4.w,
-      ),
-      width: double.infinity,
-      height: 6.h,
+      margin: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            text ?? "",
-            style: TextStyle(
-              fontSize: 16.sp,
+          // Refined accent bar
+          Container(
+            width: 3,
+            height: 4.5.h,
+            decoration: BoxDecoration(
+              color: Constants.thirdColor,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
-          isEnd
-              ? GestureDetector(
-                  onTap: () => onTap(),
-                  child: const Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    color: Constants.thirdColor,
+          SizedBox(width: 4.w),
+          // Main content area
+          Expanded(
+            child: SizedBox(
+              height: 4.5.h,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      text ?? "",
+                      style: TextStyle(
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white.withOpacity(0.95),
+                        letterSpacing: 0.2,
+                      ),
+                    ),
                   ),
-                )
-              : Container(),
+                  isEnd
+                      ? GestureDetector(
+                          onTap: () => onTap(),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 0.5.h, horizontal: 1.w),
+                            child: Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              color: Constants.thirdColor.withOpacity(0.8),
+                              size: 16.sp,
+                            ),
+                          ),
+                        )
+                      : const SizedBox(),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

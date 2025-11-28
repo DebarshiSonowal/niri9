@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_social_button/flutter_social_button.dart';
 import 'package:niri9/Constants/assets.dart';
 import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Models/banner.dart';
 import 'package:niri9/Models/category.dart';
-import 'package:niri9/Models/dynamic_list_item_model.dart';
 import 'package:niri9/Models/order_history.dart';
 import 'package:niri9/Models/rent_plan_details_response.dart';
+import 'package:niri9/Models/season.dart';
 import 'package:niri9/Models/subscription.dart';
-import 'package:niri9/Models/subscription_model.dart';
 import 'package:niri9/Models/video.dart';
 import 'package:niri9/Models/video_details.dart';
 
@@ -28,14 +27,16 @@ import '../Models/user.dart';
 
 class Repository extends ChangeNotifier {
   int _currentIndex = 0;
+  Season? selectedSeason;
   List<Category> _categories = [];
   List<Video> _specificVideos = [],
       _recently_viewed_list = [],
       _rental = [],
-      _wishList = [],_more_like_this_list = [];
+      _wishList = [],
+      _more_like_this_list = [];
   List<AppBarOption> _appbarOptions = [];
   List<BannerResult> homeBanner = [], trendingBanner = [];
-  List<OrderHistoryItem> orders = [];
+  List<Result> orders = [];
   User? _user;
   List<List<Video>> _videos = [];
   int? currentVideoId;
@@ -49,6 +50,8 @@ class Repository extends ChangeNotifier {
   String? firebase_otp_key;
   CategoryAll? categoryAll;
   int currentHomeBannerIndex = 0;
+  bool loading = false;
+  bool playloading = false;
 
   List<AppBarOption> get appbarOptions => _appbarOptions;
 
@@ -111,10 +114,6 @@ class Repository extends ChangeNotifier {
       icon: FontAwesomeIcons.boxArchive,
     ),
     AccountItem(
-      name: "Notification Inbox",
-      icon: Icons.notifications,
-    ),
-    AccountItem(
       name: "Upgrade",
       icon: FontAwesomeIcons.crown,
     ),
@@ -175,6 +174,11 @@ class Repository extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setLoading(bool val) {
+    loading = val;
+    notifyListeners();
+  }
+
   void setUser(User val) {
     _user = val;
     notifyListeners();
@@ -212,6 +216,13 @@ class Repository extends ChangeNotifier {
 
   void setVideoDetails(Video? details) {
     videoDetails = details;
+    selectedSeason =
+        details!.season_list.isNotEmpty ? details.season_list.first : null;
+    notifyListeners();
+  }
+
+  void changeSeason(Season season) {
+    selectedSeason = season;
     notifyListeners();
   }
 
@@ -233,6 +244,9 @@ class Repository extends ChangeNotifier {
   }
 
   void setCategories(List<Category> list) {
+    debugPrint(
+        "Repository: setCategories called with ${list.length} categories");
+
     _appbarOptions = list
         .map((e) => AppBarOption(
               name: e.name ?? "",
@@ -242,7 +256,16 @@ class Repository extends ChangeNotifier {
               sequence: e.sequence,
             ))
         .toList();
+
+    debugPrint("Repository: Created ${_appbarOptions.length} appbarOptions:");
+    for (int i = 0; i < _appbarOptions.length; i++) {
+      final option = _appbarOptions[i];
+      debugPrint(
+          "Repository: AppBarOption $i - name: '${option.name}', slug: '${option.slug}'");
+    }
+
     _categories = list;
+    debugPrint("Repository: Categories and appbarOptions set successfully");
     notifyListeners();
   }
 
@@ -257,7 +280,15 @@ class Repository extends ChangeNotifier {
   }
 
   void setSearchVideos(List<Video> list) {
+    debugPrint("Repository: setSearchVideos called with ${list.length} videos");
+    for (int i = 0; i < list.length; i++) {
+      final video = list[i];
+      debugPrint(
+          "Repository: Video $i - id=${video.id}, title='${video.title}'");
+    }
     _specificVideos = list;
+    debugPrint(
+        "Repository: _specificVideos now has ${_specificVideos.length} videos");
     notifyListeners();
   }
 
@@ -329,7 +360,7 @@ class Repository extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setOrders(List<OrderHistoryItem> list) {
+  void setOrders(List<Result> list) {
     orders = list;
     notifyListeners();
   }

@@ -24,127 +24,257 @@ class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(12.h),
-        child: Container(
-          color: Constants.backgroundColor,
-          child: Column(
-            children: [
-              SizedBox(
-                height: 3.h,
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
+        backgroundColor: Colors.black,
+        elevation: 0,
+        toolbarHeight: 8.h,
+        title: Row(
+          children: [
+            Image.asset(
+              Assets.logoTransparent,
+              height: 5.h,
+              width: 10.w,
+              fit: BoxFit.cover,
+            ),
+            SizedBox(width: 3.w),
+            Text(
+              "Account",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18.sp,
+                fontWeight: FontWeight.bold,
               ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 4.w,
-                  ),
-                  Image.asset(
-                    Assets.logoTransparent,
-                    height: 7.5.h,
-                    width: 14.w,
-                    fit: BoxFit.cover,
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 0.1.h,
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 4.w,
-                  ),
-                  Text(
-                    "Account Settings",
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.white,
-                          fontSize: 15.sp,
-                        ),
-                  ),
-                  const Spacer(),
-                  Icon(
-                    FontAwesomeIcons.pen,
-                    color: Colors.white70,
-                    size: 13.sp,
-                  ),
-                  SizedBox(
-                    width: 2.w,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      if (Storage.instance.isLoggedIn) {
-                        Navigation.instance
-                            .navigate(Routes.profileUpdateScreen);
-                      } else {
-                        Navigation.instance.navigate(Routes.loginScreen);
-                      }
-                    },
-                    child: Text(
-                      "Manage Profiles",
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.white,
-                            fontSize: 15.sp,
-                          ),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              if (Storage.instance.isLoggedIn) {
+                Navigation.instance.navigate(Routes.profileUpdateScreen);
+              } else {
+                Navigation.instance.navigate(Routes.loginScreen, args: "");
+              }
+            },
+            icon: Icon(
+              FontAwesomeIcons.userEdit,
+              color: Colors.white,
+              size: 5.w,
+            ),
+          ),
+          SizedBox(width: 2.w),
+        ],
+      ),
+      body: Column(
+        children: [
+          // User Profile Section
+          Container(
+            margin: EdgeInsets.all(4.w),
+            padding: EdgeInsets.all(4.w),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  height: 15.w,
+                  width: 15.w,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.red.shade600,
+                        Colors.red.shade800,
+                      ],
                     ),
                   ),
-                  SizedBox(
-                    width: 2.w,
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 8.w,
                   ),
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        color: Constants.backgroundColor,
-        child: Consumer<Repository>(builder: (context, data, _) {
-          return ListView.separated(
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              var item = data.items[index];
-              if (item.name == "Activate TV") {
-                return Container();
-              }
-              return ListTile(
-                onTap: () {
-                  onTap(index, item);
-                  // debugPrint("Item");
-                },
-                leading: Icon(
-                  item.icon,
-                  color: Colors.white,
                 ),
-                title: Text(
-                  ((item.name ?? "") == "Sign In" ||
-                          (item.name ?? "") == "Sign Out")
-                      ? (Storage.instance.isLoggedIn ? "Sign Out" : "Sign In")
-                      : (item.name ?? ""),
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: Colors.white,
-                        fontSize: 14.sp,
+                SizedBox(width: 4.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        Storage.instance.isLoggedIn
+                            ? "Welcome back!"
+                            : "Guest User",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
+                      SizedBox(height: 1.h),
+                      Text(
+                        Storage.instance.isLoggedIn
+                            ? "Manage your account settings"
+                            : "Sign in to access all features",
+                        style: TextStyle(
+                          color: Colors.grey.shade300,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              );
-            },
-            separatorBuilder: (context, index) {
-              var item = data.items[index];
-              if (item.name == "Activate TV") {
-                return Container();
-              }
-              return Divider(
-                thickness: 0.05.h,
-                color: Colors.white,
-              );
-            },
-            itemCount: data.items.length,
-          );
-        }),
+                if (!Storage.instance.isLoggedIn)
+                  GestureDetector(
+                    onTap: () {
+                      Navigation.instance
+                          .navigate(Routes.loginScreen, args: "");
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 4.w,
+                        vertical: 1.5.h,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.red.shade600,
+                            Colors.red.shade800,
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        "Sign In",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+
+          // Menu Items
+          Expanded(
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 4.w),
+              child: Consumer<Repository>(builder: (context, data, _) {
+                return ListView.builder(
+                  itemCount: data.items.length,
+                  itemBuilder: (context, index) {
+                    var item = data.items[index];
+                    if (item.name == "Activate TV") {
+                      return const SizedBox.shrink();
+                    }
+
+                    return Container(
+                      margin: EdgeInsets.only(bottom: 2.h),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade900,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: ListTile(
+                        onTap: () => onTap(index, item),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 4.w,
+                          vertical: 1.h,
+                        ),
+                        leading: Container(
+                          height: 12.w,
+                          width: 12.w,
+                          decoration: BoxDecoration(
+                            color:
+                                _getIconColor(item.name ?? "").withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            item.icon,
+                            color: _getIconColor(item.name ?? ""),
+                            size: 6.w,
+                          ),
+                        ),
+                        title: Text(
+                          ((item.name ?? "") == "Sign In" ||
+                                  (item.name ?? "") == "Sign Out")
+                              ? (Storage.instance.isLoggedIn
+                                  ? "Sign Out"
+                                  : "Sign In")
+                              : (item.name ?? ""),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14.sp,
+                          ),
+                        ),
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.grey.shade400,
+                          size: 4.w,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: const CustomBottomNavBar(),
     );
+  }
+
+  Color _getIconColor(String itemName) {
+    switch (itemName) {
+      case "My Account":
+        return Colors.red.shade400;
+      case "My List":
+        return Colors.red.shade400;
+      case "Subscription":
+        return Colors.red.shade400;
+      case "Orders":
+        return Colors.red.shade400;
+      case "Upgrade":
+        return Colors.red.shade400;
+      case "Terms of Use":
+        return Colors.red.shade400;
+      case "Privacy Policy":
+        return Colors.red.shade400;
+      case "Refund Policy":
+        return Colors.red.shade400;
+      case "Help & FAQ's":
+        return Colors.red.shade400;
+      case "About":
+        return Colors.red.shade400;
+      case "Chat With Us":
+        return Colors.red.shade400;
+      case "Sign Out":
+      case "Sign In":
+        return Colors.red.shade400;
+      default:
+        return Colors.white;
+    }
   }
 
   Future<void> onTap(int index, AccountItem item) async {
@@ -153,55 +283,78 @@ class _AccountPageState extends State<AccountPage> {
         if (Storage.instance.isLoggedIn) {
           Navigation.instance.navigate(Routes.profile);
         } else {
-          Navigation.instance.navigate(Routes.loginScreen);
+          Navigation.instance.navigate(Routes.loginScreen, args: "");
         }
         break;
       case 1:
-        Navigation.instance.navigate(Routes.watchlistScreen);
+        if (Storage.instance.isLoggedIn) {
+          Navigation.instance.navigate(Routes.watchlistScreen);
+        } else {
+          Navigation.instance.navigate(Routes.loginScreen, args: "");
+        }
         break;
       case 2:
-        Navigation.instance.navigate(Routes.subscriptionScreen);
+        if (Storage.instance.isLoggedIn) {
+          Navigation.instance.navigate(Routes.subscriptionScreen);
+        } else {
+          Navigation.instance.navigate(Routes.loginScreen, args: "");
+        }
         break;
       case 3:
-        Navigation.instance.navigate(Routes.orderHistory);
+        if (Storage.instance.isLoggedIn) {
+          Navigation.instance.navigate(Routes.orderHistory);
+        } else {
+          Navigation.instance.navigate(Routes.loginScreen, args: "");
+        }
         break;
       case 4:
-        Navigation.instance.navigate(Routes.notificationInbox);
+        if (Storage.instance.isLoggedIn) {
+          Navigation.instance.navigate(Routes.subscriptionScreen);
+        } else {
+          Navigation.instance.navigate(Routes.loginScreen, args: "sub");
+        }
         break;
       case 5:
-        Navigation.instance.navigate(Routes.subscriptionScreen);
-        break;
-      case 6:
         // Navigation.instance.navigate(Routes.activateTV);
         break;
-      case 7:
+      case 6:
         // _launchUrl(Uri.parse("https://niri9.com/terms-condition.php"));
         Navigation.instance.navigate(Routes.termsConditionsScreen);
         break;
-      case 8:
+      case 7:
         // _launchUrl(Uri.parse("https://niri9.com/privacy_policy.php"));
         Navigation.instance.navigate(Routes.privacyPolicyScreen);
         break;
-      case 9:
-        Navigation.instance.navigate(Routes.refundScreen);
-        break;
-      case 10:
-        Navigation.instance.navigate(Routes.helpFaqScreen);
-        break;
-      case 11:
-        Navigation.instance.navigate(Routes.aboutScreen);
-        break;
-      case 12:
-        _launchUrl(Uri.parse("whatsapp://send?phone=+917002413212"));
-        break;
-      default:
-        await Storage.instance.logout();
-        setState(() {});
-        final response = await Navigation.instance.navigate(Routes.loginScreen);
-        if (response == null) {
-          setState(() {});
+      case 8:
+        if (Storage.instance.isLoggedIn) {
+          Navigation.instance.navigate(Routes.refundScreen);
+        } else {
+          Navigation.instance.navigate(Routes.loginScreen, args: "");
         }
         break;
+      case 9:
+        Navigation.instance.navigate(Routes.helpFaqScreen);
+        break;
+      case 10:
+        Navigation.instance.navigate(Routes.aboutScreen);
+        break;
+      case 11:
+        _launchUrl(Uri.parse("whatsapp://send?phone=+919864000253"));
+        break;
+      default:
+        if (Storage.instance.isLoggedIn) {
+          await Storage.instance.logout();
+          setState(() {});
+          final response =
+              await Navigation.instance.navigate(Routes.homeScreen);
+          Provider.of<Repository>(context, listen: false).updateIndex(0);
+          if (response == null) {
+            setState(() {});
+          }
+          break;
+        } else {
+          Navigation.instance.navigate(Routes.loginScreen, args: "");
+        }
     }
   }
 
@@ -218,7 +371,16 @@ class _AccountPageState extends State<AccountPage> {
     super.initState();
     Future.delayed(Duration.zero, () {
       // fetchData(context);
-      Provider.of<Repository>(context, listen: false).updateIndex(4);
+      CustomBottomNavBar.ensureCorrectIndex(context, Routes.accountScreen);
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Ensure correct navigation index when coming back to account screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      CustomBottomNavBar.ensureCorrectIndex(context, Routes.accountScreen);
     });
   }
 }

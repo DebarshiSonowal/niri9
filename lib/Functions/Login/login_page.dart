@@ -1,9 +1,7 @@
 import 'dart:io';
-
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_social_button/flutter_social_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:niri9/API/api_provider.dart';
@@ -19,7 +17,8 @@ import 'package:social_login_buttons/social_login_buttons.dart';
 import '../../Widgets/alert.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final String? fromwhere;
+  const LoginPage({super.key, this.fromwhere});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -102,9 +101,9 @@ class _LoginPageState extends State<LoginPage> {
                 Checkbox(
                   fillColor: WidgetStateProperty.resolveWith<Color>((states) {
                     if (!agree) {
-                      return Colors.grey; // Set desired color when not checked
+                      return Colors.grey;
                     }
-                    return Colors.white10; // Default active color
+                    return Colors.white10;
                   }),
                   checkColor: Colors.blue,
                   value: agree,
@@ -207,7 +206,11 @@ class _LoginPageState extends State<LoginPage> {
         if (selectedCountryCode.dialCode == "+91") {
           Navigation.instance.navigate(
             Routes.otpScreen,
-            args: "${selectedCountryCode.dialCode}${mobileController.text}",
+            args: {
+              "mobile":
+                  "${selectedCountryCode.dialCode}${mobileController.text}",
+              "whereToGo": "sub"
+            },
           );
         } else {
           loginByFirebase(
@@ -221,26 +224,35 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<UserCredential> signInWithGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  Future<UserCredential?> signInWithGoogle() async {
+    try {
+      // Get the GoogleSignIn instance
+      final GoogleSignIn googleSignIn = GoogleSignIn.instance;
 
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await googleSignIn.authenticate();
 
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
+      // Return null if the user cancels the sign-in
+      if (googleUser == null) {
+        return null;
+      }
 
-    // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance
-        .signInWithCredential(credential)
-        .then((UserCredential value) {
-      return value;
-    });
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.idToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Once signed in, return the UserCredential
+      return await FirebaseAuth.instance.signInWithCredential(credential);
+    } catch (e) {
+      print('Error signing in with Google: $e');
+      return null;
+    }
   }
 
   void loginByFirebase(String dialCode, String number) async {

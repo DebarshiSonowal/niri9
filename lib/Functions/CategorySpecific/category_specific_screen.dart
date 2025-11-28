@@ -26,7 +26,6 @@ class CategorySpecificScreen extends StatefulWidget {
 }
 
 class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
-  final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: true);
   int page = 1;
@@ -34,16 +33,8 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(() {
-      if (_refreshController.position?.atEdge ?? false) {
-        bool isTop = _refreshController.position?.pixels == 0;
-        if (isTop) {
-          _refreshController.requestRefresh();
-        } else {
-          // print('At the bottom');
-          _refreshController.requestLoading();
-        }
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<Repository>(context, listen: false).clearSpecificVideos();
     });
   }
 
@@ -51,20 +42,10 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
     setState(() {
       page = 1;
     });
-    // monitor network fetch
     fetchVideos(context);
-    // if failed,use refreshFailed()
   }
 
   void _onLoading() async {
-    // monitor network fetch
-    // await Future.delayed(Duration(milliseconds: 1000));
-    // // if failed,use loadFailed(),if no data return,use LoadNodata()
-    // items.add((items.length+1).toString());
-    // if(mounted)
-    //   setState(() {
-    //
-    //   });
     setState(() {
       page++;
     });
@@ -112,77 +93,111 @@ class _CategorySpecificScreenState extends State<CategorySpecificScreen> {
           controller: _refreshController,
           onRefresh: _onRefresh,
           onLoading: _onLoading,
-          child: FutureBuilder<List<Video>>(
-              future: fetchVideos(context),
-              builder: (context, _) {
-                if (_.hasData&&(_.data ?? []).isNotEmpty) {
-                  return SizedBox(
-                    height: 100.h,
-                    width: double.infinity,
-                    child: Consumer<Repository>(builder: (context, data, _) {
-                      return SingleChildScrollView(
-                        child: GridView.builder(
-                          shrinkWrap: true,
-                          controller: _scrollController,
-                          itemCount: data.specificVideos.length,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 1.5.w,
-                            mainAxisSpacing: 1.h,
-                            childAspectRatio: 6.5 / 8.5,
-                          ),
-                          itemBuilder: (BuildContext context, int index) {
-                            var item = data.specificVideos[index];
-                            return OttItem(item: item, onTap: () {
-                              debugPrint("Clicked ${Storage.instance.isLoggedIn}");
-                              if(Storage.instance.isLoggedIn){
-                                Navigation.instance.navigate(Routes.watchScreen,args: item.id);
-                              }else{
+          child: Consumer<Repository>(builder: (context, data, _) {
+            debugPrint(
+                "Consumer rebuild - specificVideos count: ${data.specificVideos.length}, loading: ${data.loading}");
 
-                                CommonFunctions().showLoginDialog(Navigation.instance.navigatorKey.currentContext??context);
-                                // Navigation.instance.navigate(Routes.watchScreen,args: item.id);
-                              }
-                            });
-                          },
-                        ),
-                      );
-                    }),
-                  );
-                }
-                if (_.hasError || (_.hasData&&(_.data ?? []).isEmpty)) {
-                  return Center(
-                    child: Text(
-                      "No Videos Available",
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            if (data.loading && data.specificVideos.isEmpty) {
+              return const GridViewShimmering();
+            }
+
+            if (data.specificVideos.isNotEmpty) {
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: data.specificVideos.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 1.5.w,
+                  mainAxisSpacing: 1.h,
+                  childAspectRatio: 6.5 / 8.5,
+                ),
+                itemBuilder: (BuildContext context, int index) {
+                  var item = data.specificVideos[index];
+                  return OttItem(
+                      item: item,
+                      onTap: () {
+                        debugPrint(
+                            "Clicked video: ${item.title}, ID: ${item.id}, isLoggedIn: ${Storage.instance.isLoggedIn}");
+                        if (Storage.instance.isLoggedIn) {
+                          Navigation.instance
+                              .navigate(Routes.watchScreen, args: item.id);
+                        } else {
+                          CommonFunctions().showLoginDialog(
+                              Navigation.instance.navigatorKey.currentContext ??
+                                  context);
+                        }
+                      });
+                },
+              );
+            } else {
+              return Center(
+                child: Text(
+                  "No Videos Available",
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.white,
                         fontSize: 14.sp,
                       ),
-                    ),
-                  );
-                }
-                return const GridViewShimmering();
-              }),
+                ),
+              );
+            }
+          }),
         ),
       ),
     );
   }
 
   Future<List<Video>> fetchVideos(context) async {
-    // Navigation.instance.navigate(Routes.loadingScreen);
+    debugPrint(
+        "fetchVideos called with page: $page, searchTerm: ${widget.searchTerm}");
+
     final response = await ApiProvider.instance
-        .getVideos(page, null, widget.searchTerm, null, null, null,null);
+        .getVideos(page, null, widget.searchTerm, null, null, null, null);
+
+    debugPrint(
+        "API response success: ${response.success}, message: ${response.message}");
+    debugPrint("API response videos count: ${response.videos?.length ?? 0}");
+
+    // Debug each video if any exist
+    if (response.videos?.isNotEmpty == true) {
+      for (int i = 0; i < (response.videos?.length ?? 0) && i < 3; i++) {
+        final video = response.videos![i];
+        debugPrint("Video $i: title='${video.title}', id=${video.id}");
+      }
+    }
+
     if (response.success ?? false) {
-      // Navigation.instance.goBack();
       _refreshController.refreshCompleted();
-      Provider.of<Repository>(context, listen: false)
-          .setSearchVideos(response.videos);
+      _refreshController.loadComplete();
+
+      if (page == 1) {
+        debugPrint("Setting ${response.videos?.length ?? 0} videos for page 1");
+        Provider.of<Repository>(context, listen: false)
+            .setSearchVideos(response.videos ?? []);
+      } else {
+        final currentVideos =
+            Provider.of<Repository>(context, listen: false).specificVideos;
+        final List<Video> newVideos = [
+          ...currentVideos,
+          ...(response.videos ?? [])
+        ];
+        debugPrint(
+            "Appending videos: ${currentVideos.length} + ${response.videos?.length ?? 0} = ${newVideos.length}");
+        Provider.of<Repository>(context, listen: false)
+            .setSearchVideos(newVideos);
+      }
+
+      // Additional debug for repository state
+      final repo = Provider.of<Repository>(context, listen: false);
+      debugPrint(
+          "Repository specificVideos count after update: ${repo.specificVideos.length}");
+
       return response.videos ?? List<Video>.empty();
     } else {
-      // Navigation.instance.goBack();
+      debugPrint("API response failed: ${response.message}");
       _refreshController.refreshCompleted();
+      _refreshController.loadFailed();
       return List<Video>.empty();
-      // showError(response.message ?? "Something went wrong");
     }
   }
 }

@@ -39,7 +39,7 @@ class Video {
       category_web_url,
       web_url,
       imdb_rating;
-  bool? has_rent, has_my_list, view_permission;
+  bool? has_rent, has_my_list, has_plan, view_permission;
 
   // Meta? meta, meta_org;
   List<Genres> genres = [];
@@ -83,6 +83,7 @@ class Video {
     web_url = json['web_url'];
     //bool
     has_rent = json['has_rent'] ?? false;
+    has_plan = json['has_plan'] ?? false;
     has_my_list = json['has_my_list'] ?? false;
     view_permission = json['view_permission'] ?? false;
     //meta

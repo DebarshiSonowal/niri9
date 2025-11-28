@@ -28,6 +28,22 @@
 	<true/>
 	<key>MinimumOSVersion</key>
 	<string>13.0</string>
+	<key>SKAdNetworkItems</key>
+	<array>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>cstr6suwn9.skadnetwork</string>
+		</dict>
+	</array>
+	<key>StoreKit</key>
+	<dict>
+		<key>AppleID</key>
+		<string>644XXXXXXX</string>
+		<key>StoreKitTestingEnabled</key>
+		<true/>
+		<key>InAppPurchase</key>
+		<true/>
+	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

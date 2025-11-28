@@ -13,8 +13,6 @@ import '../../../API/api_provider.dart';
 import '../../../Models/user.dart';
 import '../../../Models/video.dart';
 import '../../../Navigation/Navigate.dart';
-import '../../../Widgets/failed_dialogue_content.dart';
-import '../../../Widgets/successful_content_widget.dart';
 
 class RentBottomSheet extends StatefulWidget {
   const RentBottomSheet({
@@ -32,6 +30,7 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
   int currentIndex = 0;
   final _razorpay = Razorpay();
   String? voucherNo, amount;
+  bool loading = false;
 
   @override
   void initState() {
@@ -163,17 +162,25 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
                                 BorderRadius.circular(8), // <-- Radius
                           ),
                         ),
-                        child: Text(
-                          'Rent for ₹ ${double.tryParse(data.rentPlanDetails?.rentList![currentIndex].totalPriceInr ?? '0')!.toInt()}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineMedium
-                              ?.copyWith(
-                                color: Colors.white,
-                                // fontWeight: FontWeight.bold,
-                                fontSize: 11.sp,
+                        child: loading
+                            ? SizedBox(
+                                height: 10,
+                                width: 10,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Text(
+                                'Rent for ₹ ${double.tryParse(data.rentPlanDetails?.rentList![currentIndex].totalPriceInr ?? '0')!.toInt()}',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineMedium
+                                    ?.copyWith(
+                                      color: Colors.white,
+                                      // fontWeight: FontWeight.bold,
+                                      fontSize: 11.sp,
+                                    ),
                               ),
-                        ),
                       ),
                     ),
                   ],
@@ -215,6 +222,9 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
   }
 
   void initiateOrder(Repository data) async {
+    setState(() {
+      loading = true;
+    });
     final response = await ApiProvider.instance.initiateOrder(
       Provider.of<Repository>(context, listen: false)
               .rentPlanDetails
@@ -228,6 +238,7 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
       setState(() {
         voucherNo = response.result?.voucherNo;
         amount = response.result?.grandTotal ?? "0";
+        loading = false;
       });
       initiatePayment(
         rzp_key: response.result?.rzp_key ?? "",
@@ -239,6 +250,9 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
         id: response.result?.voucherNo ?? "",
       );
     } else {
+      setState(() {
+        loading = false;
+      });
       Fluttertoast.showToast(msg: response.message ?? "Something Went wrong");
     }
   }
@@ -255,22 +269,22 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
       var resp = json.decode(response.message!);
       debugPrint('error ${resp['error']['description']} ${response.code} ');
       Navigation.instance.goBack();
-      showFailedDialog(
-        context: context,
-        // orderId: orderId,
-        // paymentId: paymentId,
-        // amount: amount,
-        message: response.message ?? "Please try again later",
-      );
+      // showFailedDialog(
+      //   context: context,
+      //   // orderId: orderId,
+      //   // paymentId: paymentId,
+      //   // amount: amount,
+      //   message: response.message ?? "Please try again later",
+      // );
     } catch (e) {
       Navigation.instance.goBack();
-      showFailedDialog(
-        context: context,
-        // orderId: orderId,
-        // paymentId: paymentId,
-        // amount: amount,
-        message: response.message ?? "Please try again later",
-      );
+      // showFailedDialog(
+      //   context: context,
+      //   // orderId: orderId,
+      //   // paymentId: paymentId,
+      //   // amount: amount,
+      //   message: response.message ?? "Please try again later",
+      // );
     }
   }
 
@@ -278,106 +292,112 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
       BuildContext context) async {
     final response =
         await ApiProvider.instance.verifyPayment(paymentId, orderId, amount);
+
     if (response.success ?? false) {
       Fluttertoast.showToast(
           msg: response.message ?? "Payment was successfully");
-      // showDialog(context: context, builder: builder);
-      showSuccessDialog(
-        context: context,
-        // orderId: orderId,
-        // paymentId: paymentId,
-        // amount: amount,
-        message: response.message ?? "You have successfully subscribed",
-      );
+
+      // Close the bottom sheet BEFORE showing success dialog
+      Navigator.of(context).pop();
+
+      await Future.delayed(Duration(milliseconds: 300)); // smooth transition
+
+      // showSuccessDialog(
+      //   context: context,
+      //   message: response.message ?? "You have successfully subscribed",
+      // );
     } else {
       Fluttertoast.showToast(msg: response.message ?? "Something went wrong");
-      showFailedDialog(
-        context: context,
-        // orderId: orderId,
-        // paymentId: paymentId,
-        // amount: amount,
-        message: response.message ?? "Please try again later",
-      );
+
+      // Close the bottom sheet BEFORE showing failure dialog
+      Navigator.of(context).pop();
+
+      await Future.delayed(Duration(milliseconds: 300)); // smooth transition
+
+      // showFailedDialog(
+      //   context: context,
+      //   message: response.message ?? "Please try again later",
+      // );
     }
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {}
 
-  void showSuccessDialog(
-      {required BuildContext context,
-      // String? orderId,
-      // String? paymentId,
-      // String? amount,
-      String? message}) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              "Payment Successful",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white,
-                    fontSize: 12.sp,
-                  ),
-            ),
-            content: SuccessfulContentWidget(message: message ?? ""),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigation.instance.goBack();
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  "Close",
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white70,
-                        fontSize: 12.sp,
-                      ),
-                ),
-              ),
-            ],
-          );
-        });
-  }
+  // void showSuccessDialog(
+  //     {required BuildContext context,
+  //     // String? orderId,
+  //     // String? paymentId,
+  //     // String? amount,
+  //     String? message}) {
+  //   showDialog(
+  //       context: context,
+  //       builder: (context) {
+  //         return AlertDialog(
+  //           title: Text(
+  //             "Payment Successful",
+  //             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+  //                   color: Colors.white,
+  //                   fontSize: 12.sp,
+  //                 ),
+  //           ),
+  //           content: SuccessfulContentWidget(message: message ?? ""),
+  //           actions: [
+  //             TextButton(
+  //               onPressed: () {
+  //                 Navigation.instance.goBack();
+  //                 Navigator.pop(context);
+  //               },
+  //               child: Text(
+  //                 "Close",
+  //                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+  //                       color: Colors.white70,
+  //                       fontSize: 12.sp,
+  //                     ),
+  //               ),
+  //             ),
+  //           ],
+  //         );
+  //       });
+  // }
 
-  void showFailedDialog(
-      {required BuildContext context,
-      // String? orderId,
-      // String? paymentId,
-      // String? amount,
-      String? message}) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              "Payment Failed",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white,
-                    fontSize: 12.sp,
-                  ),
-            ),
-            content: FailedDialogContent(
-              message: message,
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  // Navigation.instance.goBack();
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  "Close",
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white70,
-                        fontSize: 12.sp,
-                      ),
-                ),
-              ),
-            ],
-          );
-        });
-  }
+  // void showFailedDialog(
+  //     {required BuildContext context,
+  //     // String? orderId,
+  //     // String? paymentId,
+  //     // String? amount,
+  //     String? message}) {
+  //   showDialog(
+  //       context: context,
+  //       builder: (context) {
+  //         return AlertDialog(
+  //           title: Text(
+  //             "Payment Failed",
+  //             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+  //                   color: Colors.white,
+  //                   fontSize: 12.sp,
+  //                 ),
+  //           ),
+  //           content: FailedDialogContent(
+  //             message: message,
+  //           ),
+  //           actions: [
+  //             TextButton(
+  //               onPressed: () {
+  //                 // Navigation.instance.goBack();
+  //                 Navigator.pop(context);
+  //               },
+  //               child: Text(
+  //                 "Close",
+  //                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+  //                       color: Colors.white70,
+  //                       fontSize: 12.sp,
+  //                     ),
+  //               ),
+  //             ),
+  //           ],
+  //         );
+  //       });
+  // }
 }
 
 class RentPlanItem extends StatelessWidget {

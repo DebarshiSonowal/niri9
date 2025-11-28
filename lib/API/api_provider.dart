@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Models/VideoResolution.dart';
@@ -35,10 +37,53 @@ class ApiProvider {
   static final ApiProvider instance = ApiProvider._();
 
   final String baseUrl = "https://niri9.com";
-
   final String path = "api";
 
+  // Cached dio instance with optimizations
+  static Dio? _cachedDio;
+  static final CacheOptions _cacheOptions = CacheOptions(
+    store: MemCacheStore(maxSize: 10 * 1024 * 1024),
+    // 10MB cache
+    policy: CachePolicy.request,
+    // hitCacheOnErrorExcept: [401, 403, 500, 502, 503],
+    maxStale: const Duration(minutes: 30),
+    priority: CachePriority.high,
+  );
+
   Dio? dio;
+
+  // Get optimized dio instance
+  Dio _getDio({bool useCache = false}) {
+    if (_cachedDio == null) {
+      BaseOptions options = BaseOptions(
+        connectTimeout: const Duration(seconds: 15), // Reduced from 30
+        receiveTimeout: const Duration(seconds: 20), // Reduced from 30
+        sendTimeout: const Duration(seconds: 15),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      );
+
+      _cachedDio = Dio(options);
+
+      // Add cache interceptor for static data
+      if (useCache) {
+        _cachedDio!.interceptors
+            .add(DioCacheInterceptor(options: _cacheOptions));
+      }
+
+      // Add connection pooling
+      (_cachedDio!.httpClientAdapter as IOHttpClientAdapter).createHttpClient =
+          () {
+        final client = HttpClient();
+        client.maxConnectionsPerHost = 10;
+        client.connectionTimeout = const Duration(seconds: 15);
+        return client;
+      };
+    }
+    return _cachedDio!;
+  }
 
   Future<LoginResponse> login(
     String provider,
@@ -53,123 +98,64 @@ class ApiProvider {
     String? otp,
   ) async {
     BaseOptions option = BaseOptions(
-        connectTimeout: const Duration(seconds: Constants.waitTime),
-        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        connectTimeout: const Duration(seconds: 15), // Reduced
+        receiveTimeout: const Duration(seconds: 20), // Reduced
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          // 'Authorization': 'Bearer ${Storage.instance.token}'
-          // 'APP-KEY': ConstanceData.app_key
         });
     var url = "$baseUrl/$path/users/login";
-    // var url = "http://asamis.assam.gov.in/api/login";
     dio = Dio(option);
-    debugPrint(url.toString());
-    var data = {
-      "provider": provider,
-    };
-    if (country_code != "") {
-      data.addAll({
-        "country_code": country_code,
-      });
-    }
-    if (mobile != "") {
-      data.addAll({
-        "mobile": mobile,
-      });
-    }
-    if (otp != "") {
-      data.addAll({
-        "otp": otp ?? "",
-      });
-    }
-    if (f_name != "") {
-      data.addAll({
-        "f_name": f_name,
-      });
-    }
-    if (l_name != "") {
-      data.addAll({
-        "l_name": l_name,
-      });
-    }
-    if (email != "") {
-      data.addAll({
-        "email": email,
-      });
-    }
-    if (profile_pic != "") {
-      data.addAll({
-        "profile_pic": profile_pic,
-      });
-    }
-    if (social_id != "") {
-      data.addAll({
-        "social_id": social_id,
-      });
-    }
-    if (device_token != "") {
-      data.addAll({
-        "device_token": device_token,
-      });
-    }
-    debugPrint(jsonEncode(data));
+
+    // Build data more efficiently
+    Map<String, dynamic> data = {"provider": provider};
+    if (country_code.isNotEmpty) data["country_code"] = country_code;
+    if (mobile.isNotEmpty) data["mobile"] = mobile;
+    if (otp?.isNotEmpty == true) data["otp"] = otp!;
+    if (f_name.isNotEmpty) data["f_name"] = f_name;
+    if (l_name.isNotEmpty) data["l_name"] = l_name;
+    if (email.isNotEmpty) data["email"] = email;
+    if (profile_pic.isNotEmpty) data["profile_pic"] = profile_pic;
+    if (social_id.isNotEmpty) data["social_id"] = social_id;
+    if (device_token.isNotEmpty) data["device_token"] = device_token;
+
     try {
-      Response? response = await dio?.post(
-        url,
-        data: jsonEncode(data),
-      );
-      debugPrint("login response: ${response?.data} ${response?.headers}");
+      Response? response = await dio?.post(url, data: data);
       if (response?.statusCode == 200 || response?.statusCode == 201) {
         return LoginResponse.fromJson(response?.data);
       } else {
-        debugPrint("login error response: ${response?.data}");
-        return LoginResponse.withError(response?.data['error']
-            ? response?.data['message']['success']
-            : response?.data['message']['error']);
+        return LoginResponse.withError(
+            response?.data['message'] ?? 'Login failed');
       }
-    } on DioError catch (e) {
-      debugPrint("login error: ${e.error} ${e.response} ${e.message}");
-      return LoginResponse.withError(e.response?.data['message']);
+    } on DioException catch (e) {
+      return LoginResponse.withError(
+          e.response?.data?['message'] ?? e.message ?? 'Network error');
     }
   }
 
   Future<GenericOTPResponse> generateOTP(String mobile) async {
     BaseOptions option = BaseOptions(
-        connectTimeout: const Duration(seconds: Constants.waitTime),
-        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 20),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          // 'Authorization': 'Bearer ${Storage.instance.token}'
-          // 'APP-KEY': ConstanceData.app_key
         });
     var url = "$baseUrl/$path/users/generate-otp";
-    // var url = "http://asamis.assam.gov.in/api/login";
     dio = Dio(option);
-    debugPrint(url.toString());
-    var data = {
-      "mobile": mobile,
-    };
-    debugPrint(jsonEncode(data));
+    var data = {"mobile": mobile};
 
     try {
-      Response? response = await dio?.post(
-        url,
-        data: jsonEncode(data),
-      );
-      debugPrint("getOTP response: ${response?.data} ${response?.headers}");
+      Response? response = await dio?.post(url, data: data);
       if (response?.statusCode == 200 || response?.statusCode == 201) {
         return GenericOTPResponse.fromJson(response?.data);
       } else {
-        debugPrint("getOTP error response: ${response?.data}");
-        return GenericOTPResponse.withError(response?.data['error']
-            ? response?.data['message']['success']
-            : response?.data['message']['error']);
+        return GenericOTPResponse.withError(
+            response?.data['message'] ?? 'OTP generation failed');
       }
-    } on DioError catch (e) {
-      debugPrint("getOTP error: ${e.response?.data}\n ${e.error} ${e.message}");
-      return GenericOTPResponse.withError(e.response?.data['message']??e.message);
+    } on DioException catch (e) {
+      return GenericOTPResponse.withError(
+          e.response?.data?['message'] ?? e.message ?? 'Network error');
     }
   }
 
@@ -214,38 +200,24 @@ class ApiProvider {
   }
 
   Future<GenresResponse> getGenres() async {
-    BaseOptions option = BaseOptions(
-        connectTimeout: const Duration(seconds: Constants.waitTime),
-        receiveTimeout: const Duration(seconds: Constants.waitTime),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          // 'Authorization': 'Bearer ${Storage.instance.token}'
-          // 'APP-KEY': ConstanceData.app_key
-        });
-    var url = "$baseUrl/$path/videos/genres";
-    // var url = "http://asamis.assam.gov.in/api/login";
-    dio = Dio(option);
-    debugPrint(url.toString());
-    // debugPrint(jsonEncode(data));
+    final dio = _getDio();
+    var url = "/$path/videos/genres";
 
     try {
-      Response? response = await dio?.get(
+      final response = await dio.get(
         url,
-        // data: jsonEncode(data),
+        options: _cacheOptions.toOptions(),
       );
-      debugPrint("getGenres response: ${response?.data} ${response?.headers}");
-      if (response?.statusCode == 200 || response?.statusCode == 201) {
-        return GenresResponse.fromJson(response?.data);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return GenresResponse.fromJson(response.data);
       } else {
-        debugPrint("getGenres error response: ${response?.data}");
-        return GenresResponse.withError(response?.data['error']
-            ? response?.data['message']['success']
-            : response?.data['message']['error']);
+        return GenresResponse.withError(
+            response.data['message'] ?? 'Failed to fetch genres');
       }
-    } on DioError catch (e) {
-      debugPrint("getGenres  error: ${e.error} ${e.message}");
-      return GenresResponse.withError(e.message);
+    } on DioException catch (e) {
+      return GenresResponse.withError(
+          e.response?.data?['message'] ?? e.message ?? 'Network error');
     }
   }
 
@@ -425,44 +397,95 @@ class ApiProvider {
   }
 
   Future<CategoryResponse> getCategories() async {
-    BaseOptions option = BaseOptions(
-        connectTimeout: const Duration(seconds: Constants.waitTime),
-        receiveTimeout: const Duration(seconds: Constants.waitTime),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          // 'Authorization': 'Bearer ${Storage.instance.token}'
-          // 'APP-KEY': ConstanceData.app_key
-        });
-    var url = "$baseUrl/$path/videos/categories";
-    // var url = "http://asamis.assam.gov.in/api/login";
-    dio = Dio(option);
-    debugPrint(url.toString());
-    // debugPrint(jsonEncode(data));
+    // Create a dio instance with longer timeouts for this specific request
+    BaseOptions options = BaseOptions(
+      baseUrl: baseUrl,
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      sendTimeout: const Duration(seconds: 30),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    );
+    final dio = Dio(options);
+
+    var url = "/$path/videos/categories";
+
+    debugPrint("ApiProvider: Fetching categories from: $baseUrl$url");
 
     try {
-      Response? response = await dio?.get(
-        url,
-        // data: jsonEncode(data),
-      );
+      final response = await dio.get(url);
+
       debugPrint(
-          "CategoryResponse response: ${response?.data} ${response?.headers}");
-      if (response?.statusCode == 200 || response?.statusCode == 201) {
-        return CategoryResponse.fromJson(response?.data);
+          "ApiProvider: Categories response status: ${response.statusCode}");
+      debugPrint("ApiProvider: Categories response data: ${response.data}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final categoryResponse = CategoryResponse.fromJson(response.data);
+        debugPrint(
+            "ApiProvider: Categories parsed - success: ${categoryResponse.success}");
+        debugPrint(
+            "ApiProvider: Categories count: ${categoryResponse.categories.length}");
+
+        for (int i = 0; i < categoryResponse.categories.length; i++) {
+          final category = categoryResponse.categories[i];
+          debugPrint(
+              "ApiProvider: Category $i - name: '${category.name}', slug: '${category.slug}'");
+        }
+
+        return categoryResponse;
       } else {
-        debugPrint("CategoryResponse error response: ${response?.data}");
-        return CategoryResponse.withError(response?.data['error']
-            ? response?.data['message']['success']
-            : response?.data['message']['error']);
+        debugPrint("ApiProvider: Categories error response: ${response.data}");
+        return CategoryResponse.withError(
+            response.data['message'] ?? 'Failed to fetch categories');
       }
-    } on DioError catch (e) {
-      debugPrint("CategoryResponse  error: ${e.error} ${e.message}");
-      return CategoryResponse.withError(e.message);
+    } on DioException catch (e) {
+      debugPrint(
+          "ApiProvider: Categories DioException: ${e.message}, type: ${e.type}");
+
+      String errorMessage = 'Network error';
+      switch (e.type) {
+        case DioExceptionType.connectionTimeout:
+          errorMessage = 'Connection timeout';
+          break;
+        case DioExceptionType.sendTimeout:
+          errorMessage = 'Send timeout';
+          break;
+        case DioExceptionType.receiveTimeout:
+          errorMessage = 'Receive timeout';
+          break;
+        case DioExceptionType.badResponse:
+          errorMessage = 'Bad response: ${e.response?.statusCode}';
+          break;
+        case DioExceptionType.cancel:
+          errorMessage = 'Request cancelled';
+          break;
+        case DioExceptionType.connectionError:
+          errorMessage = 'Connection error - check internet connection';
+          break;
+        case DioExceptionType.unknown:
+          errorMessage = 'Unknown error: ${e.message}';
+          break;
+        default:
+          errorMessage = e.message ?? 'Network error';
+      }
+
+      return CategoryResponse.withError(errorMessage);
+    } catch (e) {
+      debugPrint("ApiProvider: Categories unexpected error: $e");
+      return CategoryResponse.withError('Unexpected error: $e');
     }
   }
 
-  Future<VideoResponse> getVideos(int page_no, String? language,
-      String? category, String? genre, String? search, String? page,String? type) async {
+  Future<VideoResponse> getVideos(
+      int page_no,
+      String? language,
+      String? category,
+      String? genre,
+      String? search,
+      String? page,
+      String? type) async {
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
         receiveTimeout: const Duration(seconds: Constants.waitTime),
@@ -473,63 +496,52 @@ class ApiProvider {
           // 'APP-KEY': ConstanceData.app_key
         });
     var url = "$baseUrl/$path/videos/list";
-    // var url = "http://asamis.assam.gov.in/api/login";
     dio = Dio(option);
-    debugPrint(url.toString());
-    Map<String, dynamic> data = {
-      'page_no': page_no,
-    };
-    if (language != null) {
-      data.addAll({
-        'language': language ?? "",
-      });
-    }
-    if (search != null) {
-      data.addAll({
-        'search': search,
-      });
-    }
-    if (page != null) {
-      data.addAll({
-        'page_for': page,
-      });
-    }
-    if (category != null) {
-      data.addAll({
-        'category': category ?? "",
-      });
-    }
-    if (genre != null) {
-      data.addAll({
-        'genre': genre ?? "",
-      });
-    }
-    if (type != null) {
-      data.addAll({
-        'type': type ?? "",
-      });
-    }
-    debugPrint(jsonEncode(data));
+
+    final queryParams = <String, dynamic>{'page_no': page_no};
+    if (language?.isNotEmpty == true) queryParams['language'] = language;
+    if (search?.isNotEmpty == true) queryParams['search'] = search;
+    if (page?.isNotEmpty == true) queryParams['page_for'] = page;
+    if (category?.isNotEmpty == true) queryParams['category'] = category;
+    if (genre?.isNotEmpty == true) queryParams['genre'] = genre;
+    if (type?.isNotEmpty == true) queryParams['type'] = type;
+
+    debugPrint("getVideos request: $url");
+    debugPrint("getVideos queryParams: $queryParams");
 
     try {
-      Response? response = await dio?.get(
+      final response = await dio?.get(
         url,
-        queryParameters: data,
-        // data: jsonEncode(data),
+        queryParameters: queryParams,
       );
+
+      debugPrint("getVideos response status: ${response?.statusCode}");
       debugPrint(
-          "VideoResponse response: ${response?.data} ${response?.headers}");
+          "getVideos response data keys: ${(response?.data as Map?)?.keys}");
+
+      if (response?.data['result'] != null) {
+        debugPrint(
+            "getVideos result keys: ${(response?.data['result'] as Map?)?.keys}");
+        if (response?.data['result']['data'] != null) {
+          debugPrint(
+              "getVideos data length: ${(response?.data['result']['data'] as List?)?.length}");
+        } else {
+          debugPrint("getVideos: result.data is null");
+        }
+      } else {
+        debugPrint("getVideos: result is null");
+      }
+
       if (response?.statusCode == 200 || response?.statusCode == 201) {
         return VideoResponse.fromJson(response?.data);
       } else {
-        debugPrint("VideoResponse error response: ${response?.data}");
-        return VideoResponse.withError(response?.data['error']
-            ? response?.data['message']['success']
-            : response?.data['message']['error']);
+        return VideoResponse.withError(
+            response?.data['message'] ?? 'Failed to fetch videos');
       }
-    } on DioError catch (e) {
-      debugPrint("VideoResponse  error: ${e.error} ${e.message}");
-      return VideoResponse.withError(e.message);
+    } on DioException catch (e) {
+      debugPrint("getVideos DioException: ${e.message}");
+      return VideoResponse.withError(
+          e.response?.data?['message'] ?? e.message ?? 'Network error');
     }
   }
 
@@ -855,6 +867,7 @@ class ApiProvider {
   }
 
   Future<RentPlanDetailsResponse> getRentPlans(int id) async {
+    print(Storage.instance.token);
     BaseOptions option = BaseOptions(
         connectTimeout: const Duration(seconds: Constants.waitTime),
         receiveTimeout: const Duration(seconds: Constants.waitTime),
@@ -912,7 +925,7 @@ class ApiProvider {
     dio = Dio(option);
     debugPrint(url.toString());
     var data = {
-      'platform':'phone',
+      'platform': 'phone',
     };
     debugPrint(jsonEncode(data));
 
@@ -1201,6 +1214,51 @@ class ApiProvider {
       debugPrint(
           "verifyPayment error: ${e.error} ${e.response?.data} ${e.message}");
       return GenericResponse.withError(e.response?.data['message']);
+    }
+  }
+
+  Future<GenericResponse> verifyApplePayment(String orderId, String productId,
+      String amount, String receiptData, String transactionDate) async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Storage.instance.token}'
+        });
+    var url = "$baseUrl/$path/sales/order/verify-apple-payment";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    var data = {
+      "product_id": productId,
+      "amount": amount,
+      "order_id": orderId,
+      "receipt_data": receiptData,
+      "transaction_date": transactionDate,
+    };
+    debugPrint(jsonEncode(data));
+
+    try {
+      Response? response = await dio?.post(
+        url,
+        data: jsonEncode(data),
+      );
+      debugPrint(
+          "verifyApplePayment response: ${response?.data} ${response?.headers}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return GenericResponse.fromJson(response?.data);
+      } else {
+        debugPrint("verifyApplePayment error response: ${response?.data}");
+        return GenericResponse.withError(response?.data['error']
+            ? response?.data['message']['success']
+            : response?.data['message']['error']);
+      }
+    } on DioError catch (e) {
+      debugPrint(
+          "verifyApplePayment error: ${e.error} ${e.response?.data} ${e.message}");
+      return GenericResponse.withError(
+          e.response?.data['message'] ?? e.message);
     }
   }
 
@@ -1568,51 +1626,93 @@ class ApiProvider {
 
   Future<SectionsResponse> getSections(
       String page, String page_no, language_id) async {
-    BaseOptions option = BaseOptions(
-        connectTimeout: const Duration(seconds: Constants.waitTime),
-        receiveTimeout: const Duration(seconds: Constants.waitTime),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          // 'Authorization': 'Bearer ${Storage.instance.token}'
-          // 'APP-KEY': ConstanceData.app_key
-        });
-    var url = "$baseUrl/$path/widgets/sections";
-    // var url = "http://asamis.assam.gov.in/api/login";
-    dio = Dio(option);
-    debugPrint(url.toString());
-    var data = {
+    // Create a dio instance with longer timeouts for this specific request
+    BaseOptions options = BaseOptions(
+      baseUrl: baseUrl,
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      sendTimeout: const Duration(seconds: 30),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    );
+    final dio = Dio(options);
+
+    var url = "/$path/widgets/sections";
+
+    final queryParams = <String, dynamic>{
       'page': page,
+      'page_no': page_no,
     };
-    data.addAll({
-      'page_no': page_no ?? '1',
-    });
-    if (language_id != "") {
-      data.addAll({
-        'language_id': language_id ?? '1',
-      });
+    if (language_id?.isNotEmpty == true) {
+      queryParams['language_id'] = language_id;
     }
-    debugPrint(jsonEncode(data));
-    // debugPrint(jsonEncode(data));
+
+    debugPrint("getSections request: $baseUrl$url with params: $queryParams");
 
     try {
-      Response? response = await dio?.get(
+      final response = await dio.get(
         url,
-        queryParameters: data,
+        queryParameters: queryParams,
       );
-      debugPrint(
-          "getSections response: ${response?.data} ${response?.headers}");
-      if (response?.statusCode == 200 || response?.statusCode == 201) {
-        return SectionsResponse.fromJson(response?.data);
+
+      debugPrint("getSections response status: ${response.statusCode}");
+      debugPrint("getSections response data: ${response.data}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final sectionsResponse = SectionsResponse.fromJson(response.data);
+        debugPrint(
+            "getSections parsed: status=${sectionsResponse.status}, sections count=${sectionsResponse.sections.length}");
+
+        // Debug each section
+        for (int i = 0; i < sectionsResponse.sections.length; i++) {
+          final section = sectionsResponse.sections[i];
+          debugPrint(
+              "Section $i: title='${section.title}', videos count=${section.videos.length}");
+        }
+
+        return sectionsResponse;
       } else {
-        debugPrint("getSections error response: ${response?.data}");
-        return SectionsResponse.withError(response?.data['error']
-            ? response?.data['message']['success']
-            : response?.data['message']['error']);
+        debugPrint("getSections error response: ${response.data}");
+        return SectionsResponse.withError(
+            response.data['message'] ?? 'Failed to fetch sections');
       }
-    } on DioError catch (e) {
-      debugPrint("getSections  error: ${e.error} ${e.message}");
-      return SectionsResponse.withError(e.message);
+    } on DioException catch (e) {
+      debugPrint(
+          "getSections DioException: ${e.message}, type: ${e.type}, response: ${e.response?.data}");
+
+      String errorMessage = 'Network error';
+      switch (e.type) {
+        case DioExceptionType.connectionTimeout:
+          errorMessage = 'Connection timeout';
+          break;
+        case DioExceptionType.sendTimeout:
+          errorMessage = 'Send timeout';
+          break;
+        case DioExceptionType.receiveTimeout:
+          errorMessage = 'Receive timeout';
+          break;
+        case DioExceptionType.badResponse:
+          errorMessage = 'Bad response: ${e.response?.statusCode}';
+          break;
+        case DioExceptionType.cancel:
+          errorMessage = 'Request cancelled';
+          break;
+        case DioExceptionType.connectionError:
+          errorMessage = 'Connection error - check internet connection';
+          break;
+        case DioExceptionType.unknown:
+          errorMessage = 'Unknown error: ${e.message}';
+          break;
+        default:
+          errorMessage = e.message ?? 'Network error';
+      }
+
+      return SectionsResponse.withError(errorMessage);
+    } catch (e) {
+      debugPrint("getSections unexpected error: $e");
+      return SectionsResponse.withError('Unexpected error: $e');
     }
   }
 

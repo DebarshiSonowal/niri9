@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:niri9/API/api_provider.dart';
-import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Helper/storage.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:niri9/Repository/repository.dart';
@@ -20,14 +19,122 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initialize());
+  }
+
+  Future<void> _initialize() async {
+    try {
+      final repo = Provider.of<Repository>(context, listen: false);
+
+      // Run all non-dependent API calls in parallel for better performance
+      final futures = <Future>[
+        _fetchCategories(repo),
+        _fetchGenres(repo),
+        _fetchSettings(repo),
+      ];
+
+      // Add profile fetch only if user is logged in
+      if (Storage.instance.isLoggedIn) {
+        futures.add(_fetchProfile(repo));
+      }
+
+      // Wait for all API calls to complete
+      await Future.wait(futures);
+
+      if (!mounted) return;
+
+      // Navigate to home screen
+      Navigation.instance.navigateAndRemoveUntil(Routes.homeScreen);
+    } catch (e) {
+      debugPrint("Splash initialization error: $e");
+      // Even if some calls fail, still navigate to home
+      if (mounted) {
+        Navigation.instance.navigateAndRemoveUntil(Routes.homeScreen);
+      }
+    }
+  }
+
+  Future<void> _fetchCategories(Repository repo) async {
+    try {
+      debugPrint("SplashScreen: Starting to fetch categories");
+      final response = await ApiProvider.instance.getCategories();
+      debugPrint(
+          "SplashScreen: Categories API response - success: ${response.success}");
+      debugPrint(
+          "SplashScreen: Categories count: ${response.categories.length}");
+
+      if (response.success ?? false) {
+        debugPrint("SplashScreen: Setting categories in repository");
+        for (int i = 0; i < response.categories.length; i++) {
+          final category = response.categories[i];
+          debugPrint(
+              "SplashScreen: Category $i - name: '${category.name}', slug: '${category.slug}'");
+        }
+        repo.setCategories(response.categories);
+        debugPrint("SplashScreen: Categories successfully set in repository");
+      } else {
+        debugPrint(
+            "SplashScreen: Categories API returned success=false, message: ${response.message}");
+      }
+    } catch (e) {
+      debugPrint("SplashScreen: Failed to fetch categories: $e");
+    }
+  }
+
+  Future<void> _fetchGenres(Repository repo) async {
+    try {
+      final response = await ApiProvider.instance.getGenres();
+      if (response.success ?? false) {
+        repo.addGenres(response.genres);
+      }
+    } catch (e) {
+      debugPrint("Failed to fetch genres: $e");
+    }
+  }
+
+  Future<void> _fetchSettings(Repository repo) async {
+    try {
+      final response = await ApiProvider.instance.getSettings();
+      if (response.success ?? false) {
+        repo.setVideoPercent(response.videoPercent ?? []);
+        repo.setVideoSettings(response.videoSetting);
+        repo.addCategoryAll(response.categoryAll);
+      }
+    } catch (e) {
+      debugPrint("Failed to fetch settings: $e");
+    }
+  }
+
+  Future<void> _fetchProfile(Repository repo) async {
+    try {
+      final response = await ApiProvider.instance.getProfile();
+      if (response.success ?? false && response.user != null) {
+        repo.setUser(response.user!);
+        debugPrint("User profile loaded: ${response.user?.last_sub}");
+      }
+    } catch (e) {
+      debugPrint("Failed to fetch profile: $e");
+    }
+  }
+
+  // Optionally enable this if Help Center is needed on launch
+  // Future<void> _fetchHelp(Repository repo) async {
+  //   final response = await ApiProvider.instance.getHelpCenter();
+  //   if (response.success ?? false) {
+  //     repo.setHelp(response.result ?? "");
+  //   }
+  // }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xff151515),
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        padding: EdgeInsets.symmetric(
-          horizontal: 2.w,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 2.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -41,154 +148,14 @@ class _SplashScreenState extends State<SplashScreen> {
                 fit: BoxFit.cover,
               ),
             ),
-            // SizedBox(
-            //   height: 1.h,
-            // ),
-            // SizedBox(
-            //   height: 3.5.h,
-            //   width: 7.w,
-            //   child: const CircularProgressIndicator(
-            //     color: Colors.white,
-            //   ),
-            // ),
+            SizedBox(height: 3.h),
+            const CircularProgressIndicator(
+              color: Colors.white,
+              strokeWidth: 2.0,
+            ),
           ],
         ),
       ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(const Duration(seconds: 0), () async {
-      await fetchData();
-    });
-  }
-
-  Future<void> fetchData() async {
-    await fetchCategories();
-    // await fetchBanner();
-    await fetchGenres();
-    // await fetchSections();
-    // await fetchPrivacy();
-    // await fetchRefund();
-    // await fetchFaq();
-    // await fetchHelp();
-    // await fetchTerms();
-    if(Storage.instance.isLoggedIn){
-      await fetchProfile();
-    }
-    await fetchSettings();
-    Navigation.instance.navigateAndRemoveUntil(Routes.homeScreen);
-  }
-
-  Future<void> fetchProfile() async {
-    // Navigation.instance.navigate(Routes.loadingScreen);
-    final response = await ApiProvider.instance.getProfile();
-    if (response.success ?? false) {
-      // Navigation.instance.goBack();
-      Provider.of<Repository>(context, listen: false).setUser(response.user!);
-      debugPrint("User: ${response.user?.last_sub}");
-    } else {
-      // Navigation.instance.goBack();
-      // showError(response.message ?? "Something went wrong");
-    }
-  }
-  // Future<void> fetchBanner() async {
-  //   final response = await ApiProvider.instance.getBannerResponse("home");
-  //   if (response.success ?? false) {
-  //     // if (!context.mounted) return;
-  //     Provider.of<Repository>(context, listen: false)
-  //         .addHomeBanner(response.result??[]);
-  //     // await fetchVideos(response.sections[0]);
-  //   }
-  // }
-
-  // Future<void> fetchSections() async {
-  //   final response = await ApiProvider.instance.getSections("home",'1');
-  //   if (response.status ?? false) {
-  //     // if (!context.mounted) return;
-  //     Provider.of<Repository>(context, listen: false)
-  //         .addHomeSections(response.sections);
-  //     // await fetchVideos(response.sections[0]);
-  //   }
-  //   final response1 = await ApiProvider.instance.getSections("trending",'1');
-  //   if (response1.status ?? false) {
-  //     // if (!context.mounted) return;
-  //     Provider.of<Repository>(context, listen: false)
-  //         .addTrendingSections(response1.sections);
-  //     // await fetchVideos(response.sections[0]);
-  //   }
-  // }
-
-  Future<void> fetchCategories() async {
-    final response = await ApiProvider.instance.getCategories();
-    if (response.success ?? false) {
-      Provider.of<Repository>(context, listen: false)
-          .setCategories(response.categories);
-    }
-  }
-
-  Future<void> fetchGenres() async {
-    final response = await ApiProvider.instance.getGenres();
-    if (response.success ?? false) {
-      Provider.of<Repository>(context, listen: false)
-          .addGenres(response.genres);
-    }
-  }
-
-  Future<void> fetchVideos(section) async {
-    // final response = await ApiProvider.instance.getVideos(1, section, "movie", "action");
-    // if(response.success??false){
-    //   Provider.of<Repository>(context,listen: false).setVideos(response.videos);
-    // }
-  }
-
-  // Future<void> fetchPrivacy() async {
-  //   final response = await ApiProvider.instance.getPrivacyPolicy();
-  //   if (response.success ?? false) {
-  //     Provider.of<Repository>(context, listen: false)
-  //         .setPrivacy(response.result ?? "");
-  //   }
-  // }
-  // Future<void> fetchRefund() async {
-  //   final response = await ApiProvider.instance.getRefundPolicy();
-  //   if (response.success ?? false) {
-  //     Provider.of<Repository>(context, listen: false)
-  //         .setRefund(response.result ?? "");
-  //   }
-  // }
-  Future<void> fetchHelp() async {
-    final response = await ApiProvider.instance.getHelpCenter();
-    if (response.success ?? false) {
-      Provider.of<Repository>(context, listen: false)
-          .setHelp(response.result ?? "");
-    }
-  }
-  // Future<void> fetchFaq() async {
-  //   final response = await ApiProvider.instance.getFAQ();
-  //   if (response.success ?? false) {
-  //     Provider.of<Repository>(context, listen: false)
-  //         .setFaq(response.result ?? "");
-  //   }
-  // }
-  // Future<void> fetchTerms() async {
-  //   final response = await ApiProvider.instance.getTermsPolicy();
-  //   if (response.success ?? false) {
-  //     Provider.of<Repository>(context, listen: false)
-  //         .setTermsConditions(response.result ?? "");
-  //   }
-  // }
-
-  Future<void> fetchSettings() async {
-    final response = await ApiProvider.instance.getSettings();
-    if (response.success ?? false) {
-      Provider.of<Repository>(context, listen: false)
-          .setVideoPercent(response.videoPercent??[]);
-      Provider.of<Repository>(context, listen: false)
-          .setVideoSettings(response.videoSetting);
-      Provider.of<Repository>(context, listen: false)
-          .addCategoryAll(response.categoryAll);
-    }
   }
 }

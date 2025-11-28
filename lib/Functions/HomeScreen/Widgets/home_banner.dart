@@ -2,8 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:lottie/lottie.dart';
 import 'package:niri9/Constants/assets.dart';
+import 'package:niri9/Functions/HomeScreen/Widgets/my_list_button.dart';
+import 'package:niri9/Functions/WatchScreen/Widgets/animation_add_button.dart';
 import 'package:niri9/Models/banner.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -18,12 +19,11 @@ import '../../../Navigation/Navigate.dart';
 import '../../../Repository/repository.dart';
 import '../../../Router/routes.dart';
 import '../../Trending/Widgets/trending_banner.dart';
-import 'my_list_button.dart';
 import 'share_indicator.dart';
 import 'slider_indicator.dart';
 
 class HomeBanner extends StatefulWidget {
-  const HomeBanner({Key? key}) : super(key: key);
+  const HomeBanner({super.key});
 
   @override
   State<HomeBanner> createState() => _HomeBannerState();
@@ -48,12 +48,16 @@ class _HomeBannerState extends State<HomeBanner> {
             return Container();
           }
           return Shimmer.fromColors(
-            baseColor: Colors.white,
-            highlightColor: Colors.white70,
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
             child: Container(
               width: double.infinity,
-              height: 40.h,
-              color: Colors.white30,
+              height: 25.h,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.grey.shade300,
+              ),
+              margin: EdgeInsets.symmetric(horizontal: 4.w),
             ),
           );
         });
@@ -93,20 +97,19 @@ class _BannerSectionState extends State<BannerSection> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      color: Colors.white,
       width: double.infinity,
-      height: 40.h,
+      // height: 30.h,
       child: Consumer<Repository>(builder: (context, data, _) {
         return Stack(
-          alignment: Alignment.bottomCenter,
           children: [
             data.homeBanner.isNotEmpty
                 ? SizedBox(
-                    height: 40.h,
+                    // height: 44.h,
                     width: double.infinity,
                     child: CarouselSlider.builder(
                       carouselController: controller,
-                      // itemCount: data.bannerList.length,
                       itemCount: data.homeBanner.length,
                       itemBuilder:
                           (BuildContext context, int index, int realIndex) {
@@ -126,12 +129,13 @@ class _BannerSectionState extends State<BannerSection> {
                       options: CarouselOptions(
                         autoPlay: true,
                         enableInfiniteScroll: true,
-                        // enlargeCenterPage: true,
-                        aspectRatio: 10 / 9,
+                        autoPlayInterval: const Duration(seconds: 5),
+                        autoPlayAnimationDuration:
+                            const Duration(milliseconds: 1000),
+                        autoPlayCurve: Curves.easeInOut,
+                        aspectRatio: 16 / 9,
                         viewportFraction: 1,
                         onPageChanged: (index, reason) {
-                          debugPrint(
-                              "onPageChanged $index ${data.homeBanner[_current].hasMyList}");
                           setState(() {
                             _current = index;
                           });
@@ -140,42 +144,218 @@ class _BannerSectionState extends State<BannerSection> {
                     ),
                   )
                 : Container(),
-            data.homeBanner.isNotEmpty
-                ? Container(
-                    margin: EdgeInsets.only(
-                      bottom: 1.h,
+            // Netflix-style gradient overlay
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height:25.h,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.4),
+                      Colors.black.withOpacity(0.8),
+                      Colors.black.withOpacity(0.95),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // Netflix-style content overlay
+            if (data.homeBanner.isNotEmpty)
+              Positioned(
+                bottom: 3.h,
+                left: 6.w,
+                right: 6.w,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Title
+                    Text(
+                      data.homeBanner[_current].title ?? "Featured Content",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24.sp,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    width: double.infinity,
-                    height: 5.h,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    SizedBox(height: 0.5.h),
+                    // Description or genre
+                    Text(
+                      data.homeBanner[_current].description ??
+                          "Popular on NIRI9",
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 1.h),
+                    // Action buttons row
+                    Row(
                       children: [
-                        MyListButton(
-                          hasMyList:
-                              data.homeBanner[_current].hasMyList ?? false,
+                        // Play button
+                        Expanded(
+                          flex: 2,
+                          child: GestureDetector(
+                            onTap: () {
+                              if (Storage.instance.isLoggedIn) {
+                                Navigation.instance.navigate(Routes.watchScreen,
+                                    args: data.homeBanner[_current].id);
+                              } else {
+                                CommonFunctions().showLoginDialog(context);
+                              }
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 0.5.h),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.play_arrow,
+                                    color: Colors.black,
+                                    size: 6.w,
+                                  ),
+                                  SizedBox(width: 1.w),
+                                  Text(
+                                    'Play',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 2.w),
+                        // My List button
+                        Expanded(
+                          flex: 2,
+                          child: GestureDetector(
+                            onTap: () {
+                              if (Storage.instance.isLoggedIn) {
+                                addToMyList(data.homeBanner[_current].id);
+                              } else {
+                                Navigation.instance
+                                    .navigate(Routes.loginScreen, args: "");
+                              }
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 0.5.h),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.7),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.5),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 6.w,
+                                  ),
+                                  SizedBox(width: 1.w),
+                                  Text(
+                                    'My List',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 3.w),
+                        // Share button
+                        GestureDetector(
                           onTap: () {
-                            addToMyList(data.homeBanner[_current].id);
-                          },
-                        ),
-                        SizedBox(
-                          width: 3.w,
-                        ),
-                        SliderIndicator(current: _current),
-                        SizedBox(
-                          width: 3.w,
-                        ),
-                        ShareIndicator(
-                          onTap: () {
-                            // showSuccessDialog(context: context);
                             Share.share(
                                 'check out NIRI9 from https://play.google.com/store/apps/details?id=com.niri.niri9');
                           },
+                          child: Container(
+                            padding: EdgeInsets.all(1.h),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.7),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.5),
+                                width: 1,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.share,
+                              color: Colors.white,
+                              size: 5.w,
+                            ),
+                          ),
                         ),
+                        if (data.homeBanner[_current].hasRent ?? false) ...[
+                          SizedBox(width: 3.w),
+                          Container(
+                            padding: EdgeInsets.all(1.h),
+                            decoration: BoxDecoration(
+                              color: Colors.amber,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Icon(
+                              Icons.shop,
+                              color: Colors.white,
+                              size: 5.w,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
-                  )
-                : Container(),
+                  ],
+                ),
+              ),
+            // Dots indicator at bottom
+            if (data.homeBanner.isNotEmpty && data.homeBanner.length > 1)
+              Positioned(
+                bottom: 1.h,
+                left: 0,
+                right: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: data.homeBanner.asMap().entries.map((entry) {
+                    return Container(
+                      width: _current == entry.key ? 8.0 : 6.0,
+                      height: _current == entry.key ? 8.0 : 6.0,
+                      margin: EdgeInsets.symmetric(horizontal: 1.w),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _current == entry.key
+                            ? Colors.white
+                            : Colors.white.withOpacity(0.5),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
           ],
         );
       }),
@@ -206,65 +386,57 @@ class BannerImageItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 40.h,
+      height: 55.h,
       width: double.infinity,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          CachedNetworkImage(
-            imageUrl: item.posterPic ?? "",
-            fit: BoxFit.fill,
-            height: 40.h,
-            width: double.infinity,
-            placeholder: (context, index) {
-              return Image.asset(
-                Assets.logoTransparent,
-              );
-            },
-          ),
-          Container(
-            height: 8.h,
+      child: CachedNetworkImage(
+        imageUrl: item.posterPic ?? "",
+        fit: BoxFit.cover,
+        height: 55.h,
+        width: double.infinity,
+        placeholder: (context, index) {
+          return Container(
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.2),
+              gradient: LinearGradient(
+                colors: [
+                  Colors.grey.shade800,
+                  Colors.grey.shade900,
+                ],
+              ),
             ),
-            // color: Colors.grey,
-            width: double.infinity,
-
-            padding: EdgeInsets.only(
-              bottom: 0.7.h,
+            child: Center(
+              child: Image.asset(
+                Assets.logoTransparent,
+                opacity: const AlwaysStoppedAnimation(0.3),
+                width: 20.w,
+              ),
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 15.w,
-                ),
-                GestureDetector(
-                  onTap: () => onTap(item.id),
-                  child: const PlayNowButton(),
-                ),
-                SizedBox(
-                  width: 15.w,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 2.w),
-                    child: (item.hasRent ?? false)
-                        ? const Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Icon(
-                                Icons.shop,
-                                color: Colors.yellow,
-                              )
-                            ],
-                          )
-                        : Container(),
+          );
+        },
+        errorWidget: (context, url, error) {
+          return Container(
+            color: Colors.grey.shade900,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 12.w,
+                    color: Colors.grey.shade600,
                   ),
-                ),
-              ],
+                  SizedBox(height: 1.h),
+                  Text(
+                    'Image not available',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 12.sp,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

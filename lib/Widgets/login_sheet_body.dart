@@ -312,11 +312,36 @@ class _LoginSheetBodyState extends State<LoginSheetBody> {
                             }
                           }
                         },
-                        child: Text(
-                          time != 0 ? "Resend OTP after 0:$time" : "Resend OTP",
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12.sp,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 5.w, vertical: 1.2.h),
+                          decoration: BoxDecoration(
+                            color: time != 0
+                                ? Colors.grey.shade800
+                                : Colors.blueAccent,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color:
+                                  time != 0 ? Colors.grey : Colors.blueAccent,
+                              width: 1.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            time != 0
+                                ? "Resend OTP after 0:$time"
+                                : "Resend OTP",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),

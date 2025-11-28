@@ -19,6 +19,30 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController fnameController = TextEditingController();
   final TextEditingController lnameController = TextEditingController();
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
+
+  void loadUserData() async {
+    // Get current user data and pre-fill the form
+    final userResponse = await ApiProvider.instance.getProfile();
+    if (userResponse.success ?? false) {
+      setState(() {
+        emailController.text = userResponse.user?.email ?? '';
+        fnameController.text = userResponse.user?.f_name ?? '';
+        lnameController.text = userResponse.user?.l_name ?? '';
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,20 +104,28 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                 "Update Profile",
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Colors.white,
-                      fontSize: 18.sp,
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.bold,
                     ),
               ),
               SizedBox(
                 height: 4.h,
               ),
-              TextFormField(
+              if (isLoading)
+                const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                )
+              else ...[
+                TextFormField(
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.black,
-                      // fontSize: 1.6.h,
-                    ),
-                controller: fnameController,
-                keyboardType: TextInputType.emailAddress,
-                maxLines: null,
+                        color: Colors.black,
+                        fontSize: 16.sp,
+                      ),
+                  controller: fnameController,
+                  keyboardType: TextInputType.name,
+                  maxLines: null,
                 minLines: 1,
                 textAlign: TextAlign.start,
                 textAlignVertical: TextAlignVertical.top,
@@ -103,10 +135,10 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                   floatingLabelBehavior: FloatingLabelBehavior.never,
                   labelText: 'Enter your First Name',
                   labelStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.black,
-                        // fontSize: 1.5.h,
-                      ),
-                  border: const OutlineInputBorder(),
+                              color: Colors.grey.shade600,
+                              fontSize: 14.sp,
+                            ),
+                    border: const OutlineInputBorder(),
                   enabledBorder: const OutlineInputBorder(),
                 ),
               ),
@@ -115,12 +147,12 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
               ),
               TextFormField(
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.black,
-                      // fontSize: 1.6.h,
-                    ),
-                controller: lnameController,
-                keyboardType: TextInputType.emailAddress,
-                maxLines: null,
+                        color: Colors.black,
+                        fontSize: 16.sp,
+                      ),
+                  controller: lnameController,
+                  keyboardType: TextInputType.name,
+                  maxLines: null,
                 minLines: 1,
                 textAlign: TextAlign.start,
                 textAlignVertical: TextAlignVertical.top,
@@ -130,10 +162,10 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                   floatingLabelBehavior: FloatingLabelBehavior.never,
                   labelText: 'Enter your Last Name',
                   labelStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.black,
-                        // fontSize: 1.5.h,
-                      ),
-                  border: const OutlineInputBorder(),
+                              color: Colors.grey.shade600,
+                              fontSize: 14.sp,
+                            ),
+                    border: const OutlineInputBorder(),
                   enabledBorder: const OutlineInputBorder(),
                 ),
               ),
@@ -142,10 +174,10 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
               ),
               TextFormField(
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.black,
-                      // fontSize: 1.6.h,
-                    ),
-                controller: emailController,
+                        color: Colors.black,
+                        fontSize: 16.sp,
+                      ),
+                  controller: emailController,
                 keyboardType: TextInputType.emailAddress,
                 maxLines: null,
                 minLines: 1,
@@ -157,19 +189,20 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                   floatingLabelBehavior: FloatingLabelBehavior.never,
                   labelText: 'Enter your Email',
                   labelStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.black,
-                        // fontSize: 1.5.h,
-                      ),
-                  border: const OutlineInputBorder(),
+                              color: Colors.grey.shade600,
+                              fontSize: 14.sp,
+                            ),
+                    border: const OutlineInputBorder(),
                   enabledBorder: const OutlineInputBorder(),
                 ),
               ),
+              ],
               SizedBox(
                 height: 6.h,
               ),
               SizedBox(
                 width: double.infinity,
-                height: 5.h,
+                height: 6.h,
                 child: ElevatedButton(
                   style: ButtonStyle(
                     elevation: MaterialStateProperty.all(10),
@@ -195,7 +228,8 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                     "Submit",
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 12.sp,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),

@@ -1,0 +1,254 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "4D8437EC",
+  "nonRenewingSubscriptions" : [
+    {
+      "displayPrice" : "999.0",
+      "familyShareable" : false,
+      "internalID" : "1559342565",
+      "localizations" : [
+        {
+          "description" : "subscription for 12 months",
+          "displayName" : "12 months",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "mon12",
+      "referenceName" : "12 months",
+      "type" : "NonRenewingSubscription"
+    },
+    {
+      "displayPrice" : "299.0",
+      "familyShareable" : false,
+      "internalID" : "1559342233",
+      "localizations" : [
+        {
+          "description" : "applicable for 3 months viewing of all videos",
+          "displayName" : "months 3",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "mon3",
+      "referenceName" : "3 months",
+      "type" : "NonRenewingSubscription"
+    },
+    {
+      "displayPrice" : "499.0",
+      "familyShareable" : false,
+      "internalID" : "1559342423",
+      "localizations" : [
+        {
+          "description" : "all contents available for 6 months",
+          "displayName" : "6 months",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "mon6",
+      "referenceName" : "6 months",
+      "type" : "NonRenewingSubscription"
+    }
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "1548207144",
+    "_developerTeamID" : "BAH4BK6A87",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 786046278.30294394,
+    "_locale" : "en_US",
+    "_storefront" : "IND",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21796252",
+      "localizations" : [
+
+      ],
+      "name" : "niri9_subscription",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "699.0",
+          "familyShareable" : false,
+          "groupNumber" : 3,
+          "internalID" : "6753577897",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Niri9 Half Yearly Subscription",
+              "displayName" : "Niri9 Half Yearly Subscription",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.niri9.subscription.halfyearly",
+          "recurringSubscriptionPeriod" : "P6M",
+          "referenceName" : "Niri9 Half Yearly Subscription",
+          "subscriptionGroupID" : "21796252",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "149.0",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6753566692",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Niri9 Monthly Subscription",
+              "displayName" : "Niri9 Monthly Subscription",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "Niri9 Monthly Subscription",
+              "displayName" : "Niri9 Monthly Subscription",
+              "locale" : "en_GB"
+            }
+          ],
+          "productID" : "com.niri9.subscription.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Niri9 Monthly Subscription",
+          "subscriptionGroupID" : "21796252",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "399.0",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6753577680",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Niri9 Quarterly Subscription",
+              "displayName" : "Niri9 Quarterly Subscription",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.niri9.subscription.quarterly",
+          "recurringSubscriptionPeriod" : "P3M",
+          "referenceName" : "Niri9 Quarterly Subscription",
+          "subscriptionGroupID" : "21796252",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "1299.0",
+          "familyShareable" : false,
+          "groupNumber" : 4,
+          "internalID" : "6753577792",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Niri9 Yearly Subscription",
+              "displayName" : "Niri9 Yearly Subscription",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.niri9.subscription.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Niri9 Yearly Subscription",
+          "subscriptionGroupID" : "21796252",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "subscriptionOffersKeyPair" : {
+    "id" : "10566617",
+    "privateKey" : "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgSM7HDOIkwZ8C1+tLWM0yyEtKiqpNcMmCaFAvjR9r5WOgCgYIKoZIzj0DAQehRANCAAQI1Fwr30ttsXuR+JWfDiCIkYfm01uJiVZc8oas99k/hXAbt2JxW7tCGgKreZq7o1LL1OE6tZ0WAqm0ATCinXHV"
+  },
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

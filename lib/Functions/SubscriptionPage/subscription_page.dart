@@ -1,36 +1,27 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:animated_background/animated_background.dart';
-import 'package:dotted_line/dotted_line.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_config/flutter_config.dart';
-import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:lottie/lottie.dart';
 import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Constants/assets.dart';
-import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Helper/storage.dart';
-import 'package:niri9/Models/plan_pricing.dart';
-import 'package:niri9/Models/subscription.dart';
 import 'package:niri9/Models/user.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:niri9/Router/routes.dart';
-import 'package:niri9/Widgets/gradient_text.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../Repository/repository.dart';
+import '../../Services/apple_iap_service.dart';
 import '../../Widgets/failed_dialogue_content.dart';
 import 'Widgets/benifits_widget.dart';
-import 'Widgets/plan_column.dart';
 import 'Widgets/plans_section.dart';
-import 'Widgets/premium_card.dart';
-import 'Widgets/subscription_appbar.dart';
 import '../../Widgets/successful_content_widget.dart';
-import 'Widgets/type_column.dart';
 
 class SubscriptionPage extends StatefulWidget {
   const SubscriptionPage({Key? key}) : super(key: key);
@@ -44,176 +35,74 @@ class _SubscriptionPageState extends State<SubscriptionPage>
   int selected = 2;
   final _razorpay = Razorpay();
   String? voucherNo, amount;
-  int currentAmount = 419;
+  bool _isProcessing = false;
+  final AppleIAPService _iapService = AppleIAPService.instance;
 
   @override
   void initState() {
     super.initState();
-    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
-    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
-    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+
+    // Set up Razorpay only for Android
+    if (Platform.isAndroid) {
+      _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+      _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+      _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    }
+
     Future.delayed(Duration.zero, () {
       fetchSubscription();
+      if (Platform.isIOS) {
+        _initializeIAP();
+      }
     });
+  }
+
+  Future<void> _initializeIAP() async {
+    try {
+      debugPrint('🚀 Initializing IAP for iOS...');
+      final initialized = await _iapService.initialize();
+
+      if (!initialized) {
+        debugPrint('❌ Failed to initialize IAP');
+
+        // Show helpful message for simulator
+        if (!kReleaseMode) {
+          Fluttertoast.showToast(
+            msg: "Could not load subscriptions. Check StoreKit Configuration.",
+            toastLength: Toast.LENGTH_LONG,
+          );
+        }
+      } else {
+        debugPrint('✅ IAP initialized successfully');
+        debugPrint('📦 Available products: ${_iapService.products.length}');
+
+        // Log all loaded products for debugging
+        for (var product in _iapService.products) {
+          debugPrint('   📱 Product: ${product.id}');
+          debugPrint('      Title: ${product.title}');
+          debugPrint('      Price: ${product.price}');
+        }
+
+        // Trigger UI rebuild to show StoreKit prices
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Error initializing IAP: $e');
+    }
   }
 
   @override
   void dispose() {
-    _razorpay.clear();
+    if (Platform.isAndroid) {
+      _razorpay.clear();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   appBar: PreferredSize(
-    //     preferredSize: Size.fromHeight(7.h),
-    //     child: const SubscriptionAppbar(
-    //       title: "Subscription",
-    //     ),
-    //   ),
-    //   backgroundColor: Constants.subscriptionBg,
-    //   body: Container(
-    //     padding: EdgeInsets.symmetric(
-    //       horizontal: 1.w,
-    //       vertical: 2.h,
-    //     ),
-    //     height: double.infinity,
-    //     width: double.infinity,
-    //     child: SingleChildScrollView(
-    //       child: Column(
-    //         children: [
-    //           const PremiumCard(),
-    //           SizedBox(
-    //             height: 5.h,
-    //           ),
-    //           Consumer<Repository>(builder: (context, data, _) {
-    //             return Container(
-    //               padding: EdgeInsets.symmetric(
-    //                 horizontal: 2.w,
-    //                 vertical: 1.h,
-    //               ),
-    //               margin: EdgeInsets.symmetric(
-    //                 horizontal: 2.w,
-    //               ),
-    //               color: const Color(0xff0b071e),
-    //               width: double.infinity,
-    //               height: 42.5.h,
-    //               child: Column(
-    //                 children: [
-    //                   Expanded(
-    //                     child: SizedBox(
-    //                       width: double.infinity,
-    //                       child: Row(
-    //                         children: [
-    //                           const TypeColumn(),
-    //                           PlanColumn(
-    //                             displayData: data.subscriptions[0].displayData!,
-    //                             index: 0,
-    //                             plan_type: data.subscriptions[0].plan_type!,
-    //                             discount: data.subscriptions[0].discount!,
-    //                             total_price:
-    //                                 data.subscriptions[0].total_price_inr!,
-    //                             base_price:
-    //                                 data.subscriptions[0].base_price_inr!,
-    //                             selected: selected,
-    //                             updateSet: (int val) {
-    //                               setState(() {
-    //                                 selected = val;
-    //                               });
-    //                             },
-    //                           ),
-    //                           PlanColumn(
-    //                             displayData: data.subscriptions[1].displayData!,
-    //                             index: 1,
-    //                             plan_type: data.subscriptions[1].plan_type!,
-    //                             discount: data.subscriptions[1].discount!,
-    //                             total_price:
-    //                                 data.subscriptions[1].total_price_inr!,
-    //                             base_price:
-    //                                 data.subscriptions[1].base_price_inr!,
-    //                             selected: selected,
-    //                             updateSet: (int val) {
-    //                               setState(() {
-    //                                 selected = val;
-    //                               });
-    //                             },
-    //                           ),
-    //                           PlanColumn(
-    //                             displayData: data.subscriptions[2].displayData!,
-    //                             index: 2,
-    //                             plan_type: data.subscriptions[2].plan_type!,
-    //                             discount: data.subscriptions[2].discount!,
-    //                             total_price:
-    //                                 data.subscriptions[2].total_price_inr!,
-    //                             base_price:
-    //                                 data.subscriptions[2].base_price_inr!,
-    //                             selected: selected,
-    //                             updateSet: (int val) {
-    //                               setState(() {
-    //                                 selected = val;
-    //                               });
-    //                             },
-    //                           ),
-    //                         ],
-    //                       ),
-    //                     ),
-    //                   ),
-    //                   Container(
-    //                     margin: EdgeInsets.symmetric(
-    //                       horizontal: 4.w,
-    //                     ),
-    //                     padding: EdgeInsets.symmetric(
-    //                       vertical: 0.5.h,
-    //                     ),
-    //                     width: double.infinity,
-    //                     child: ElevatedButton(
-    //                       style: ElevatedButton.styleFrom(
-    //                         backgroundColor: Constants.planButtonColor,
-    //                       ),
-    //                       onPressed: () {
-    //                         initiateOrder(data);
-    //                       },
-    //                       child: Center(
-    //                         child: Text(
-    //                           "Continue",
-    //                           style: Theme.of(context)
-    //                               .textTheme
-    //                               .headlineMedium
-    //                               ?.copyWith(
-    //                                 color: const Color(0xff002215),
-    //                               ),
-    //                         ),
-    //                       ),
-    //                     ),
-    //                   ),
-    //                   GestureDetector(
-    //                     onTap: () {
-    //                       Navigation.instance.navigate(Routes.cuponApply);
-    //                     },
-    //                     child: Text(
-    //                       'Apply Promo Code',
-    //                       style: TextStyle(
-    //                         color: Colors.white,
-    //                         decoration: TextDecoration.underline,
-    //                         // fontWeight: FontWeight.bold,
-    //                         fontSize: 9.sp,
-    //                         decorationColor: Colors.white,
-    //                       ),
-    //                     ),
-    //                   ),
-    //                   SizedBox(
-    //                     height: 1.h,
-    //                   ),
-    //                 ],
-    //               ),
-    //             );
-    //           }),
-    //         ],
-    //       ),
-    //     ),
-    //   ),
-    // );
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(7.h),
@@ -232,10 +121,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
             ),
             vsync: this,
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 3.w,
-                // vertical: 0.5.h,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 3.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -250,6 +136,19 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                           color: Colors.white,
                         ),
                       ),
+                      Spacer(),
+                      // Show restore button for iOS
+                      if (Platform.isIOS)
+                        TextButton(
+                          onPressed: _restorePurchases,
+                          child: Text(
+                            'Restore',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 10.sp,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ],
@@ -260,18 +159,14 @@ class _SubscriptionPageState extends State<SubscriptionPage>
       ),
       body: SafeArea(
         child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: 4.w,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 4.w),
           height: 100.h,
           width: 100.w,
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                BenefitsWidget(
-                  selected: selected,
-                ),
+                BenefitsWidget(selected: selected),
                 PlansSection(
                   selected: selected,
                   onTap: (int val) {
@@ -279,53 +174,228 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                       selected = val;
                     });
                   },
-                  upgrade: () {
-                    if (Storage.instance.isLoggedIn) {
-                      initiateOrder(
-                          Provider.of<Repository>(context, listen: false));
-                    } else {
-                      Fluttertoast.showToast(
-                          msg: "Please Log In before buying a subscription");
-                    }
-                  },
+                  upgrade: _handleUpgradePressed,
+                  // Pass IAP service for iOS prices
+                  iapService: Platform.isIOS ? _iapService : null,
                 ),
+                SizedBox(height: 1.h),
+                _buildRequiredDisclosures(),
+                SizedBox(height: 2.h),
               ],
             ),
           ),
-          // child: ,
-          // ),
         ),
       ),
     );
   }
 
+  Widget _buildRequiredDisclosures() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Subscription Information',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.white,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          SizedBox(height: 1.h),
+          Text(
+            Platform.isIOS
+                ? '• Payment will be charged to your Apple ID account at confirmation of purchase\n'
+                    '• Subscription automatically renews unless cancelled at least 24 hours before the end of the current period\n'
+                    '• Your account will be charged for renewal within 24 hours prior to the end of the current period\n'
+                    '• You can manage and cancel your subscriptions in your App Store account settings'
+                : '• Payment will be charged to your account at confirmation of purchase\n'
+                    '• Subscription automatically renews unless cancelled\n'
+                    '• You can manage and cancel your subscriptions in your account settings',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.white70,
+                  fontSize: 12.sp,
+                  height: 1.4,
+                ),
+          ),
+          SizedBox(height: 1.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                onPressed: _openPrivacyPolicy,
+                child: Text(
+                  'Privacy Policy',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 13.sp,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+              Text(' | ', style: TextStyle(color: Colors.white70)),
+              TextButton(
+                onPressed: _openTermsOfUse,
+                child: Text(
+                  'Terms of Use',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 13.sp,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openPrivacyPolicy() {
+    launchUrl(
+      Uri.parse('https://niri9.com/privacy'),
+      mode: LaunchMode.externalApplication,
+    );
+  }
+
+  void _openTermsOfUse() {
+    launchUrl(
+      Uri.parse('https://niri9.com/terms-and-condition'),
+      mode: LaunchMode.externalApplication,
+    );
+  }
+
+  void _handleUpgradePressed() async {
+    if (_isProcessing) {
+      Fluttertoast.showToast(msg: "Processing previous request...");
+      return;
+    }
+
+    if (!Storage.instance.isLoggedIn) {
+      Fluttertoast.showToast(msg: "Please Log In before buying a subscription");
+      return;
+    }
+
+    setState(() {
+      _isProcessing = true;
+    });
+
+    try {
+      if (Platform.isIOS) {
+        await _handleIOSPurchase();
+      } else if (Platform.isAndroid) {
+        _handleRazorpayPurchase();
+      }
+    } finally {
+      if (Platform.isIOS) {
+        // Don't reset for iOS immediately as purchase is async
+        Future.delayed(Duration(seconds: 2), () {
+          if (mounted) {
+            setState(() {
+              _isProcessing = false;
+            });
+          }
+        });
+      } else {
+        setState(() {
+          _isProcessing = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _handleIOSPurchase() async {
+    final repo = Provider.of<Repository>(context, listen: false);
+    final subscriptionId = repo.subscriptions[selected].id ?? 0;
+
+    debugPrint('🛒 Starting iOS purchase - Subscription ID: $subscriptionId');
+
+    // Create order on backend first
+    final response =
+        await ApiProvider.instance.initiateOrder(subscriptionId, 0, 0);
+
+    if (!(response.success ?? false)) {
+      Fluttertoast.showToast(msg: response.message ?? "Failed to create order");
+      return;
+    }
+
+    setState(() {
+      voucherNo = response.result?.voucherNo;
+      amount = response.result?.grandTotal ?? "0";
+    });
+
+    // Initiate StoreKit purchase
+    final success = await _iapService.buySubscriptionById(
+      subscriptionId,
+      voucherNo ?? '',
+      amount ?? '0',
+      onComplete: () {
+        debugPrint('✅ Purchase completed successfully');
+        showSuccessDialog(
+          context: context,
+          message: "Your subscription is now active!",
+        );
+        setState(() {
+          _isProcessing = false;
+        });
+      },
+      onError: () {
+        debugPrint('❌ Purchase failed or cancelled');
+        setState(() {
+          _isProcessing = false;
+        });
+      },
+    );
+
+    if (!success) {
+      setState(() {
+        _isProcessing = false;
+      });
+    }
+  }
+
+  void _handleRazorpayPurchase() {
+    final repo = Provider.of<Repository>(context, listen: false);
+    initiateOrder(repo);
+  }
+
+  void _restorePurchases() async {
+    if (_isProcessing) return;
+
+    setState(() {
+      _isProcessing = true;
+    });
+
+    try {
+      await _iapService.restorePurchases();
+      await fetchProfile();
+    } finally {
+      setState(() {
+        _isProcessing = false;
+      });
+    }
+  }
+
+  // Razorpay handlers (Android only)
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    // """debugPrint(
-    //     'success ${response.paymentId} ${response.orderId} ${response.signature}'
-    //     )""";
     verifyPayment(voucherNo, response.paymentId, amount, context);
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
-    // Do something when payment fails
     try {
       var resp = json.decode(response.message!);
-      debugPrint('error ${resp['error']['description']} ${response.code} ');
+      debugPrint('error ${resp['error']['description']} ${response.code}');
       Navigation.instance.goBack();
       showFailedDialog(
         context: context,
-        // orderId: orderId,
-        // paymentId: paymentId,
-        // amount: amount,
         message: response.message ?? "Please try again later",
       );
     } catch (e) {
       Navigation.instance.goBack();
       showFailedDialog(
         context: context,
-        // orderId: orderId,
-        // paymentId: paymentId,
-        // amount: amount,
         message: response.message ?? "Please try again later",
       );
     }
@@ -341,40 +411,35 @@ class _SubscriptionPageState extends State<SubscriptionPage>
       final user = Provider.of<Repository>(context, listen: false).user;
       setState(() {
         if (user?.has_subscription ?? false) {
-          if (response.subscriptions.indexWhere((element) =>
-                  (element.id ?? 0) == user?.last_sub?.lastSubscription?.id) >=
-              0) {
-            selected = response.subscriptions.indexWhere((element) =>
-                (element.id ?? 0) == user?.last_sub?.lastSubscription?.id);
+          final index = response.subscriptions.indexWhere((element) =>
+              (element.id ?? 0) == user?.last_sub?.lastSubscription?.id);
+          if (index >= 0) {
+            selected = index;
           }
         } else {
-          selected = response.subscriptions
-                  .indexWhere((element) => (element.is_default ?? 0) == 1) ??
-              0;
+          final defaultIndex = response.subscriptions
+              .indexWhere((element) => (element.is_default ?? 0) == 1);
+          selected = defaultIndex >= 0 ? defaultIndex : 0;
         }
       });
     }
   }
 
-  void initiatePayment(
-      {required double total, User? profile, required id, String? rzp_key}) {
+  void initiatePayment({
+    required double total,
+    User? profile,
+    required id,
+    String? rzp_key,
+  }) {
     var options = {
       'key': rzp_key,
-      // 'key': FlutterConfig.get('RAZORPAY_KEY'),
       'amount': "${total * 100}",
-      // 'order_id': id,
-      // "image": "https://tratri.in/assets/assets/images/logos/logo-razorpay.jpg",
-      // 'name': '${profile?.f_name} ${profile?.l_name}',
       'description': 'Books',
       'prefill': {
         'contact': profile?.mobile ?? "",
         'order_id': id,
         'email': profile?.email ?? ""
       },
-      // 'note': {
-      //   'customer_id': customer_id,
-      //   'order_id': id,
-      // },
     };
     debugPrint("$options");
     try {
@@ -385,8 +450,11 @@ class _SubscriptionPageState extends State<SubscriptionPage>
   }
 
   void initiateOrder(Repository data) async {
-    final response = await ApiProvider.instance
-        .initiateOrder(data.subscriptions[selected].id ?? 0, 0, 0);
+    final response = await ApiProvider.instance.initiateOrder(
+      data.subscriptions[selected].id ?? 0,
+      0,
+      0,
+    );
     if (response.success ?? false) {
       setState(() {
         voucherNo = response.result?.voucherNo;
@@ -396,9 +464,9 @@ class _SubscriptionPageState extends State<SubscriptionPage>
         rzp_key: response.result?.rzp_key ?? "",
         total: double.parse(response.result?.grandTotal ?? "0"),
         profile: Provider.of<Repository>(
-                Navigation.instance.navigatorKey.currentContext ?? context,
-                listen: false)
-            .user,
+          Navigation.instance.navigatorKey.currentContext ?? context,
+          listen: false,
+        ).user,
         id: response.result?.voucherNo ?? "",
       );
     } else {
@@ -407,36 +475,32 @@ class _SubscriptionPageState extends State<SubscriptionPage>
   }
 
   Future<void> fetchProfile() async {
-    // Navigation.instance.navigate(Routes.loadingScreen);
     final response = await ApiProvider.instance.getProfile();
     if (response.success ?? false) {
-      // Navigation.instance.goBack();
-      // Storage.instance.
       Provider.of<Repository>(context, listen: false).setUser(response.user!);
       debugPrint("User: ${response.user?.last_sub}");
-    } else {
-      // Navigation.instance.goBack();
-      // showError(response.message ?? "Something went wrong");
     }
   }
 
-  Future<void> verifyPayment(String? orderId, String? paymentId, String? amount,
-      BuildContext context) async {
+  Future<void> verifyPayment(
+    String? orderId,
+    String? paymentId,
+    String? amount,
+    BuildContext context,
+  ) async {
     Navigation.instance.navigate(Routes.loadingScreen);
-    final response =
-        await ApiProvider.instance.verifyPayment(paymentId, orderId, amount);
+    final response = await ApiProvider.instance.verifyPayment(
+      paymentId,
+      orderId,
+      amount,
+    );
     if (response.success ?? false) {
-      Fluttertoast.showToast(
-          msg: response.message ?? "Payment was successfully");
-      // showDialog(context: context, builder: builder);
+      Fluttertoast.showToast(msg: response.message ?? "Payment was successful");
 
       await fetchProfile();
       Navigation.instance.goBack();
       showSuccessDialog(
         context: context,
-        // orderId: orderId,
-        // paymentId: paymentId,
-        // amount: amount,
         message: response.message ?? "You have successfully subscribed",
       );
       Navigation.instance.goBack();
@@ -445,88 +509,74 @@ class _SubscriptionPageState extends State<SubscriptionPage>
       Fluttertoast.showToast(msg: response.message ?? "Something went wrong");
       showFailedDialog(
         context: context,
-        // orderId: orderId,
-        // paymentId: paymentId,
-        // amount: amount,
         message: response.message ?? "Please try again later",
       );
       Navigation.instance.goBack();
     }
   }
 
-  void showSuccessDialog(
-      {required BuildContext context,
-      // String? orderId,
-      // String? paymentId,
-      // String? amount,
-      String? message}) {
+  void showSuccessDialog({required BuildContext context, String? message}) {
     showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              "Payment Successful",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white,
-                    fontSize: 12.sp,
-                  ),
-            ),
-            content: SuccessfulContentWidget(message: message ?? ""),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigation.instance.goBack();
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  "Close",
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white70,
-                        fontSize: 12.sp,
-                      ),
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            "Payment Successful",
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.white,
+                  fontSize: 12.sp,
                 ),
+          ),
+          content: SuccessfulContentWidget(message: message ?? ""),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigation.instance.goBack();
+                Navigator.pop(context);
+              },
+              child: Text(
+                "Close",
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white70,
+                      fontSize: 12.sp,
+                    ),
               ),
-            ],
-          );
-        });
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  void showFailedDialog(
-      {required BuildContext context,
-      // String? orderId,
-      // String? paymentId,
-      // String? amount,
-      String? message}) {
+  void showFailedDialog({required BuildContext context, String? message}) {
     showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              "Payment Failed",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white,
-                    fontSize: 12.sp,
-                  ),
-            ),
-            content: FailedDialogContent(
-              message: message,
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  // Navigation.instance.goBack();
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  "Close",
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white70,
-                        fontSize: 12.sp,
-                      ),
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            "Payment Failed",
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.white,
+                  fontSize: 12.sp,
                 ),
+          ),
+          content: FailedDialogContent(message: message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                "Close",
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white70,
+                      fontSize: 12.sp,
+                    ),
               ),
-            ],
-          );
-        });
+            ),
+          ],
+        );
+      },
+    );
   }
 }

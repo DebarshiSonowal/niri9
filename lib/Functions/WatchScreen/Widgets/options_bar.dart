@@ -1,7 +1,6 @@
 // import 'package:appinio_video_player/appinio_video_player.dart';
-import 'package:cached_video_player_plus/cached_video_player_plus.dart';
+// import 'package:cached_video_player_plus/cached_video_player_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_lists/flutter_lists.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:niri9/Functions/WatchScreen/Widgets/rent_bottom_sheet.dart';
 import 'package:niri9/Models/video.dart';
@@ -9,141 +8,197 @@ import 'package:niri9/Repository/repository.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
-import 'package:url_launcher/url_launcher.dart';
 // import 'package:video_player/video_player.dart';
 
 import '../../../API/api_provider.dart';
-import '../../../Constants/assets.dart';
-import '../../../Constants/constants.dart';
-import 'icon_text_button.dart';
-import 'trailer_widget.dart';
 
 class OptionsBar extends StatelessWidget {
-  const OptionsBar({
-    super.key,
-    required this.customVideoPlayerController,
-  });
+  const OptionsBar({super.key, required this.onEpisodeTap});
 
-  final CachedVideoPlayerPlusController customVideoPlayerController;
+  final Function(String) onEpisodeTap;
 
   @override
   Widget build(BuildContext context) {
     return Consumer<Repository>(builder: (context, data, _) {
+      final hasRent = data.videoDetails?.has_rent ?? false;
+      final hasSubscription = data.user?.has_subscription ?? false;
+      final trailerPlayer = data.videoDetails?.trailer_player ?? "";
+
       return Container(
+        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
         decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              const Color(0xff1a1a1a).withOpacity(0.95),
+              const Color(0xff0a0a0a).withOpacity(0.98),
+            ],
+          ),
           border: Border(
             top: BorderSide(
-              color: Colors.white54,
-              width: 0.03.h,
-            ),
-            bottom: BorderSide(
-              color: Colors.white54,
-              width: 0.03.h,
+              color: Colors.white.withOpacity(0.08),
+              width: 1,
             ),
           ),
         ),
-        height: 10.h,
-        width: double.infinity,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              flex: 4,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5.w,
-                  vertical: 1.h,
-                ),
-                color: const Color(0xff2a2829),
+        child: SafeArea(
+          top: false,
+          child: Row(
+            children: [
+              Expanded(
+                flex: trailerPlayer.isNotEmpty ? 3 : 1,
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    IconTextButton(
-                      name: "Share",
-                      icon: Icons.share,
+                    _buildActionButton(
+                      icon: Icons.share_rounded,
+                      label: "Share",
                       onTap: () {
                         Share.share(
-                            "Check out our app on Play Store https://play.google.com/store/apps/details?id=com.niri.niri9}");
+                            "Check out Niri 9 - Movies & Web Series App!\n\n📱 iOS: https://apps.apple.com/in/app/niri-9-movies-web-series-app/id1548207144\n🤖 Android: https://play.google.com/store/apps/details?id=com.niri.niri9");
                       },
                     ),
-                    SizedBox(
-                      width: 5.w,
-                    ),
-                    IconTextButton(
-                      name: "My List",
-                      icon: Icons.playlist_add,
+                    _buildActionButton(
+                      icon: Icons.bookmark_add_outlined,
+                      label: "My List",
                       onTap: () {
                         addToMyList(data.videoDetails?.id);
                       },
                     ),
-                    ((data.videoDetails?.has_rent ?? false) &&
-                            !(data.user?.has_subscription ?? false))
-                        ? SizedBox(
-                            width: 5.w,
-                          )
-                        : Container(),
-                    ((data.videoDetails?.has_rent ?? false) &&
-                            !(data.user?.has_subscription ?? false))
-                        ? IconTextButton(
-                            name: "Rent",
-                            icon: Icons.money,
-                            onTap: () {
-                              if (data.videoDetails?.has_rent ?? false) {
-                                showRenting(context, data.videoDetails);
-                              }
-                            },
-                          )
-                        : Container(),
                   ],
                 ),
               ),
-            ),
-            data.videoDetails?.trailer_player != ""
-                ? Expanded(
-                    flex: 2,
-                    child: Center(
-                      child: GestureDetector(
-                        onTap: () async {
-                          // _launchUrl(data.videoDetails?.trailer_player ?? "");
-                          if ((data.videoDetails?.trailer_player ?? "") != "") {
-                            await customVideoPlayerController.pause();
-                            await showTrailer(
-                                "${data.videoDetails?.trailer_player}?${DateTime.now().microsecondsSinceEpoch}",
-                                context);
-                          } else {}
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.play_circle_filled,
-                              color: Constants.thirdColor,
-                              size: 22.sp,
-                            ),
-                            SizedBox(
-                              height: 1.2.h,
-                            ),
-                            Text(
-                              "Watch Trailer",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    color: Colors.white70,
-                                    fontSize: 12.sp,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  )
-                : Container(),
-          ],
+              if (trailerPlayer.isNotEmpty) ...[
+                SizedBox(width: 4.w),
+                Expanded(
+                  flex: 2,
+                  child: _buildTrailerButton(context, trailerPlayer),
+                ),
+              ],
+            ],
+          ),
         ),
       );
     });
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+          decoration: BoxDecoration(
+            color: const Color(0xff2a2a2a).withOpacity(0.6),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.05),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+                spreadRadius: 0,
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color: Colors.white.withOpacity(0.9),
+                size: 22.sp,
+              ),
+              SizedBox(height: 0.8.h),
+              Text(
+                label,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.85),
+                  fontSize: 11.sp,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 0.2,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTrailerButton(BuildContext context, String trailerUrl) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => onEpisodeTap(trailerUrl),
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 0.5.w, vertical: 0.5.h),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xffe50914),
+                const Color(0xffc5050f),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.1),
+              width: 0.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xffe50914).withOpacity(0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+                spreadRadius: 0,
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+                spreadRadius: 0,
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.play_arrow_rounded,
+                color: Colors.white,
+                size: 24.sp,
+              ),
+              SizedBox(width: 2.w),
+              Flexible(
+                child: Text(
+                  "Watch Trailer",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> addToMyList(int? id) async {
@@ -155,271 +210,14 @@ class OptionsBar extends StatelessWidget {
     }
   }
 
-  Future<void> _launchUrl(String _url) async {
-    if (!await launchUrl(Uri.parse(_url),
-        mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $_url');
-    }
-  }
-
-  void showRenting(context, Video? videoDetails) {
-    showModalBottomSheet<void>(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      // context and builder are
-      // required properties in this widget
+  Future<void> showRenting(BuildContext context, Video? videoDetails) async {
+    return showModalBottomSheet(
       isDismissible: true,
-      context: context,
-      builder: (BuildContext context) {
-        // we set up a container inside which
-        // we create center column and display text
-
-        // Returning SizedBox instead of a Container
-        return RentBottomSheet(videoDetails: videoDetails);
-      },
-    );
-  }
-
-  Future<bool> showTrailer(String url, BuildContext context) async {
-    debugPrint("showTrailer $url");
-    final resp = await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.transparent,
-          content: TrailerWidget(
-            url: url,
-          ),
-        );
-      },
-    ).then((value) {
-      return false;
-    });
-    return true;
-  }
-}
-
-class RentalBodyWidget extends StatelessWidget {
-  const RentalBodyWidget({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 8.w,
-        vertical: 2.5.h,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
       ),
-      height: 70.h,
-      width: double.infinity,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 3.h,
-            ),
-            Text(
-              "Illegal",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.sp,
-                  ),
-            ),
-            SizedBox(
-              height: 1.5.h,
-            ),
-            Text(
-              "Web Series . 10-Dec-2023 . Session 1",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.black54,
-                    // fontWeight: FontWeight.bold,
-                    fontSize: 12.sp,
-                  ),
-            ),
-            SizedBox(
-              height: 1.5.h,
-            ),
-            Container(
-              width: double.infinity,
-              height: 11.h,
-              padding: EdgeInsets.symmetric(
-                horizontal: 2.w,
-                vertical: 1.h,
-              ),
-              decoration: BoxDecoration(
-                color: const Color(0xffe6e6e6),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Validity",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.black,
-                              // fontWeight: FontWeight.bold,
-                              fontSize: 10.sp,
-                            ),
-                      ),
-                      Text(
-                        "15 days",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10.sp,
-                            ),
-                      ),
-                    ],
-                  ),
-                  Divider(
-                    height: 0.8.h,
-                    color: Colors.black,
-                  ),
-                  Text(
-                    "You have 15 days to start watching this content once retired",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey.shade700,
-                          // fontWeight: FontWeight.bold,
-                          fontSize: 10.sp,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 1.5.h,
-            ),
-            Container(
-              width: double.infinity,
-              height: 11.h,
-              padding: EdgeInsets.symmetric(
-                horizontal: 2.w,
-                vertical: 1.h,
-              ),
-              decoration: BoxDecoration(
-                color: const Color(0xffe6e6e6),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Watch Time",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.black,
-                              // fontWeight: FontWeight.bold,
-                              fontSize: 10.sp,
-                            ),
-                      ),
-                      Text(
-                        "50 hours",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10.sp,
-                            ),
-                      ),
-                    ],
-                  ),
-                  Divider(
-                    height: 0.8.h,
-                    color: Colors.black,
-                  ),
-                  Text(
-                    "You have 15 days to start watching this content once retired",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey.shade700,
-                          // fontWeight: FontWeight.bold,
-                          fontSize: 10.sp,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 1.5.h,
-            ),
-            SizedBox(
-              height: 25.h,
-              width: double.infinity,
-              child: Theme(
-                data: ThemeData(
-                  textTheme: Theme.of(context).textTheme.apply(
-                        bodyColor: Colors.black87,
-                        fontSizeFactor: 2.5,
-                      ),
-                ),
-                child: const UnorderedList<String>(
-                  items: [
-                    "You can watch this content multiple times during the 50 hours period",
-                    "This is a non-refundable transaction",
-                    "This content is only available for rent and not a part of Premium Subscription",
-                    "You can play your content on this device/ Niri9 Account only"
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 1.5.h,
-            ),
-            Container(
-              width: double.infinity,
-              height: 11.h,
-              padding: EdgeInsets.symmetric(
-                horizontal: 4.w,
-                vertical: 1.h,
-              ),
-              decoration: BoxDecoration(
-                color: const Color(0xffe6e6e6),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: 40.w,
-                    child: Text(
-                      "By renting you agree to our Terms of Service",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey.shade700,
-                            // fontWeight: FontWeight.bold,
-                            fontSize: 10.sp,
-                          ),
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    width: 20.w,
-                    height: 4.h,
-                    child: Center(
-                      child: Text(
-                        "Rent for ₹59",
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      context: context,
+      builder: (_) => RentBottomSheet(videoDetails: videoDetails),
     );
   }
 }

@@ -20,8 +20,14 @@ class User {
     expiry_date = json["expiry_date"] ?? "NA";
     has_subscription = json["has_subscription"] ?? false;
     // last_subscription = json["last_subscription"] ?? false;
-    last_rent = (json["last_rent"]==false||json['last_rent']==null)?null:LastRentDetails.fromJson(json['last_rent']);
-    last_sub = (json["last_subscription"]==false||json["last_subscription"]==null)?null:LastSubscriptionsDetails.fromJson(json);
+    last_rent = (json["last_rent"] == false || json['last_rent'] == null)
+        ? null
+        : LastRentDetails.fromJson(json['last_rent']);
+    last_sub = (json["last_subscription"] == false ||
+            json["last_subscription"] == null ||
+            json["last_subscription"] is List)
+        ? null
+        : LastSubscriptionsDetails.fromJson(json["last_subscription"]);
   }
 }
 

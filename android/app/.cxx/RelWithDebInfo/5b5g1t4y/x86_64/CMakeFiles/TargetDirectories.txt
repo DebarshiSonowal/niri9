@@ -1,0 +1,2 @@
+C:/Users/NAYANJYOTI KALITA/Desktop/flutter/Work/niri9/niri9/android/app/.cxx/RelWithDebInfo/5b5g1t4y/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/NAYANJYOTI KALITA/Desktop/flutter/Work/niri9/niri9/android/app/.cxx/RelWithDebInfo/5b5g1t4y/x86_64/CMakeFiles/rebuild_cache.dir

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:niri9/Constants/assets.dart';
 import 'package:niri9/Navigation/Navigate.dart';
@@ -16,7 +15,8 @@ import '../../Repository/repository.dart';
 import '../../Widgets/alert.dart';
 
 class OtpPage extends StatefulWidget {
-  const OtpPage({super.key, required this.mobile});
+  final String? whereToGo;
+  const OtpPage({super.key, required this.mobile, this.whereToGo});
 
   final String mobile;
 
@@ -108,14 +108,16 @@ class _OtpPageState extends State<OtpPage> {
                     inactiveFillColor: Colors.black54,
                   ),
 
-                  textStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: Colors.white,
-                      ),
+                  textStyle:
+                      Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: Colors.white,
+                          ),
                   hintCharacter: '0',
-                  hintStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: Colors.grey.shade300,
-                        fontSize: 2.h,
-                      ),
+                  hintStyle:
+                      Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: Colors.grey.shade300,
+                            fontSize: 2.h,
+                          ),
                   animationDuration: const Duration(milliseconds: 300),
                   // backgroundColor: Colors.blue.shade50,
                   enableActiveFill: true,
@@ -148,16 +150,45 @@ class _OtpPageState extends State<OtpPage> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        if(time==0){
+                        if (time == 0) {
                           if (isIndianNumber(widget.mobile)) {
                             sendOTP(widget.mobile.substring(3));
                           } else {
-                            phoneSignIn(phoneNumber: widget.mobile.toString().substring(3));
+                            phoneSignIn(
+                              phoneNumber:
+                                  widget.mobile.toString().substring(3),
+                            );
                           }
                         }
                       },
-                      child: Text(
-                        time != 0 ? "Resend OTP after 0:$time" : "Resend OTP",
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 5.w, vertical: 1.2.h),
+                        decoration: BoxDecoration(
+                          color: time == 0
+                              ? Colors.blueAccent
+                              : Colors.grey.shade700,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: time == 0 ? Colors.blueAccent : Colors.grey,
+                            width: 1.2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 3,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          time != 0 ? "Resend OTP after 0:$time" : "Resend OTP",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -308,7 +339,7 @@ class _OtpPageState extends State<OtpPage> {
         debugPrint(timer.tick.toString());
         try {
           setState(() {
-            time = (59- timer.tick);
+            time = (59 - timer.tick);
           });
         } catch (e) {
           debugPrint(e.toString());
@@ -341,7 +372,13 @@ class _OtpPageState extends State<OtpPage> {
       Navigation.instance.goBack();
       Storage.instance.setUser(response.token ?? "");
       Provider.of<Repository>(context, listen: false).setUser(response.user!);
-      Navigation.instance.navigate(Routes.homeScreen);
+      if (widget.whereToGo == "sub") {
+        Navigator.pop(context);
+        Navigator.pop(context);
+        Navigation.instance.navigate(Routes.subscriptionScreen);
+      } else {
+        Navigation.instance.navigate(Routes.homeScreen);
+      }
     } else {
       Navigation.instance.goBack();
       showError(response.message ?? "Something Went Wrong");

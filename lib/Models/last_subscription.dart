@@ -10,9 +10,9 @@ class LastSubscriptionsDetails {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    if (this.lastSubscription != null) {
-      data['last_subscription'] = this.lastSubscription!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (lastSubscription != null) {
+      data['last_subscription'] = lastSubscription!.toJson();
     }
     return data;
   }
@@ -41,24 +41,24 @@ class LastSubscription {
 
   LastSubscription(
       {this.id,
-        this.title,
-        this.planType,
-        this.duration,
-        this.devicePermissions,
-        this.videoQuality,
-        this.noOfScreens,
-        this.isAdFree,
-        this.basePriceInr,
-        this.basePriceUsd,
-        this.discount,
-        this.totalPriceInr,
-        this.totalPriceUsd,
-        this.note,
-        this.planSection,
-        this.isDefault,
-        this.status,
-        this.createdAt,
-        this.updatedAt});
+      this.title,
+      this.planType,
+      this.duration,
+      this.devicePermissions,
+      this.videoQuality,
+      this.noOfScreens,
+      this.isAdFree,
+      this.basePriceInr,
+      this.basePriceUsd,
+      this.discount,
+      this.totalPriceInr,
+      this.totalPriceUsd,
+      this.note,
+      this.planSection,
+      this.isDefault,
+      this.status,
+      this.createdAt,
+      this.updatedAt});
 
   LastSubscription.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -83,26 +83,26 @@ class LastSubscription {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['plan_type'] = this.planType;
-    data['duration'] = this.duration;
-    data['device_permissions'] = this.devicePermissions;
-    data['video_quality'] = this.videoQuality;
-    data['no_of_screens'] = this.noOfScreens;
-    data['is_ad_free'] = this.isAdFree;
-    data['base_price_inr'] = this.basePriceInr;
-    data['base_price_usd'] = this.basePriceUsd;
-    data['discount'] = this.discount;
-    data['total_price_inr'] = this.totalPriceInr;
-    data['total_price_usd'] = this.totalPriceUsd;
-    data['note'] = this.note;
-    data['plan_section'] = this.planSection;
-    data['is_default'] = this.isDefault;
-    data['status'] = this.status;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['title'] = title;
+    data['plan_type'] = planType;
+    data['duration'] = duration;
+    data['device_permissions'] = devicePermissions;
+    data['video_quality'] = videoQuality;
+    data['no_of_screens'] = noOfScreens;
+    data['is_ad_free'] = isAdFree;
+    data['base_price_inr'] = basePriceInr;
+    data['base_price_usd'] = basePriceUsd;
+    data['discount'] = discount;
+    data['total_price_inr'] = totalPriceInr;
+    data['total_price_usd'] = totalPriceUsd;
+    data['note'] = note;
+    data['plan_section'] = planSection;
+    data['is_default'] = isDefault;
+    data['status'] = status;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

@@ -16,82 +16,41 @@ class BenefitsName extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: 4.h,
-            // height:,
-          ),
-          SizedBox(
-            width: double.infinity,
-            height: 8.h,
-            child: Text.rich(
-              TextSpan(
-                text: 'All Contents\n',
-                children: <InlineSpan>[
-                  TextSpan(
-                    text: 'Movies, Tv Series, Music Video',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.white54,
-                          fontSize: 13.sp,
-                        ),
-                  )
-                ],
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white,
-                      // fontWeight: FontWeight.bold,
-                      fontSize: 12.sp,
-                    ),
+            child: Center(
+              child: Text(
+                "Features",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
               ),
             ),
-            // height:,
           ),
           SizedBox(
             width: double.infinity,
             height: 8.h,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Watch On TV',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white,
-                        // fontWeight: FontWeight.bold,
-                        fontSize: 13.sp,
-                      ),
+                  'All Content',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
+                  ),
                 ),
-              ],
-            ),
-          ),
-          SizedBox(
-            width: double.infinity,
-            height: 8.h,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+                SizedBox(height: 0.5.h),
                 Text(
-                  'Ads Free',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white,
-                        // fontWeight: FontWeight.bold,
-                        fontSize: 13.sp,
-                      ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            width: double.infinity,
-            height: 8.h,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 30.w,
-                  child: Text(
-                    'Number of devices that can be logged in',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.white,
-                          // fontWeight: FontWeight.bold,
-                          fontSize: 13.sp,
-                        ),
-                    maxLines: 2,
+                  'Movies, TV Series, Music Videos',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
@@ -103,13 +62,94 @@ class BenefitsName extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Icon(
+                  Icons.tv,
+                  color: Colors.white60,
+                  size: 16.sp,
+                ),
+                SizedBox(width: 2.w),
                 Text(
-                  'Max Video Quality',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white,
-                        // fontWeight: FontWeight.bold,
-                        fontSize: 13.sp,
-                      ),
+                  'Watch On TV',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            height: 8.h,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.block,
+                  color: Colors.white60,
+                  size: 16.sp,
+                ),
+                SizedBox(width: 2.w),
+                Text(
+                  'Ad-Free',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            height: 8.h,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.devices,
+                  color: Colors.white60,
+                  size: 16.sp,
+                ),
+                SizedBox(width: 2.w),
+                Expanded(
+                  child: Text(
+                    'Devices',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            height: 8.h,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.hd,
+                  color: Colors.white60,
+                  size: 16.sp,
+                ),
+                SizedBox(width: 2.w),
+                Text(
+                  'Video Quality',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
+                  ),
                 ),
               ],
             ),

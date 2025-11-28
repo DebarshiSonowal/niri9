@@ -33,7 +33,7 @@ class DescriptionSection extends StatelessWidget {
                   "Audio Language",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Colors.white70,
-                        fontSize: 12.sp,
+                        fontSize: 13.sp,
                       ),
                 ),
                 SizedBox(
@@ -52,7 +52,7 @@ class DescriptionSection extends StatelessWidget {
                     "${data.videoDetails?.language_name}",
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Constants.thirdColor,
-                          fontSize: 12.sp,
+                          fontSize: 13.sp,
                         ),
                   ),
                 ),
@@ -61,7 +61,7 @@ class DescriptionSection extends StatelessWidget {
                   "Available in ${(data.videoDetails?.related_language.length ?? 0) + 1} language",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Colors.white30,
-                        fontSize: 12.sp,
+                        fontSize: 13.sp,
                       ),
                 ),
                 SizedBox(
@@ -81,7 +81,7 @@ class DescriptionSection extends StatelessWidget {
               readLessText: '',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: Colors.white30,
-                    fontSize: 12.sp,
+                    fontSize: 14.sp,
                   ),
               readMoreTextStyle:
                   Theme.of(context).textTheme.bodyLarge?.copyWith(

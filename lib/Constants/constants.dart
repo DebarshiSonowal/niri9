@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class Constants {
   static const primaryColor = Color(0xff151515);
   static const secondaryColor = Color(0xff2a2829);
-  static const thirdColor = Color(0xffde547b);
+  static const thirdColor = Color(0xffE50916);
   static const backgroundColor = Color(0xff131515);
   static const bottomNavigationBarBackgroundColor = Color(0xff151515);
 
@@ -16,7 +16,9 @@ class Constants {
 
   static const selectedPlanColor = Color(0xff731af5);
 
-  static const int waitTime = 30;
+  static const int waitTime = 15;
+
+  static const razorpayKey = "jMpgLbygk3LidMcKkrq0zGJ6";
 
   //s
   static const refundPolicy =

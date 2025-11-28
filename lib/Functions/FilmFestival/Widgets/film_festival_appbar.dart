@@ -27,14 +27,17 @@ class FilmFestivalAppbar extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigation.instance.goBack();
-                  },
-                  child: Icon(
-                    Icons.arrow_back_ios_sharp,
-                    color: Colors.white,
-                    size: 14.sp,
+                Padding(
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigation.instance.goBack();
+                    },
+                    child: Icon(
+                      Icons.arrow_back_ios_sharp,
+                      color: Colors.white,
+                      size: 20.sp,
+                    ),
                   ),
                 ),
                 // SizedBox(
@@ -45,11 +48,11 @@ class FilmFestivalAppbar extends StatelessWidget {
                     Text(
                       "NIRI 9 ",
                       style:
-                      Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: Colors.white,
-                        fontSize: 12.sp,
-                        // fontWeight: FontWeight.bold,
-                      ),
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                color: Colors.white,
+                                fontSize: 12.sp,
+                                // fontWeight: FontWeight.bold,
+                              ),
                     ),
                     Image.asset(
                       Assets.filmImage,
@@ -58,11 +61,11 @@ class FilmFestivalAppbar extends StatelessWidget {
                     Text(
                       " FILM FESTIVAL",
                       style:
-                      Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: Colors.white,
-                        fontSize: 12.sp,
-                        // fontWeight: FontWeight.bold,
-                      ),
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                color: Colors.white,
+                                fontSize: 12.sp,
+                                // fontWeight: FontWeight.bold,
+                              ),
                     ),
                   ],
                 ),

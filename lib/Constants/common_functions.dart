@@ -6,59 +6,101 @@ import '../Router/routes.dart';
 import '../Widgets/login_sheet_body.dart';
 
 class CommonFunctions {
-  void showLoginDialog(BuildContext context) {
+  Future<void> showLoginDialog(BuildContext context) async {
     showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             backgroundColor: Colors.black,
             title: Text(
               "Oops! You are not logged in",
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: Colors.white,
-                    fontSize: 13.sp,
+                    fontSize: 20.sp,
                   ),
             ),
-            content: SizedBox(
-              width: 70.w,
-              height: 5.h,
-              child: Center(
-                child: Text(
-                  "You need to log in to view the videos",
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white70,
-                        fontSize: 14.sp,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 70.w,
+                  height: 5.h,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.info,
+                        color: Colors.white,
                       ),
+                      Text(
+                        "You need to log in to view the videos",
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: Colors.white70,
+                              fontSize: 14.sp,
+                            ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                SizedBox(
+                  width: double.infinity,
+                  child: Row(
+                    spacing: 10,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFFDB2323),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigation.instance
+                                .navigate(Routes.loginScreen, args: "");
+                          },
+                          child: Text(
+                            "LOG IN",
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: Colors.white,
+                                      fontSize: 14.sp,
+                                    ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            "Cancel",
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: Colors.black,
+                                      fontSize: 14.sp,
+                                    ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
             ),
-            actions: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigation.instance.navigate(Routes.loginScreen);
-                },
-                child: Text(
-                  "LOG IN",
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.black,
-                        fontSize: 11.sp,
-                      ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  "Cancel",
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.black,
-                        fontSize: 11.sp,
-                      ),
-                ),
-              ),
-            ],
+            // actions: [
+
+            // ],
           );
         });
   }
@@ -126,6 +168,12 @@ class CommonFunctions {
       },
     );
   }
+
+  // void showLoginAndSubscribe(BuildContext context) {
+  //   showModalBottomSheet(context: context, builder:(context) {
+  //     return
+  //   },);
+  // }
 
   void showLoginSheet(BuildContext context) {
     showModalBottomSheet(

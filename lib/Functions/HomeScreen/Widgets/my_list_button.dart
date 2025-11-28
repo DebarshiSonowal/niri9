@@ -5,9 +5,7 @@ class MyListButton extends StatelessWidget {
   const MyListButton({
     super.key,
     required this.onTap,
-    required this.hasMyList,
   });
-  final bool hasMyList;
   final Function onTap;
 
   @override
@@ -21,7 +19,7 @@ class MyListButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Icon(
-              !hasMyList ? Icons.add : Icons.remove,
+              Icons.add,
               size: 18.sp,
               color: Colors.white,
             ),

@@ -21,9 +21,15 @@ class Storage {
 
   get token => sharedpreferences.getString("token") ?? "";
 
+  // Get user ID for Apple IAP - this can be used to track purchases per user
+  get userId => sharedpreferences.getString("userId") ?? token;
+
+  // Store user ID when available
+  Future<void> setUserId(String id) async {
+    await sharedpreferences.setString("userId", id);
+  }
 
   Future<void> logout() async {
     await sharedpreferences.clear();
   }
-
 }

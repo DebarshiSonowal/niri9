@@ -16,6 +16,8 @@ import '../LanguageSelectedPage/language_selected_page.dart';
 import 'Widgets/dynamic_premium_list_item.dart';
 import 'Widgets/dynamic_premium_other_list_item.dart';
 import 'Widgets/trending_dynamic_items.dart';
+import 'Widgets/trending_hero_section.dart';
+import 'Widgets/trending_categories.dart';
 
 class TrendingPage extends StatefulWidget {
   const TrendingPage({super.key});
@@ -27,48 +29,111 @@ class TrendingPage extends StatefulWidget {
 class _TrendingPageState extends State<TrendingPage> {
   bool isEnd = false;
   int page = 1;
+  String selectedCategory = 'All';
+
+  final List<String> categories = [
+    'All',
+    'Movies',
+    'TV Shows',
+    'Documentaries',
+    'Comedy',
+    'Drama',
+    'Action',
+    'Horror',
+    'Romance'
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              Navigation.instance.goBack();
-            },
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: Colors.white,
-            )),
-        backgroundColor: Colors.black,
-        title: Text(
-          "Trending",
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: Colors.white,
-                fontSize: 16.sp,
-                // fontWeight: FontWeight.bold,
+      backgroundColor: Colors.black,
+      body: CustomScrollView(
+        slivers: [
+          // Clean Netflix-style app bar
+          SliverAppBar(
+            backgroundColor: Colors.black,
+            elevation: 0,
+            pinned: true,
+            floating: false,
+            snap: false,
+            toolbarHeight: 8.h,
+            leading: Container(
+              margin: EdgeInsets.only(left: 4.w),
+              child: IconButton(
+                onPressed: () {
+                  Navigation.instance.goBack();
+                },
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.white,
+                  size: 6.w,
+                ),
+                splashRadius: 24,
               ),
-        ),
-      ),
-      body: Container(
-        color: Constants.primaryColor,
-        height: 100.h,
-        width: 100.w,
-        padding: EdgeInsets.symmetric(
-          vertical: 0.5.h,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const TrendingBanner(),
-              SizedBox(
-                height: 0.5.h,
+            ),
+            title: Container(
+              child: Text(
+                "Trending",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22.sp,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.8,
+                ),
               ),
-              TrendingDynamicItems(page: page),
+            ),
+            centerTitle: false,
+            actions: [
+              Container(
+                margin: EdgeInsets.only(right: 2.w),
+                child: IconButton(
+                  onPressed: () {
+                    // Add search functionality
+                  },
+                  icon: Icon(
+                    Icons.search,
+                    color: Colors.white,
+                    size: 6.w,
+                  ),
+                  splashRadius: 24,
+                ),
+              ),
+
             ],
           ),
-        ),
+
+          // Hero trending section
+          SliverToBoxAdapter(
+            child: TrendingHeroSection(),
+          ),
+
+          // Category selector
+          SliverToBoxAdapter(
+            child: TrendingCategories(
+              categories: categories,
+              selectedCategory: selectedCategory,
+              onCategorySelected: (category) {
+                setState(() {
+                  selectedCategory = category;
+                });
+              },
+            ),
+          ),
+
+          // Trending sections
+          SliverToBoxAdapter( 
+            child: Container(
+              color: Colors.black,
+              child: TrendingDynamicItems(
+                  page: page, selectedCategory: selectedCategory),
+            ),
+          ),
+
+          // Extra bottom padding
+          SliverToBoxAdapter(
+            child: SizedBox(height: 10.h),
+          ),
+        ],
       ),
       bottomNavigationBar: const CustomBottomNavBar(),
     );
@@ -77,12 +142,17 @@ class _TrendingPageState extends State<TrendingPage> {
   @override
   void initState() {
     super.initState();
-    // Future.delayed(Duration.zero, () => {
-    // fetchDetails()
-    // });
     Future.delayed(Duration.zero, () {
-      // fetchData(context);
-      Provider.of<Repository>(context, listen: false).updateIndex(2);
+      CustomBottomNavBar.ensureCorrectIndex(context, Routes.premiumScreen);
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Ensure correct navigation index when coming back to trending screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      CustomBottomNavBar.ensureCorrectIndex(context, Routes.premiumScreen);
     });
   }
 }

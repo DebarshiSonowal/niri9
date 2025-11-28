@@ -2,6 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:NIRI 9-Movies &amp; Web Series App.storekit">
+   </FileRef>
+   <FileRef
+      location = "group:StoreKitTestCertificate.cer">
+   </FileRef>
+   <FileRef
       location = "group:Runner.xcodeproj">
    </FileRef>
    <FileRef
