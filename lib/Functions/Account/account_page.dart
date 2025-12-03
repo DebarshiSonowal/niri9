@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:niri9/API/api_provider.dart';
 import 'package:niri9/Models/account_item.dart';
 import 'package:niri9/Navigation/Navigate.dart';
 import 'package:niri9/Repository/repository.dart';
@@ -9,7 +10,6 @@ import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../Constants/assets.dart';
-import '../../Constants/constants.dart';
 import '../../Helper/storage.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 
@@ -21,6 +21,8 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
+  bool _isDeleting = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -180,6 +182,10 @@ class _AccountPageState extends State<AccountPage> {
                     if (item.name == "Activate TV") {
                       return const SizedBox.shrink();
                     }
+                    if (item.name == "Delete Account" &&
+                        !Storage.instance.isLoggedIn) {
+                      return const SizedBox.shrink();
+                    }
 
                     return Container(
                       margin: EdgeInsets.only(bottom: 2.h),
@@ -227,11 +233,20 @@ class _AccountPageState extends State<AccountPage> {
                             fontSize: 14.sp,
                           ),
                         ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.grey.shade400,
-                          size: 4.w,
-                        ),
+                        trailing: item.name == "Delete Account" && _isDeleting
+                            ? SizedBox(
+                                height: 3.h,
+                                width: 3.h,
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.grey.shade400,
+                                size: 4.w,
+                              ),
                       ),
                     );
                   },
@@ -341,7 +356,11 @@ class _AccountPageState extends State<AccountPage> {
       case 11:
         _launchUrl(Uri.parse("whatsapp://send?phone=+919864000253"));
         break;
-      default:
+      case 12:
+        if (_isDeleting) return;
+        _showDeleteAccountDialog();
+        break;
+      case 13:
         if (Storage.instance.isLoggedIn) {
           await Storage.instance.logout();
           setState(() {});
@@ -355,6 +374,90 @@ class _AccountPageState extends State<AccountPage> {
         } else {
           Navigation.instance.navigate(Routes.loginScreen, args: "");
         }
+        break;
+      default:
+        break;
+    }
+  }
+
+  Future<void> _showDeleteAccountDialog() async {
+    await showDialog(
+      context: context,
+      builder: (dialogCtx) {
+        return AlertDialog(
+          backgroundColor: Colors.grey.shade900,
+          title: const Text(
+            "Delete Account",
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          content: const Text(
+            "Are you sure you want to delete your Niri9 account? This action cannot be undone.",
+            style: TextStyle(color: Colors.white70, fontSize: 14),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogCtx).pop(),
+              child: const Text(
+                "Cancel",
+                style: TextStyle(color: Colors.white70, fontSize: 14),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogCtx).pop();
+                _deleteAccount();
+              },
+              child: const Text(
+                "Delete",
+                style: TextStyle(color: Colors.redAccent, fontSize: 14),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteAccount() async {
+    if (_isDeleting) return;
+    setState(() {
+      _isDeleting = true;
+    });
+
+    try {
+      final response = await ApiProvider.instance.deleteAccount();
+      if (!mounted) return;
+      if (response.success ?? false) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.message ?? "Account deleted successfully"),
+          ),
+        );
+        await Storage.instance.logout();
+        Provider.of<Repository>(context, listen: false).updateIndex(0);
+        setState(() {});
+        Navigation.instance.navigateAndRemoveUntil(Routes.homeScreen);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text(response.message ?? "Unable to delete account right now"),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Something went wrong. Please try again later."),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDeleting = false;
+        });
+      }
     }
   }
 

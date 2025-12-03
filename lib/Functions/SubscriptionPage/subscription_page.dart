@@ -238,7 +238,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
               TextButton(
                 onPressed: _openTermsOfUse,
                 child: Text(
-                  'Terms of Use',
+                  'Terms of Use (EULA)',
                   style: TextStyle(
                     color: Colors.blue,
                     fontSize: 13.sp,

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +13,6 @@ import 'package:niri9/Functions/WatchScreen/Widgets/info_bar.dart';
 import 'package:niri9/Functions/WatchScreen/Widgets/more_like_this_section.dart';
 import 'package:niri9/Functions/WatchScreen/Widgets/options_bar.dart';
 import 'package:niri9/Functions/WatchScreen/Widgets/rent_bottom_sheet.dart';
-import 'package:niri9/Functions/WatchScreen/Widgets/trailer_widget.dart';
 import 'package:niri9/Models/video.dart';
 import 'package:niri9/Models/video_details.dart';
 import 'package:niri9/Navigation/Navigate.dart';
@@ -81,23 +78,6 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
     }
   }
 
-  Future<void> _fetchDetails(int id) async {
-    if (_isDisposed) return;
-
-    try {
-      // Execute both API calls in parallel
-      await Future.wait([
-        _fetchVideoDetails(id),
-        _fetchRentDetails(id),
-      ]);
-    } catch (e) {
-      debugPrint("Error fetching details: $e");
-      if (mounted && !_isDisposed) {
-        setState(() => _isVideoAvailable = false);
-      }
-    }
-  }
-
   Future<void> _fetchRentDetails(int id) async {
     if (_isDisposed) return;
 
@@ -125,9 +105,19 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
       if (response.success ?? false) {
         repo.setVideoDetails(response.video!);
 
-        // Initialize player without awaiting if we have permission
-        final permission = response.video?.view_permission ?? false;
-        if (permission) {
+        // Initialize player only if user has proper access
+        // If user has subscription, they can watch all content (including rental) directly
+        final hasAccess = repo.user?.has_subscription ?? false;
+        final hasRent = response.video?.has_rent ?? false;
+        final hasPlan = response.video?.has_plan ?? false;
+
+        // Can initialize player if:
+        // 1. User has subscription: can watch everything (including rental content)
+        // 2. Rental content without subscription: must be rented (has_plan = true)
+        // 3. Non-rental content: subscription required (hasAccess = true)
+        final canInitialize = hasAccess || (hasRent && hasPlan);
+
+        if (canInitialize) {
           // Start player initialization in background (don't await)
           _initializePlayerAsync(repo);
         }
@@ -153,8 +143,22 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
     if (_isDisposed) return;
 
     try {
-      final permission = repo.videoDetails?.view_permission ?? false;
-      if (!permission) return;
+      // Double-check access before initializing player
+      // If user has subscription, they can watch all content (including rental) directly
+      final hasAccess = repo.user?.has_subscription ?? false;
+      final hasRent = repo.videoDetails?.has_rent ?? false;
+      final hasPlan = repo.videoDetails?.has_plan ?? false;
+
+      // Can initialize player if:
+      // 1. User has subscription: can watch everything (including rental content)
+      // 2. Rental content without subscription: must be rented (has_plan = true)
+      // 3. Non-rental content: subscription required (hasAccess = true)
+      final canInitialize = hasAccess || (hasRent && hasPlan);
+
+      if (!canInitialize) {
+        debugPrint("Cannot initialize player: access denied");
+        return;
+      }
 
       final videos = repo.videoDetails?.videos;
       if (videos == null || videos.isEmpty) {
@@ -312,16 +316,17 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
     final hasRent = store.videoDetails?.has_rent ?? false;
     final hasPlan = store.videoDetails?.has_plan ?? false;
 
-    // Show video player if we have a controller and any of these conditions are met:
-    // 1. Has permission and access (subscription)
-    // 2. Has permission but no rent requirement
-    // 3. Trailer is playing
-    // 4. Has permission and rent but no plan needed
-    if (_chewieController != null &&
-        ((hasPermission && hasAccess) ||
-            (hasPermission && !hasRent) ||
-            _trailerPlayer ||
-            (hasPermission && hasRent && hasPlan))) {
+    // Determine if user can actually play the content
+    // If user has subscription, they can watch all content (including rental) directly
+    // - User with subscription: can watch everything
+    // - Rental content without subscription: must be rented (has_plan = true)
+    // - Non-rental content: subscription required
+    final canPlay = _trailerPlayer ||
+        hasAccess || // Subscription allows watching all content
+        (hasRent && hasPlan); // Rental content: must be rented if no subscription
+
+    // Show video player if we have a controller and user can play
+    if (_chewieController != null && canPlay) {
       return SizedBox(
         height: 28.h,
         child: Center(
@@ -340,32 +345,42 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
       );
     }
 
-    if (!hasPermission && hasRent && !hasPlan) {
+    // Show loading state if user has permission but controller is still initializing
+    if (canPlay && _chewieController == null && !_isPlayLoading) {
       return SizedBox(
         height: 28.h,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildStyledButton(
-              onPressed: () {
-                showRenting(context, store.videoDetails);
-              },
-              text: "Rent",
-              icon: Icons.movie_creation_outlined,
-              color: Colors.orange,
-              width: 120, 
+        child: Center(
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              height: 28.h,
+              width: double.infinity,
+              color: Colors.grey,
             ),
-          ],
+          ),
         ),
       );
     }
 
-    if (!hasPermission && hasRent && hasPlan) {
+    // Content requires rental but user hasn't rented and doesn't have subscription
+    // Show rent button only if user doesn't have subscription
+    if (hasRent && !hasPlan && !hasAccess) {
       return SizedBox(
         height: 28.h,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(
+              "This content requires rental",
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
+                color: Colors.white70,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
             _buildStyledButton(
               onPressed: () {
                 showRenting(context, store.videoDetails).then((_) {
@@ -378,16 +393,32 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
               color: Colors.orange,
               width: 140,
             ),
-            const SizedBox(height: 12),
+          ],
+        ),
+      );
+    }
+
+    // No subscription and no rental access
+    if (!hasAccess && !hasPermission) {
+      _disposeControllers();
+      return SizedBox(
+        height: 28.h,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Please Subscribe to Watch this Content",
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
+                color: Colors.white70,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
             _buildStyledButton(
-              onPressed: () {
-                Navigation.instance
-                    .navigate(Routes.subscriptionScreen)!
-                    .then((_) {
-                  _fetchVideoDetails(widget.id);
-                  _fetchRentDetails(widget.id);
-                });
-              },
+              onPressed: () =>
+                  Navigation.instance.navigate(Routes.subscriptionScreen),
               text: "Subscribe",
               icon: Icons.star_outline,
               color: Colors.blue,
@@ -397,34 +428,20 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
         ),
       );
     }
-    if (!hasPermission || !hasAccess) {
-      _disposeControllers();
-    }
 
+    // Fallback: show loading while determining access
     return SizedBox(
       height: 28.h,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Please Subscribe to Watch this Content",
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w500,
-              color: Colors.white70,
-            ),
-            textAlign: TextAlign.center,
+      child: Center(
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            height: 28.h,
+            width: double.infinity,
+            color: Colors.grey,
           ),
-          const SizedBox(height: 16),
-          _buildStyledButton(
-            onPressed: () =>
-                Navigation.instance.navigate(Routes.subscriptionScreen),
-            text: "Subscribe",
-            icon: Icons.star_outline,
-            color: Colors.blue,
-            width: 140,
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -516,7 +533,7 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
                   ),
                   child: Text(
                     "${season.season}",
-                    style:  TextStyle(
+                    style: TextStyle(
                       fontSize: 14.sp,
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -619,17 +636,35 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
                 if (store.videoDetails?.videos != null &&
                     store.videoDetails?.video_type_id == 2)
                   EpisodeSliderNew(
-                    episodes: store.videoDetails!.videos!,
+                    episodes: store.videoDetails!.videos,
                     currentPlayingEpisodeId: _currentPlayingEpisodeId,
                     onEpisodeTap: (VideoDetails video) {
-                      if (store.user?.has_subscription ?? false) {
+                      final hasAccess = store.user?.has_subscription ?? false;
+                      final hasRent = store.videoDetails?.has_rent ?? false;
+                      final hasPlan = store.videoDetails?.has_plan ?? false;
+
+                      // If user has subscription, they can watch all content (including rental) directly
+                      // Can play if:
+                      // 1. User has subscription: can watch everything (including rental content)
+                      // 2. Rental content without subscription: must be rented (has_plan = true)
+                      // 3. Non-rental content: subscription required (hasAccess = true)
+                      final canPlay = hasAccess || (hasRent && hasPlan);
+
+                      if (canPlay) {
                         final videoUrl = video.videoPlayer;
                         if (videoUrl != null && videoUrl.isNotEmpty) {
                           setState(() {
                             _currentPlayingEpisodeId = video.id;
+                            _trailerPlayer =
+                                false; // Clear trailer flag when playing episode
                           });
                           _changeVideo(videoUrl);
                         }
+                      } else if (hasRent && !hasPlan && !hasAccess) {
+                        Fluttertoast.showToast(
+                            msg: "Please Rent this Content First");
+                        // Show rent bottom sheet
+                        showRenting(context, store.videoDetails);
                       } else {
                         Fluttertoast.showToast(msg: "Please Subscribe First");
                       }
@@ -835,8 +870,12 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
   Future<void> showRenting(BuildContext context, Video? videoDetails) async {
     return showModalBottomSheet(
       isDismissible: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
       ),
       context: context,
       builder: (_) => RentBottomSheet(videoDetails: videoDetails),

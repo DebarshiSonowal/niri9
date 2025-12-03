@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bulleted_list/bulleted_list.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:niri9/Constants/constants.dart';
 import 'package:niri9/Models/rent_plan_details_response.dart';
 import 'package:niri9/Repository/repository.dart';
 import 'package:provider/provider.dart';
@@ -41,50 +42,70 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
   }
 
   @override
+  void dispose() {
+    _razorpay.clear();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<Repository>(builder: (context, data, _) {
       return Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.9,
+        ),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
+          color: Constants.backgroundColor,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(20),
+          ),
         ),
-        width: double.infinity,
-        height: 95.h,
-        padding: EdgeInsets.symmetric(
-          horizontal: 6.w,
-          vertical: 2.h,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 3.h,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Drag handle
+            Center(
+              child: Container(
+                width: 40.w,
+                height: 0.5.h,
+                decoration: BoxDecoration(
+                  color: Colors.grey[700],
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-              Text(
-                widget.videoDetails?.title ?? "Illegal",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.sp,
-                    ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 5.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.videoDetails?.title ?? "Content",
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 19.sp,
+                        ),
+                  ),
+                  SizedBox(height: 0.5.h),
+                  Text(
+                    "${widget.videoDetails?.season_txt ?? ''}${widget.videoDetails?.season_txt != null && widget.videoDetails?.type_name != null ? ' • ' : ''}${widget.videoDetails?.type_name ?? ''}${widget.videoDetails?.type_name != null && widget.videoDetails?.category_name != null ? ' • ' : ''}${widget.videoDetails?.category_name ?? ''}",
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Colors.grey[400],
+                          fontSize: 13.sp,
+                        ),
+                  ),
+                  SizedBox(height: 3.h),
+                ],
               ),
-              SizedBox(
-                height: 1.h,
-              ),
-              Text(
-                "${widget.videoDetails?.season_txt} . ${widget.videoDetails?.type_name} . ${widget.videoDetails?.category_name}",
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.black54,
-                      fontSize: 10.sp,
-                    ),
-              ),
-              SizedBox(
-                height: 1.h,
-              ),
-              ListView.separated(
-                physics: const NeverScrollableScrollPhysics(),
+            ),
+            // Rent plans list
+            Flexible(
+              child: ListView.separated(
                 shrinkWrap: true,
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: 5.w),
                 itemBuilder: (context, index) {
                   var item = data.rentPlanDetails?.rentList![index];
                   return GestureDetector(
@@ -94,100 +115,142 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
                       });
                     },
                     child: RentPlanItem(
-                        item: item, isSelected: currentIndex == index),
+                      item: item,
+                      isSelected: currentIndex == index,
+                    ),
                   );
                 },
                 separatorBuilder: (context, index) {
-                  return SizedBox(
-                    height: 1.5.h,
-                  );
+                  return SizedBox(height: 2.h);
                 },
                 itemCount: data.rentPlanDetails?.rentList?.length ?? 0,
               ),
-              BulletedList(
-                bullet: Container(
-                  height: 1.5.w,
-                  width: 1.5.w,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.black54),
-                  ),
-                ),
-                listItems: [
-                  for (var i in data.rentPlanDetails?.conditions ?? []) i
-                ],
-              ),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(7),
-                  color: const Color(0xffececec),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 2.w,
-                  vertical: 1.5.h,
-                ),
-                child: Row(
+            ),
+            SizedBox(height: 2.h),
+            // Conditions
+            if (data.rentPlanDetails?.conditions != null &&
+                data.rentPlanDetails!.conditions!.isNotEmpty)
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 5.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      width: 44.w,
-                      child: Text(
-                        "By renting you agree to our Terms of Use",
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(
-                              color: Colors.black,
-                              // fontWeight: FontWeight.bold,
-                              fontSize: 9.sp,
-                            ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 5.w,
-                    ),
-                    SizedBox(
-                      width: 33.w,
-                      height: 5.h,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          initiateOrder(
-                              Provider.of<Repository>(context, listen: false));
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff1b5fbd),
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(8), // <-- Radius
-                          ),
-                        ),
-                        child: loading
-                            ? SizedBox(
-                                height: 10,
-                                width: 10,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                ),
-                              )
-                            : Text(
-                                'Rent for ₹ ${double.tryParse(data.rentPlanDetails?.rentList![currentIndex].totalPriceInr ?? '0')!.toInt()}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineMedium
-                                    ?.copyWith(
-                                      color: Colors.white,
-                                      // fontWeight: FontWeight.bold,
-                                      fontSize: 11.sp,
-                                    ),
+                    Text(
+                      "Terms & Conditions",
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15.sp,
                               ),
-                      ),
                     ),
+                    SizedBox(height: 1.h),
+                    BulletedList(
+                      bullet: Container(
+                        height: 1.2.w,
+                        width: 1.2.w,
+                        decoration: BoxDecoration(
+                          color: Constants.thirdColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      listItems: [
+                        for (var i in data.rentPlanDetails!.conditions!)
+                          Text(
+                            i,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Colors.grey[300],
+                                  fontSize: 14.sp,
+                                ),
+                          )
+                      ],
+                    ),
+                    SizedBox(height: 2.h),
                   ],
                 ),
               ),
-            ],
-          ),
+            // Footer with button
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Constants.secondaryColor,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
+              ),
+              padding: EdgeInsets.symmetric(
+                horizontal: 5.w,
+                vertical: 2.5.h,
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    "By renting you agree to our Terms of Use",
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[400],
+                          fontSize: 14.sp,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 2.h),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 6.h,
+                    child: ElevatedButton(
+                      onPressed: loading
+                          ? null
+                          : () {
+                              initiateOrder(Provider.of<Repository>(context,
+                                  listen: false));
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Constants.thirdColor,
+                        disabledBackgroundColor: Colors.grey[800],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: loading
+                          ? SizedBox(
+                              height: 2.5.h,
+                              width: 2.5.h,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2.5,
+                              ),
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.movie_creation_outlined,
+                                  color: Colors.white,
+                                  size: 18.sp,
+                                ),
+                                SizedBox(width: 2.w),
+                                Text(
+                                  'Rent for ₹${double.tryParse(data.rentPlanDetails?.rentList![currentIndex].totalPriceInr ?? '0')!.toInt()}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16.sp,
+                                      ),
+                                ),
+                              ],
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       );
     });
@@ -197,23 +260,15 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
       {required double total, User? profile, required id, String? rzp_key}) {
     var options = {
       'key': rzp_key,
-      // 'key': FlutterConfig.get('RAZORPAY_KEY'),
       'amount': "${total * 100}",
-      // 'order_id': id,
-      // "image": "https://tratri.in/assets/assets/images/logos/logo-razorpay.jpg",
-      // 'name': '${profile?.f_name} ${profile?.l_name}',
-      'description': 'Books',
+      'description': 'Rent Payment',
       'prefill': {
         'contact': profile?.mobile ?? "",
         'order_id': id,
         'email': profile?.email ?? ""
       },
-      // 'note': {
-      //   'customer_id': customer_id,
-      //   'order_id': id,
-      // },
     };
-    debugPrint("shoWMeas $options");
+    debugPrint("Payment options: $options");
     try {
       _razorpay.open(options);
     } catch (e) {
@@ -264,27 +319,12 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
-    // Do something when payment fails
     try {
       var resp = json.decode(response.message!);
       debugPrint('error ${resp['error']['description']} ${response.code} ');
       Navigation.instance.goBack();
-      // showFailedDialog(
-      //   context: context,
-      //   // orderId: orderId,
-      //   // paymentId: paymentId,
-      //   // amount: amount,
-      //   message: response.message ?? "Please try again later",
-      // );
     } catch (e) {
       Navigation.instance.goBack();
-      // showFailedDialog(
-      //   context: context,
-      //   // orderId: orderId,
-      //   // paymentId: paymentId,
-      //   // amount: amount,
-      //   message: response.message ?? "Please try again later",
-      // );
     }
   }
 
@@ -294,110 +334,21 @@ class _RentBottomSheetState extends State<RentBottomSheet> {
         await ApiProvider.instance.verifyPayment(paymentId, orderId, amount);
 
     if (response.success ?? false) {
-      Fluttertoast.showToast(
-          msg: response.message ?? "Payment was successfully");
+      Fluttertoast.showToast(msg: response.message ?? "Payment was successful");
 
-      // Close the bottom sheet BEFORE showing success dialog
       Navigator.of(context).pop();
 
-      await Future.delayed(Duration(milliseconds: 300)); // smooth transition
-
-      // showSuccessDialog(
-      //   context: context,
-      //   message: response.message ?? "You have successfully subscribed",
-      // );
+      await Future.delayed(const Duration(milliseconds: 300));
     } else {
       Fluttertoast.showToast(msg: response.message ?? "Something went wrong");
 
-      // Close the bottom sheet BEFORE showing failure dialog
       Navigator.of(context).pop();
 
-      await Future.delayed(Duration(milliseconds: 300)); // smooth transition
-
-      // showFailedDialog(
-      //   context: context,
-      //   message: response.message ?? "Please try again later",
-      // );
+      await Future.delayed(const Duration(milliseconds: 300));
     }
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {}
-
-  // void showSuccessDialog(
-  //     {required BuildContext context,
-  //     // String? orderId,
-  //     // String? paymentId,
-  //     // String? amount,
-  //     String? message}) {
-  //   showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         return AlertDialog(
-  //           title: Text(
-  //             "Payment Successful",
-  //             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-  //                   color: Colors.white,
-  //                   fontSize: 12.sp,
-  //                 ),
-  //           ),
-  //           content: SuccessfulContentWidget(message: message ?? ""),
-  //           actions: [
-  //             TextButton(
-  //               onPressed: () {
-  //                 Navigation.instance.goBack();
-  //                 Navigator.pop(context);
-  //               },
-  //               child: Text(
-  //                 "Close",
-  //                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-  //                       color: Colors.white70,
-  //                       fontSize: 12.sp,
-  //                     ),
-  //               ),
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
-
-  // void showFailedDialog(
-  //     {required BuildContext context,
-  //     // String? orderId,
-  //     // String? paymentId,
-  //     // String? amount,
-  //     String? message}) {
-  //   showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         return AlertDialog(
-  //           title: Text(
-  //             "Payment Failed",
-  //             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-  //                   color: Colors.white,
-  //                   fontSize: 12.sp,
-  //                 ),
-  //           ),
-  //           content: FailedDialogContent(
-  //             message: message,
-  //           ),
-  //           actions: [
-  //             TextButton(
-  //               onPressed: () {
-  //                 // Navigation.instance.goBack();
-  //                 Navigator.pop(context);
-  //               },
-  //               child: Text(
-  //                 "Close",
-  //                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-  //                       color: Colors.white70,
-  //                       fontSize: 12.sp,
-  //                     ),
-  //               ),
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
 }
 
 class RentPlanItem extends StatelessWidget {
@@ -412,74 +363,124 @@ class RentPlanItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(7),
-        color: !isSelected ? Colors.grey.shade100 : Colors.grey.shade300,
+        gradient: isSelected
+            ? LinearGradient(
+                colors: [
+                  Constants.selectedPlanColor.withOpacity(0.3),
+                  Constants.selectedPlanColor.withOpacity(0.1),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        color: !isSelected ? Constants.secondaryColor : null,
+        border: Border.all(
+          color: isSelected
+              ? Constants.selectedPlanColor
+              : Colors.white.withOpacity(0.1),
+          width: isSelected ? 2.0 : 1.0,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: isSelected
+            ? [
+                BoxShadow(
+                  color: Constants.selectedPlanColor.withOpacity(0.3),
+                  blurRadius: 12,
+                  spreadRadius: 1,
+                )
+              ]
+            : null,
       ),
       padding: EdgeInsets.symmetric(
         horizontal: 4.w,
-        vertical: 1.5.h,
+        vertical: 2.h,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                item?.title ?? "N/A",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.black,
-                      // fontWeight: FontWeight.bold,
-                      fontSize: 10.sp,
-                    ),
+              Expanded(
+                child: Text(
+                  item?.title ?? "N/A",
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16.sp,
+                      ),
+                ),
               ),
-              Text(
-                item?.duration ?? "15 days",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 10.sp,
-                    ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 0.8.h),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? Constants.selectedPlanColor
+                      : Colors.grey[800],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  item?.duration ?? "15 days",
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.sp,
+                      ),
+                ),
               ),
             ],
           ),
-          SizedBox(
-            height: 0.4.h,
-          ),
+          SizedBox(height: 1.5.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 "Price",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.black,
-                      // fontWeight: FontWeight.bold,
-                      fontSize: 10.sp,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.grey[400],
+                      fontSize: 13.sp,
                     ),
               ),
               Text(
                 "₹${item?.totalPriceInr ?? "N/A"}",
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.green,
+                      color: Constants.planButtonColor,
                       fontWeight: FontWeight.bold,
-                      fontSize: 11.sp,
+                      fontSize: 19.sp,
                     ),
               ),
             ],
           ),
-          Divider(
-            thickness: 0.2.h,
-            color: const Color(0xffc1c1c1),
-          ),
-          Text(
-            item?.watchTimeTxt ?? "",
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: Colors.black,
-                  // fontWeight: FontWeight.bold,
-                  fontSize: 10.sp,
+          if (item?.watchTimeTxt != null && item!.watchTimeTxt!.isNotEmpty) ...[
+            SizedBox(height: 1.5.h),
+            Divider(
+              thickness: 0.5,
+              color: Colors.grey[700],
+            ),
+            SizedBox(height: 1.h),
+            Row(
+              children: [
+                Icon(
+                  Icons.access_time,
+                  color: Colors.grey[400],
+                  size: 14.sp,
                 ),
-          ),
+                SizedBox(width: 2.w),
+                Expanded(
+                  child: Text(
+                    item!.watchTimeTxt!,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey[300],
+                          fontSize: 13.sp,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );

@@ -146,6 +146,10 @@ class Repository extends ChangeNotifier {
       icon: FontAwesomeIcons.whatsapp,
     ),
     AccountItem(
+      name: "Delete Account",
+      icon: FontAwesomeIcons.trash,
+    ),
+    AccountItem(
       name: Storage.instance.isLoggedIn ? "Sign Out" : "Sign In",
       icon: FontAwesomeIcons.signOut,
     ),

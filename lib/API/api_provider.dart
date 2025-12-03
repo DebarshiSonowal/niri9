@@ -338,6 +338,37 @@ class ApiProvider {
     }
   }
 
+  Future<GenericResponse> deleteAccount() async {
+    BaseOptions option = BaseOptions(
+        connectTimeout: const Duration(seconds: Constants.waitTime),
+        receiveTimeout: const Duration(seconds: Constants.waitTime),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Storage.instance.token}'
+        });
+    var url = "$baseUrl/$path/users/profile/delete";
+    dio = Dio(option);
+    debugPrint(url.toString());
+    debugPrint('Bearer ${Storage.instance.token}');
+
+    try {
+      Response? response = await dio?.post(url);
+      debugPrint("deleteAccount response: ${response?.data}");
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
+        return GenericResponse.fromJson(response?.data);
+      } else {
+        debugPrint("deleteAccount error response: ${response?.data}");
+        return GenericResponse.withError(
+            response?.data['message'] ?? 'Failed to delete account');
+      }
+    } on DioException catch (e) {
+      debugPrint("deleteAccount error: ${e.error} ${e.message}");
+      return GenericResponse.withError(
+          e.response?.data?['message'] ?? e.message ?? 'Network error');
+    }
+  }
+
   Future<GenericResponse> updateVideoTime(
     video_list_id,
     view_duration,
