@@ -243,7 +243,6 @@ class _LoginPageState extends State<LoginPage> {
 
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.idToken,
         idToken: googleAuth.idToken,
       );
 

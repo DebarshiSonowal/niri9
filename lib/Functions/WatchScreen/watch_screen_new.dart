@@ -1,5 +1,4 @@
 import 'package:chewie/chewie.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -41,7 +40,7 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
   bool _isInitializing = true;
   bool _trailerPlayer = false;
   bool _isDisposed = false;
-  int? _currentPlayingEpisodeId; // Track currently playing episode
+  int? _currentPlayingEpisodeId;
 
   @override
   void initState() {
@@ -51,17 +50,12 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
 
   Future<void> _initialize() async {
     if (_isDisposed) return;
-
     try {
       await WakelockPlus.enable();
-
-      // Start all API calls in parallel immediately
       final futures = <Future>[
         _fetchVideoDetails(widget.id),
         _fetchRentDetails(widget.id),
       ];
-
-      // Execute all in parallel
       await Future.wait(futures);
     } catch (e) {
       debugPrint("Error during initialization: $e");
@@ -80,7 +74,6 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
 
   Future<void> _fetchRentDetails(int id) async {
     if (_isDisposed) return;
-
     try {
       final response = await ApiProvider.instance.getRentPlans(id);
       if ((response.success ?? false) && mounted && !_isDisposed) {
@@ -94,7 +87,6 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
 
   Future<void> _fetchVideoDetails(int index) async {
     if (_isDisposed) return;
-
     final repo = Provider.of<Repository>(context, listen: false);
     repo.setLoading(true);
 
@@ -104,22 +96,34 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
 
       if (response.success ?? false) {
         repo.setVideoDetails(response.video!);
+        final videoDetails = repo.videoDetails;
+        if (videoDetails == null) {
+          debugPrint("Video details is null");
+          return;
+        }
 
-        // Initialize player only if user has proper access
-        // If user has subscription, they can watch all content (including rental) directly
-        final hasAccess = repo.user?.has_subscription ?? false;
-        final hasRent = response.video?.has_rent ?? false;
-        final hasPlan = response.video?.has_plan ?? false;
+        final hasSubscription = repo.user?.has_subscription ?? false;
+        final isRentalContent = videoDetails.has_rent ?? false;
+        final viewPermission = videoDetails.view_permission ?? false;
 
-        // Can initialize player if:
-        // 1. User has subscription: can watch everything (including rental content)
-        // 2. Rental content without subscription: must be rented (has_plan = true)
-        // 3. Non-rental content: subscription required (hasAccess = true)
-        final canInitialize = hasAccess || (hasRent && hasPlan);
+        // Access Logic:
+        // 1. If subscribed → can watch everything
+        // 2. If view_permission is true → user has rented/has access
+        // 3. Otherwise → deny access
+        final canWatchContent = hasSubscription || viewPermission;
 
-        if (canInitialize) {
-          // Start player initialization in background (don't await)
+        debugPrint(
+            "Access Check: hasSubscription=$hasSubscription, isRental=$isRentalContent, "
+            "viewPermission=$viewPermission, canWatch=$canWatchContent");
+
+        if (canWatchContent) {
+          debugPrint("User has access - initializing player");
           _initializePlayerAsync(repo);
+        } else {
+          debugPrint("User does not have access");
+          if (mounted && !_isDisposed) {
+            setState(() {});
+          }
         }
       } else {
         if (mounted && !_isDisposed) {
@@ -138,25 +142,15 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
     }
   }
 
-  // Non-blocking player initialization
   Future<void> _initializePlayerAsync(Repository repo) async {
     if (_isDisposed) return;
-
     try {
-      // Double-check access before initializing player
-      // If user has subscription, they can watch all content (including rental) directly
-      final hasAccess = repo.user?.has_subscription ?? false;
-      final hasRent = repo.videoDetails?.has_rent ?? false;
-      final hasPlan = repo.videoDetails?.has_plan ?? false;
+      final hasSubscription = repo.user?.has_subscription ?? false;
+      final viewPermission = repo.videoDetails?.view_permission ?? false;
+      final canWatchContent = hasSubscription || viewPermission;
 
-      // Can initialize player if:
-      // 1. User has subscription: can watch everything (including rental content)
-      // 2. Rental content without subscription: must be rented (has_plan = true)
-      // 3. Non-rental content: subscription required (hasAccess = true)
-      final canInitialize = hasAccess || (hasRent && hasPlan);
-
-      if (!canInitialize) {
-        debugPrint("Cannot initialize player: access denied");
+      if (!canWatchContent) {
+        debugPrint("Cannot initialize: access denied");
         return;
       }
 
@@ -172,26 +166,21 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
         return;
       }
 
-      // Set the first episode as currently playing
       if (_currentPlayingEpisodeId == null && videos.isNotEmpty) {
         _currentPlayingEpisodeId = videos.first.id;
       }
 
-      // Dispose existing controllers before creating new ones
       await _disposeControllers();
 
-      // Create and initialize player
       _videoPlayerController =
           VideoPlayerController.networkUrl(Uri.parse(videoUrl));
-
-      // Initialize player and create chewie controller in parallel
       await _videoPlayerController?.initialize();
 
       if (_isDisposed || _videoPlayerController == null) return;
 
       _chewieController = ChewieController(
         videoPlayerController: _videoPlayerController!,
-        autoPlay: repo.user?.has_subscription ?? false,
+        autoPlay: hasSubscription || viewPermission,
         looping: false,
         aspectRatio: _videoPlayerController?.value.aspectRatio,
         allowFullScreen: true,
@@ -240,22 +229,26 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
 
   Future<void> _changeVideo(String videoUrl) async {
     if (!mounted || _isDisposed) return;
-
     if (videoUrl.isEmpty) {
-      debugPrint("Invalid video URL provided");
+      debugPrint("Invalid video URL");
+      return;
+    }
+
+    final repo = Provider.of<Repository>(context, listen: false);
+    final hasSubscription = repo.user?.has_subscription ?? false;
+    final viewPermission = repo.videoDetails?.view_permission ?? false;
+    final canWatchContent = hasSubscription || viewPermission;
+
+    if (!canWatchContent) {
+      Fluttertoast.showToast(msg: "Please Subscribe or Rent First");
       return;
     }
 
     setState(() => _isPlayLoading = true);
-
     try {
-      // Dispose controllers and create new ones in parallel where possible
       await _disposeControllers();
-
       _videoPlayerController =
           VideoPlayerController.networkUrl(Uri.parse(videoUrl));
-
-      // Initialize player
       await _videoPlayerController?.initialize();
 
       if (_isDisposed || _videoPlayerController == null) return;
@@ -311,191 +304,218 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
   }
 
   Widget _buildVideoPlayer(Repository store) {
-    final hasPermission = store.videoDetails?.view_permission ?? false;
-    final hasAccess = (store.user?.has_subscription ?? false);
-    final hasRent = store.videoDetails?.has_rent ?? false;
-    final hasPlan = store.videoDetails?.has_plan ?? false;
+    final hasSubscription = store.user?.has_subscription ?? false;
+    final videoDetails = store.videoDetails;
 
-    // Determine if user can actually play the content
-    // If user has subscription, they can watch all content (including rental) directly
-    // - User with subscription: can watch everything
-    // - Rental content without subscription: must be rented (has_plan = true)
-    // - Non-rental content: subscription required
-    final canPlay = _trailerPlayer ||
-        hasAccess || // Subscription allows watching all content
-        (hasRent && hasPlan); // Rental content: must be rented if no subscription
+    if (videoDetails == null) {
+      return _buildShimmerPlaceholder();
+    }
 
-    // Show video player if we have a controller and user can play
-    if (_chewieController != null && canPlay) {
+    final isRentalContent = videoDetails.has_rent ?? false;
+    final viewPermission = videoDetails.view_permission ?? false;
+
+    // Access Logic:
+    // 1. If subscribed → can watch everything
+    // 2. If view_permission is true → user has rented/has access
+    // 3. Otherwise → show appropriate overlay
+    final canWatchContent = hasSubscription || viewPermission;
+
+    debugPrint(
+        "VideoPlayer: subscription=$hasSubscription, rental=$isRentalContent, "
+        "viewPermission=$viewPermission, canWatch=$canWatchContent, "
+        "controller=${_chewieController != null}");
+
+    // Case 1: User can watch and controller is ready
+    if (canWatchContent && _chewieController != null) {
       return SizedBox(
         height: 28.h,
-        child: Center(
-          child: _isPlayLoading
-              ? Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    height: 28.h,
-                    width: double.infinity,
-                    color: Colors.grey,
-                  ),
-                )
-              : Chewie(controller: _chewieController!),
-        ),
+        child: _isPlayLoading
+            ? _buildShimmerPlaceholder()
+            : Chewie(controller: _chewieController!),
       );
     }
 
-    // Show loading state if user has permission but controller is still initializing
-    if (canPlay && _chewieController == null && !_isPlayLoading) {
-      return SizedBox(
-        height: 28.h,
-        child: Center(
-          child: Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              height: 28.h,
-              width: double.infinity,
-              color: Colors.grey,
-            ),
-          ),
-        ),
-      );
+    // Case 2: User can watch but controller still loading
+    if (canWatchContent && _chewieController == null) {
+      return _buildShimmerPlaceholder();
     }
 
-    // Content requires rental but user hasn't rented and doesn't have subscription
-    // Show rent button only if user doesn't have subscription
-    if (hasRent && !hasPlan && !hasAccess) {
-      return SizedBox(
-        height: 28.h,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "This content requires rental",
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-                color: Colors.white70,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            _buildStyledButton(
-              onPressed: () {
-                showRenting(context, store.videoDetails).then((_) {
-                  _fetchVideoDetails(widget.id);
-                  _fetchRentDetails(widget.id);
-                });
-              },
-              text: "Rent",
-              icon: Icons.movie_creation_outlined,
-              color: Colors.orange,
-              width: 140,
-            ),
-          ],
-        ),
-      );
-    }
+    // Case 3: No subscription and no valid rental - show access overlay
+    return _buildAccessOverlay(
+      title: "Access Required",
+      subtitle: isRentalContent
+          ? "Subscribe to watch all content, or rent this movie"
+          : "Subscribe to unlock this exclusive content",
+      buttonText: isRentalContent ? "Rent or Subscribe" : "Subscribe",
+      buttonIcon:
+          isRentalContent ? Icons.movie_creation_outlined : Icons.star_outline,
+      buttonColor: isRentalContent ? Colors.orange : Colors.blue,
+      onPressed: () {
+        if (isRentalContent) {
+          // Show rental bottom sheet
+          showRenting(context, videoDetails).then((_) {
+            _fetchVideoDetails(widget.id);
+            _fetchRentDetails(widget.id);
+          });
+        } else {
+          // Go to subscription screen
+          Navigation.instance.navigate(Routes.subscriptionScreen);
+        }
+      },
+    );
+  }
 
-    // No subscription and no rental access
-    if (!hasAccess && !hasPermission) {
-      _disposeControllers();
-      return SizedBox(
-        height: 28.h,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Please Subscribe to Watch this Content",
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-                color: Colors.white70,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            _buildStyledButton(
-              onPressed: () =>
-                  Navigation.instance.navigate(Routes.subscriptionScreen),
-              text: "Subscribe",
-              icon: Icons.star_outline,
-              color: Colors.blue,
-              width: 140,
-            ),
-          ],
-        ),
-      );
-    }
-
-    // Fallback: show loading while determining access
+  Widget _buildShimmerPlaceholder() {
     return SizedBox(
       height: 28.h,
-      child: Center(
-        child: Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
-          child: Container(
-            height: 28.h,
-            width: double.infinity,
-            color: Colors.grey,
-          ),
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: Container(
+          height: 28.h,
+          width: double.infinity,
+          color: Colors.grey,
         ),
       ),
     );
   }
 
-  Widget _buildStyledButton({
+  Widget _buildAccessOverlay({
+    required String title,
+    required String subtitle,
+    required String buttonText,
+    required IconData buttonIcon,
+    required Color buttonColor,
+    required VoidCallback onPressed,
+  }) {
+    return SizedBox(
+      height: 28.h,
+      child: Stack(
+        children: [
+          // Background
+          Container(
+            height: 28.h,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black87,
+                  Colors.black.withOpacity(0.95),
+                ],
+              ),
+            ),
+          ),
+          // Content
+          Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Lock Icon
+                    Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.1),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.3),
+                          width: 2.5,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.lock_outline,
+                        color: Colors.white,
+                        size: 38,
+                      ),
+                    ),
+                    SizedBox(height: 2.5.h),
+                    // Title
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 1.h),
+                    // Subtitle
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white70,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 3,
+                    ),
+                    SizedBox(height: 2.5.h),
+                    // Button
+                    _buildActionButton(
+                      onPressed: onPressed,
+                      text: buttonText,
+                      icon: buttonIcon,
+                      color: buttonColor,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
     required VoidCallback onPressed,
     required String text,
     required IconData icon,
     required Color color,
-    double width = 120,
   }) {
     return Container(
-      width: width,
-      height: 48,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(25),
         gradient: LinearGradient(
-          colors: [
-            color,
-            color.withOpacity(0.8),
-          ],
+          colors: [color, color.withOpacity(0.75)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: color.withOpacity(0.5),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(24),
           onTap: onPressed,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          borderRadius: BorderRadius.circular(25),
+          splashColor: Colors.white.withOpacity(0.2),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.4.h),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
+                Icon(icon, color: Colors.white, size: 20),
+                SizedBox(width: 1.5.w),
                 Text(
                   text,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
@@ -621,12 +641,23 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
                 OptionsBar(
                   onEpisodeTap: (String url) {
                     if (url.isNotEmpty) {
-                      setState(() {
-                        _trailerPlayer = true;
-                        _currentPlayingEpisodeId =
-                            null; // Clear episode selection for trailer
-                      });
-                      _changeVideo(url);
+                      final hasSubscription =
+                          store.user?.has_subscription ?? false;
+                      final viewPermission =
+                          store.videoDetails?.view_permission ?? false;
+                      final canWatch = hasSubscription || viewPermission;
+
+                      if (canWatch) {
+                        setState(() {
+                          _trailerPlayer = true;
+                          _currentPlayingEpisodeId = null;
+                        });
+                        _changeVideo(url);
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: "Please Subscribe or Rent this Content");
+                        showRenting(context, store.videoDetails);
+                      }
                     }
                   },
                 ),
@@ -639,34 +670,25 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
                     episodes: store.videoDetails!.videos,
                     currentPlayingEpisodeId: _currentPlayingEpisodeId,
                     onEpisodeTap: (VideoDetails video) {
-                      final hasAccess = store.user?.has_subscription ?? false;
-                      final hasRent = store.videoDetails?.has_rent ?? false;
-                      final hasPlan = store.videoDetails?.has_plan ?? false;
+                      final hasSubscription =
+                          store.user?.has_subscription ?? false;
+                      final viewPermission =
+                          store.videoDetails?.view_permission ?? false;
+                      final canWatch = hasSubscription || viewPermission;
 
-                      // If user has subscription, they can watch all content (including rental) directly
-                      // Can play if:
-                      // 1. User has subscription: can watch everything (including rental content)
-                      // 2. Rental content without subscription: must be rented (has_plan = true)
-                      // 3. Non-rental content: subscription required (hasAccess = true)
-                      final canPlay = hasAccess || (hasRent && hasPlan);
-
-                      if (canPlay) {
+                      if (canWatch) {
                         final videoUrl = video.videoPlayer;
                         if (videoUrl != null && videoUrl.isNotEmpty) {
                           setState(() {
                             _currentPlayingEpisodeId = video.id;
-                            _trailerPlayer =
-                                false; // Clear trailer flag when playing episode
+                            _trailerPlayer = false;
                           });
                           _changeVideo(videoUrl);
                         }
-                      } else if (hasRent && !hasPlan && !hasAccess) {
-                        Fluttertoast.showToast(
-                            msg: "Please Rent this Content First");
-                        // Show rent bottom sheet
-                        showRenting(context, store.videoDetails);
                       } else {
-                        Fluttertoast.showToast(msg: "Please Subscribe First");
+                        Fluttertoast.showToast(
+                            msg: "Please Subscribe or Rent this Content");
+                        showRenting(context, store.videoDetails);
                       }
                     },
                   ),
@@ -691,7 +713,6 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            // App bar shimmer
             Container(
               padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
               color: Colors.black,
@@ -712,8 +733,6 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
                 ],
               ),
             ),
-
-            // Video player shimmer
             Shimmer.fromColors(
               baseColor: Colors.grey[600]!,
               highlightColor: Colors.grey[400]!,
@@ -723,10 +742,7 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
                 color: Colors.grey,
               ),
             ),
-
             SizedBox(height: 2.h),
-
-            // Info bar shimmer
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 4.w),
               child: Column(
@@ -760,10 +776,7 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
                 ],
               ),
             ),
-
             SizedBox(height: 2.h),
-
-            // Options bar shimmer
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 4.w),
               child: Row(
@@ -785,10 +798,7 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
                 ),
               ),
             ),
-
             SizedBox(height: 3.h),
-
-            // Description shimmer
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 4.w),
               child: Column(
@@ -812,54 +822,6 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
                 ),
               ),
             ),
-
-            SizedBox(height: 3.h),
-
-            // Episodes shimmer
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 4.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Shimmer.fromColors(
-                    baseColor: Colors.grey[600]!,
-                    highlightColor: Colors.grey[400]!,
-                    child: Container(
-                      height: 2.5.h,
-                      width: 30.w,
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 2.h),
-                  SizedBox(
-                    height: 20.h,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 3,
-                      itemBuilder: (context, index) => Container(
-                        margin: EdgeInsets.only(right: 3.w),
-                        child: Shimmer.fromColors(
-                          baseColor: Colors.grey[600]!,
-                          highlightColor: Colors.grey[400]!,
-                          child: Container(
-                            width: 35.w,
-                            height: 20.h,
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
             SizedBox(height: 4.h),
           ],
         ),
@@ -873,9 +835,7 @@ class _WatchScreenNewState extends State<WatchScreenNew> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       context: context,
       builder: (_) => RentBottomSheet(videoDetails: videoDetails),

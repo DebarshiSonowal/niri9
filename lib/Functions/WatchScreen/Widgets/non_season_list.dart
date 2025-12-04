@@ -4,9 +4,11 @@ import 'package:sizer/sizer.dart';
 
 import '../../../Constants/common_functions.dart';
 import '../../../Helper/storage.dart';
+import '../../../Models/video.dart';
 import '../../../Models/video_details.dart';
 import '../../../Repository/repository.dart';
 import 'episode_item.dart';
+import 'rent_bottom_sheet.dart';
 
 class NonSeasonList extends StatefulWidget {
   const NonSeasonList(
@@ -37,18 +39,31 @@ class _NonSeasonListState extends State<NonSeasonList> {
             var item = data.videoDetails?.videos[index];
             return GestureDetector(
               onTap: () {
-                debugPrint("Logged: ${Storage.instance.isLoggedIn}");
+                final isLoggedIn = Storage.instance.isLoggedIn ?? false;
+                final hasSubscription = data.user?.has_subscription ?? false;
+                final hasRent = data.videoDetails?.has_rent ?? false;
+                final hasActiveRent =
+                    hasRent && (data.videoDetails?.has_plan ?? false);
 
-                if (Storage.instance.isLoggedIn!) {
-                  if (data.videoDetails?.view_permission ?? false) {
-                    widget.setVideo(item);
-                    debugPrint("Video Clicked${item.title}");
-                  } else {
-                    CommonFunctions().showNotSubscribedDialog(context);
-                  }
-                } else {
+                debugPrint("Logged: $isLoggedIn");
+
+                if (!isLoggedIn) {
                   widget.showLoginPrompt(context);
+                  return;
                 }
+
+                if (hasSubscription || hasActiveRent) {
+                  widget.setVideo(item);
+                  debugPrint("Video Clicked${item.title}");
+                  return;
+                }
+
+                if (hasRent) {
+                  _showRentBottomSheet(context, data.videoDetails);
+                  return;
+                }
+
+                CommonFunctions().showNotSubscribedDialog(context);
               },
               child: EpisodeItem(
                 item: item!,
@@ -65,5 +80,23 @@ class _NonSeasonListState extends State<NonSeasonList> {
         ),
       );
     });
+  }
+
+  Future<void> _showRentBottomSheet(
+      BuildContext context, Video? videoDetails) async {
+    if (videoDetails == null) {
+      CommonFunctions().showNotSubscribedDialog(context);
+      return;
+    }
+    await showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => RentBottomSheet(videoDetails: videoDetails),
+    );
   }
 }

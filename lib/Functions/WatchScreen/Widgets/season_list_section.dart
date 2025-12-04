@@ -4,9 +4,11 @@ import 'package:sizer/sizer.dart';
 
 import '../../../Constants/common_functions.dart';
 import '../../../Helper/storage.dart';
+import '../../../Models/video.dart';
 import '../../../Models/video_details.dart';
 import '../../../Repository/repository.dart';
 import 'episode_item.dart';
+import 'rent_bottom_sheet.dart';
 
 class SeasonListSection extends StatelessWidget {
   const SeasonListSection({super.key, required this.selected, required this.setVideo, required this.showLoginPrompt});
@@ -34,23 +36,32 @@ class SeasonListSection extends StatelessWidget {
                   .video_list[index];
               return GestureDetector(
                 onTap: () {
-                  debugPrint(
-                      "Logged: ${Storage.instance.isLoggedIn}");
+                  final isLoggedIn = Storage.instance.isLoggedIn ?? false;
+                  final hasSubscription = data.user?.has_subscription ?? false;
+                  final hasRent = data.videoDetails?.has_rent ?? false;
+                  final hasActiveRent =
+                      hasRent && (data.videoDetails?.has_plan ?? false);
+
+                  debugPrint("Logged: $isLoggedIn");
                   debugPrint(
                       "Video Clicked${item.title} \n ${item.profile_pic} \n ${item.profilePicFile}");
-                  if (Storage.instance.isLoggedIn!) {
-                    if (data.videoDetails
-                        ?.view_permission ??
-                        false) {
-                      setVideo(item);
-                    } else {
-                      CommonFunctions()
-                          .showNotSubscribedDialog(
-                          context);
-                    }
-                  } else {
+
+                  if (!isLoggedIn) {
                     showLoginPrompt(context);
+                    return;
                   }
+
+                  if (hasSubscription || hasActiveRent) {
+                    setVideo(item);
+                    return;
+                  }
+
+                  if (hasRent) {
+                    _showRentBottomSheet(context, data.videoDetails);
+                    return;
+                  }
+
+                  CommonFunctions().showNotSubscribedDialog(context);
                 },
                 // child: Text("${data.currentSeasons[selected]}"),
                 child: EpisodeItem(
@@ -69,6 +80,24 @@ class SeasonListSection extends StatelessWidget {
           ),
         );
       }
+    );
+  }
+
+  Future<void> _showRentBottomSheet(
+      BuildContext context, Video? videoDetails) async {
+    if (videoDetails == null) {
+      CommonFunctions().showNotSubscribedDialog(context);
+      return;
+    }
+    await showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => RentBottomSheet(videoDetails: videoDetails),
     );
   }
 }
